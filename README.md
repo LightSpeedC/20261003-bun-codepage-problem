@@ -41,6 +41,7 @@ To run the same tests on any Windows PC after cloning (nothing installed on the 
 
 ## 4. Related issues
 
+- [oven-sh/bun#44693](https://github.com/oven-sh/bun/issues/44693) — Bun switches the console code page to 65001 at startup (the root cause, filed from this project)
 - [oven-sh/bun#43660](https://github.com/oven-sh/bun/issues/43660) — garbled output when piping Bun to Bun
 
 [⌂](../)

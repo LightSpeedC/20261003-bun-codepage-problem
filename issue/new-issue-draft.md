@@ -1,6 +1,6 @@
 # Draft of the new issue
 
-The text to post to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Not posted yet
+The text posted to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693)
 
 > 📅 Created: 2026-10-04 / Updated: 2026-10-07
 

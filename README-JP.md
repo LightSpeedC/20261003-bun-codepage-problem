@@ -41,6 +41,7 @@ clone したあと、どの Windows の PC でも同じ試験を流せる（PC �
 
 ## 4. 関連する Issue
 
+- [oven-sh/bun#44693](https://github.com/oven-sh/bun/issues/44693) — bun が起動時にコンソールのコードページを 65001 に切り替える（根本原因。このプロジェクトから出したもの）
 - [oven-sh/bun#43660](https://github.com/oven-sh/bun/issues/43660) — bun 同士のパイプで文字化けする
 
 [⌂](../)

@@ -262,8 +262,8 @@ tools/50_run/
 3. T1 → T2 → T3 → T4 → T5 の順に 1 項目ずつ足し、そのつど全件を流す（済）
 4. 結果の表を英語版・日本語版の資料にまとめ、害の一覧（H1〜H7）の状態を更新する（済: [コードページ試験の結果](../research/codepage-test-results-JP.md)）
 5. T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）
-6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（本文案は済: [新しい Issue の下書き](../issue/new-issue-draft-JP.md)。投稿は未）
-7. bun#43660 に、新しい Issue への関連を書き足す
+6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（済: [bun#44693](https://github.com/oven-sh/bun/issues/44693) として投稿した。本文は [新しい Issue の下書き](../issue/new-issue-draft-JP.md)）
+7. bun#43660 に、新しい Issue への関連を書き足す（済: [コメント](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127)）
 8. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
 
 [⌂](../README-JP.md)
