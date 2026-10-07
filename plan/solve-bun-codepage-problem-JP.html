@@ -133,7 +133,7 @@ footer .navbar { margin-top: 0; }
 <thead><tr><th>ランタイム</th><th>版</th><th>役割</th></tr></thead>
 <tbody>
 <tr><td>bun</td><td class="nowrap">1.4.2+744846f84</td><td>調べる対象（安定版）</td></tr>
-<tr><td>bun canary</td><td class="nowrap">1.4.3-canary.1+bb35d1b81</td><td>調べる対象。<code>_bin/bun-canary/</code> に置き、フルパスで呼ぶ</td></tr>
+<tr><td>bun canary</td><td class="nowrap">準備の時点の最新（全件の試験では 1.4.3-canary.1+bbdc5a519）</td><td>調べる対象。<code>_bin/bun-canary/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
 <tr><td>node</td><td class="nowrap">v26.10.0</td><td>比べる相手</td></tr>
 <tr><td>deno</td><td class="nowrap">2.9.7</td><td>比べる相手</td></tr>
 </tbody></table></div>
@@ -223,6 +223,7 @@ tools/40_test/
 tools/50_run/
   summarize-results.ts  証拠の置き場の記録から、結果表の材料を出す
   compare-evidence.ts   research/evidence_last/ と research/evidence/ の判定を比べる
+  build-result-tables.ts research/evidence/ から結果資料の表を作り、証拠ファイルと試験コードへリンクする
   verify-issue-repro.ts Issue の本文に載せる再現コマンドを新しい窓で流し、画面を出す
 </code></pre>
 <ul>
@@ -298,7 +299,7 @@ tools/50_run/
 <li>T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）</li>
 <li>「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（本文案は済: <a href="../issue/new-issue-draft-JP.html">新しい Issue の下書き</a>。投稿は未）</li>
 <li>bun#43660 に、新しい Issue への関連を書き足す</li>
-<li>どの PC でも同じ試験を流せる仕組みにし、証拠を <code>research/evidence/</code> に残す（仕組みは済。932 と 437 で全件を流し、<code>research/evidence_last/</code> に置いた。<code>research/evidence/</code> への写しは未）</li>
+<li>どの PC でも同じ試験を流せる仕組みにし、証拠を <code>research/evidence/</code> に残す（済。932 と 437 で全件を流し、<code>research/evidence/</code> に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）</li>
 </ol>
 </section>
 </div>

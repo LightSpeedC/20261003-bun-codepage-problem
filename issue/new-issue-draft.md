@@ -25,7 +25,7 @@ Windows: Bun switches the console code page to 65001 at startup, which garbles o
 **What version of Bun is running?**
 
 ```text
-1.4.2+744846f84 (also reproduced on 1.4.3-canary.1+bb35d1b81)
+1.4.2+744846f84 (also reproduced on 1.4.3-canary.1+bbdc5a519)
 ```
 
 **What platform is your computer?**
@@ -93,18 +93,19 @@ What happens:
 
 Saving and restoring cannot be made safe: several processes in one console save and restore the same shared value, so the exit order decides what remains, and a forced kill skips the restore entirely (the [source comment](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L482-L484) already says restoration "may not be applied if the process is killed abruptly"). Source links point to the current `main`.
 
-**Harms measured** on Japanese Windows 11 (10.0.26300), conhost, Bun 1.4.2 and canary, compared with Node.js v26.10.0 and Deno 2.9.7. Each process read `GetConsoleCP` / `GetConsoleOutputCP` itself, and the screen was read back with `ReadConsoleOutputCharacterW`. Node.js and Deno showed none of these.
+**Harms measured** on Windows 11 (10.0.26300), conhost, in consoles started at code page 932 and at 437, Bun 1.4.2 and canary, compared with Node.js v26.10.0 and Deno 2.9.7. Each process read `GetConsoleCP` / `GetConsoleOutputCP` itself, and the screen was read back with `ReadConsoleOutputCharacterW`. Node.js and Deno showed none of these, and every fixed-order verdict was the same at 932 and 437.
 
 1. **Garbled output** in a piped peer (the #43660 symptom), also when the two Bun processes are not directly connected (`bun | node | bun`).
-2. **Results change from run to run.** The #43660 command, run 10 times in fresh consoles, was garbled 8 times on 1.4.2 and 4 times on canary. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
+2. **Results change from run to run.** The #43660 command, run 10 times in fresh consoles, was garbled 6 times on 1.4.2 and 7 times on canary at 932, and 3 and 9 times at 437; the counts change on every run. Node.js and Deno were correct every time. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
 3. **65001 is left on the console** after a normal exit in some orders, and after a forced kill (`taskkill /F`).
 4. **Other programs in the same console break** once 65001 is left: `cmd.exe` misreads the rest of a Shift_JIS batch file (Japanese lines become `�������`), and `chcp` and `pause` switch their messages to English.
 5. **The data in the pipe is never corrupted.** Every harm comes from changing shared console state.
 
 **Evidence**
 
-- Full results (tables, timelines, screens, and links to the test code for each test): https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
-- Test code that reproduces all of the above in fresh consoles: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts) (repository: https://github.com/LightSpeedC/20261003-bun-codepage-problem )
+- Full results (tables, timelines, screens; every result links to its evidence file and to the test code): https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
+- Test code that reproduces all of the above in fresh consoles: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts) (repository: https://github.com/LightSpeedC/20261003-bun-codepage-problem )
+- To run everything on any Windows PC (it downloads pinned Bun, Node.js, Deno and pwsh into the repository and does not use what is installed): `tools\10_setup\setup-runtimes.cmd`, then `tools\40_test\run-tests.cmd`
 - Related: #43660
 ```
 

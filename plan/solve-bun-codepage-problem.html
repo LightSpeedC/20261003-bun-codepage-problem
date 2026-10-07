@@ -133,7 +133,7 @@ footer .navbar { margin-top: 0; }
 <thead><tr><th>Runtime</th><th>Version</th><th>Role</th></tr></thead>
 <tbody>
 <tr><td>Bun</td><td class="nowrap">1.4.2+744846f84</td><td>Under test (stable)</td></tr>
-<tr><td>Bun canary</td><td class="nowrap">1.4.3-canary.1+bb35d1b81</td><td>Under test. Placed in <code>_bin/bun-canary/</code> and called by full path</td></tr>
+<tr><td>Bun canary</td><td class="nowrap">latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run)</td><td>Under test. Placed in <code>_bin/bun-canary/</code> and called with PATH switched</td></tr>
 <tr><td>Node.js</td><td class="nowrap">v26.10.0</td><td>Reference</td></tr>
 <tr><td>Deno</td><td class="nowrap">2.9.7</td><td>Reference</td></tr>
 </tbody></table></div>
@@ -223,6 +223,7 @@ tools/40_test/
 tools/50_run/
   summarize-results.ts  prints the material for the result tables from the evidence folder
   compare-evidence.ts   compares the verdicts in research/evidence_last/ and research/evidence/
+  build-result-tables.ts builds the result tables from research/evidence/, linking to the evidence files and the test code
   verify-issue-repro.ts runs the reproduction command in the issue text in new consoles and prints the screen
 </code></pre>
 <ul>
@@ -298,7 +299,7 @@ tools/50_run/
 <li>Compare versions with T6 (done: stable and canary side by side in the same tables)</li>
 <li>Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (draft done: <a href="../issue/new-issue-draft.html">Draft of the new issue</a>; not posted yet)</li>
 <li>Add a cross-reference to the new issue on bun#43660</li>
-<li>Make the same tests runnable on any PC, and keep the evidence in <code>research/evidence/</code> (mechanism done; every test ran at 932 and 437 into <code>research/evidence_last/</code>; copying to <code>research/evidence/</code> not done)</li>
+<li>Make the same tests runnable on any PC, and keep the evidence in <code>research/evidence/</code> (done: every test ran at 932 and 437, the results were copied to <code>research/evidence/</code>, and every ✅ / ❌ in the result tables links to its evidence file)</li>
 </ol>
 </section>
 </div>

@@ -91,7 +91,7 @@ None of these depends on the code page, so there is no reason to change it. T1 c
 | Runtime | Version | Role |
 |---|---|---|
 | Bun | 1.4.2+744846f84 | Under test (stable) |
-| Bun canary | 1.4.3-canary.1+bb35d1b81 | Under test. Placed in `_bin/bun-canary/` and called by full path |
+| Bun canary | latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
 | Node.js | v26.10.0 | Reference |
 | Deno | 2.9.7 | Reference |
 
@@ -191,6 +191,7 @@ tools/40_test/
 tools/50_run/
   summarize-results.ts  prints the material for the result tables from the evidence folder
   compare-evidence.ts   compares the verdicts in research/evidence_last/ and research/evidence/
+  build-result-tables.ts builds the result tables from research/evidence/, linking to the evidence files and the test code
   verify-issue-repro.ts runs the reproduction command in the issue text in new consoles and prints the screen
 ```
 
@@ -263,7 +264,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 5. Compare versions with T6 (done: stable and canary side by side in the same tables)
 6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (draft done: [Draft of the new issue](../issue/new-issue-draft.md); not posted yet)
 7. Add a cross-reference to the new issue on bun#43660
-8. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (mechanism done; every test ran at 932 and 437 into `research/evidence_last/`; copying to `research/evidence/` not done)
+8. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 
 [⌂](../README.md)
 

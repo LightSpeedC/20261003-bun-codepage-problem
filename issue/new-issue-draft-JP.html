@@ -59,7 +59,7 @@ footer .navbar { margin-top: 0; }
 <pre><code class="language-text">Windows: bun が起動時にコンソールのコードページを 65001 に切り替え、出力を化けさせ、同じ窓のほかのプロセスを壊す（#43660 の根本原因）</code></pre>
 
 <p><strong>bun の版（What version of Bun is running?）</strong></p>
-<pre><code class="language-text">1.4.2+744846f84（1.4.3-canary.1+bb35d1b81 でも再現）</code></pre>
+<pre><code class="language-text">1.4.2+744846f84（1.4.3-canary.1+bbdc5a519 でも再現）</code></pre>
 
 <p><strong>環境（What platform is your computer?）</strong></p>
 <pre><code class="language-text">Microsoft Windows NT 10.0.26300.0 x64</code></pre>
@@ -108,18 +108,19 @@ Active code page: 65001
 
 控えて戻すやり方は安全にできない。1 つの窓で複数のプロセスが同じ共有の値を控えては戻すので、終わる順で何が残るかが決まる。強制終了では戻す処理そのものが走らない（ソースのコメントにも「強制終了されると戻らないことがある」と書かれている）。ソースへのリンクはいまの `main` を指す。
 
-**測った害**（日本語版 Windows 11 10.0.26300、conhost、bun 1.4.2 と canary。比べる相手は node v26.10.0 と deno 2.9.7。各プロセスが自分で `GetConsoleCP` / `GetConsoleOutputCP` を読み、画面は `ReadConsoleOutputCharacterW` で読み取った）。node と deno ではどれも起きなかった。
+**測った害**（Windows 11 10.0.26300、conhost、開始のコードページ 932 と 437 の窓、bun 1.4.2 と canary。比べる相手は node v26.10.0 と deno 2.9.7。各プロセスが自分で `GetConsoleCP` / `GetConsoleOutputCP` を読み、画面は `ReadConsoleOutputCharacterW` で読み取った）。node と deno ではどれも起きず、順番を決めたケースの判定は 932 と 437 ですべて同じだった。
 
 1. **パイプでつないだ相手の出力が化ける**（#43660 の症状）。bun 同士が直接つながっていなくても起きる（`bun | node | bun`）
-2. **回ごとに結果が変わる。** #43660 のコマンドを毎回新しい窓で 10 回流すと、1.4.2 では 8 回、canary では 4 回化けた。起動・終了の順を決めると、どの順も 3 回中 3 回同じ結果になった
+2. **回ごとに結果が変わる。** #43660 のコマンドを毎回新しい窓で 10 回流すと、932 では 1.4.2 が 6 回、canary が 7 回、437 では 3 回と 9 回化けた。回数も流すたびに変わる。node と deno は毎回正しかった。起動・終了の順を決めると、どの順も 3 回中 3 回同じ結果になった
 3. **窓に 65001 が残る。** 通常終了でも順番によって残り、強制終了（`taskkill /F`）でも残る
 4. **65001 が残ると、同じ窓のほかのプログラムが壊れる。** `cmd.exe` が SJIS のバッチファイルの残りを読み違え（日本語の行が `�������` になる）、`chcp` や `pause` のメッセージが英語になる
 5. **パイプのデータそのものは壊れない。** 害はすべて、共有されたコンソールの状態を変えることから起きている
 
 **証拠**
 
-- 全結果（表 ・ 時系列 ・ 画面、各試験の試験コードへのリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
-- 上のすべてを新しい窓で再現するテストコード: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts)（リポジトリ: https://github.com/LightSpeedC/20261003-bun-codepage-problem ）
+- 全結果（表 ・ 時系列 ・ 画面。結果の 1 つ 1 つから証拠ファイルと試験コードへリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
+- 上のすべてを新しい窓で再現するテストコード: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts)（リポジトリ: https://github.com/LightSpeedC/20261003-bun-codepage-problem ）
+- どの Windows の PC でも全件を流せる（版を決めた bun ・ node ・ deno ・ pwsh をリポジトリの中に取り、PC に入っているものは使わない）: `tools\10_setup\setup-runtimes.cmd` のあと `tools\40_test\run-tests.cmd`
 - 関連: #43660
 </code></pre>
 </section>

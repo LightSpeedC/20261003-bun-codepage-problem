@@ -91,7 +91,7 @@ bun は実行中にコンソールの入力・出力コードページを書き�
 | ランタイム | 版 | 役割 |
 |---|---|---|
 | bun | 1.4.2+744846f84 | 調べる対象（安定版） |
-| bun canary | 1.4.3-canary.1+bb35d1b81 | 調べる対象。`_bin/bun-canary/` に置き、フルパスで呼ぶ |
+| bun canary | 準備の時点の最新（全件の試験では 1.4.3-canary.1+bbdc5a519） | 調べる対象。`_bin/bun-canary/` に置き、PATH を入れ替えて呼ぶ |
 | node | v26.10.0 | 比べる相手 |
 | deno | 2.9.7 | 比べる相手 |
 
@@ -191,6 +191,7 @@ tools/40_test/
 tools/50_run/
   summarize-results.ts  証拠の置き場の記録から、結果表の材料を出す
   compare-evidence.ts   research/evidence_last/ と research/evidence/ の判定を比べる
+  build-result-tables.ts research/evidence/ から結果資料の表を作り、証拠ファイルと試験コードへリンクする
   verify-issue-repro.ts Issue の本文に載せる再現コマンドを新しい窓で流し、画面を出す
 ```
 
@@ -263,7 +264,7 @@ tools/50_run/
 5. T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）
 6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（本文案は済: [新しい Issue の下書き](../issue/new-issue-draft-JP.md)。投稿は未）
 7. bun#43660 に、新しい Issue への関連を書き足す
-8. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（仕組みは済。932 と 437 で全件を流し、`research/evidence_last/` に置いた。`research/evidence/` への写しは未）
+8. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
 
 [⌂](../README-JP.md)
 
