@@ -8,71 +8,38 @@
 
 [English](codepage-test-results.md)
 
-**要約:** bun は起動時にコンソールの入力・出力コードページを控えて両方 65001 にし、終了時に控えた値へ戻す。コードページはコンソールに属し、つながる全プロセスで共有されるため、同時に動く bun 同士が互いの控えを上書きする。その結果、出力が化け、窓に 65001 が残り、同じ窓のほかのプログラムが壊れる。node と deno はコードページを一度も変えず、すべてのケースで正しかった。判定は、窓が 932（日本語版 Windows）で始まっても 437（英語版 Windows）で始まっても同じだった。bun#43660 への Open の修正 [PR #43662](https://github.com/oven-sh/bun/pull/43662) の版は、`console.log` の化けを直すが、動いているあいだは窓を 65001 にし、強制終了では 65001 を残し（順番を決めない 20 回のうち 1 回は通常終了でも残した）、`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` では化ける。詳しくは [結論](#2-結論)。
-
-1. [条件](#1-条件)
+1. [要点](#1-要点)
 2. [結論](#2-結論)
 3. [T1. コードページの推移](#3-t1-コードページの推移)
 4. [T2. パイプの組み合わせ](#4-t2-パイプの組み合わせ)
 5. [T3・T4. 強制終了と隣のプロセス](#5-t3t4-強制終了と隣のプロセス)
 6. [T5. 順番を固定した再現](#6-t5-順番を固定した再現)
 7. [T5. bun#43660 と同じ形](#7-t5-bun43660-と同じ形)
+8. [条件](#8-条件)
 
-## 1. 条件
+## 1. 要点
 
-| 項目 | 値 |
-|---|---|
-| OS | Windows 11 Home 10.0.26300（日本語版） |
-| 窓 | ケースごとに `conhost.exe` で新しい窓を起こす。開始のコードページは、ほかと共有しないその専用の窓の中で `chcp` して 932 か 437 にする。そのあと試験はコードページに触らない |
-| bun | 1.4.2+744846f84 |
-| bun canary | 1.4.3-canary.1+bbdc5a519（準備の時点の最新） |
-| bun PR #43662 | 1.4.3-canary.1+576eb251a。bun#43660 への修正で Open の [PR #43662](https://github.com/oven-sh/bun/pull/43662) の、CI の Windows x64 のビルド（先頭コミット 576eb251a、Buildkite のビルド 119166） |
-| node | v26.10.0 |
-| deno | 2.9.7 |
-| pwsh ／ Windows PowerShell | 7.6.6 ／ 5.1.26100.9549 |
-| 送る文字列 | `abc 東京大阪 xyz`。化けると、932 では `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz`、437 では `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` |
-| 流し方 | `tools\10_setup\setup-runtimes.cmd` が上のランタイムを公式の配布元から `_bin\` に取り、`tools\40_test\run-tests.cmd` がそれを PATH の先頭に置いて全件を流す。PC に入っているものは使わない |
+1. <strong>bun は起動時にコンソールのコードページを 65001 に切り替え、終了時に控えた値へ戻す。</strong>コードページはコンソールに属し、つながる全プロセスで共有される。ソース: `init()`（[output.rs の 561〜567 行](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)）と `restore()`（[output.rs の 517〜524 行](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)）。証拠、bun が動いているあいだのコードページ: [932](evidence/cp932/bun/node-test/t1-bun/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-bun/log.jsonl)（T1）
+2. <strong>1 つの窓で 2 本の bun が動くと、互いの控えを上書きする。</strong>出力が化け、窓に 65001 が残り、同じ窓のほかのプログラムが壊れる。証拠: 化けた画面 [932](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) ／ [437](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json)（T5）、壊れた隣のプロセス [932](evidence/cp932/bun/node-test/t4-bun/screen.json) ／ [437](evidence/cp437/bun/node-test/t4-bun/screen.json)（T4）、強制終了 [932](evidence/cp932/bun/node-test/t3-bun/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t3-bun/log.jsonl)（T3）
+3. **bun#43660 への Open の修正 PR #43662 は、原因を取り除かない。**`console.log` の出力は直すが、動いているあいだは窓を 65001 にしたまま（[932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) ／ [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)）、強制終了では 65001 が残り（[932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)）、`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は化け（[932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)）、戻し方は順番を決めない 20 回のうち 1 回、競合に負けた（[932](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)）
+4. **node と deno はコードページを一度も変えず**、すべてのケースで正しく出す: node [932](evidence/cp932/bun/node-test/t1-node/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-node/log.jsonl)、deno [932](evidence/cp932/bun/node-test/t1-deno/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-deno/log.jsonl)（T1）
 
-### 判定の方法
-
-- **コードページ:** 各プロセスが起動直後・書く直前・終了直前に `GetConsoleCP` ／ `GetConsoleOutputCP` を読む。窓の前後は観測役の node が読む（T1 で node がコードページを変えないことを確かめている）
-- **画面:** 観測役が `ReadConsoleOutputCharacterW` で窓の文字を読み取る。人の目には頼らない
-- **隣のプロセス:** 各ケースの最後に、同じ窓で `chcp` と隣のプロセス役の cmd を流す。cmd は開始のコードページで書いてある（932 用は SJIS の `neighbor: 東京大阪`、437 用は CP437 の `neighbor: café`）
-- **バイト列:** 受け手が受け取ったバイト列をそのままファイルに書き、正しい UTF-8 かを見る
-
-✅ 期待どおり（あるべき姿と同じ） ／ ❌ 期待と違う。**下の表の ✅ と ❌ は、1 つ 1 つがそのケースの証拠ファイルへのリンク**になっている。画面（`screen.json`）、コードページの記録（`log.jsonl`）、受け取ったバイト列（`out.bin`）のどれか。
-
-### 証拠
-
-証拠はすべて `research/evidence/` にあり、ケースごとに 1 フォルダ（`cp<コードページ>/<bun か bun-canary>/<流した道具>/<ケース>/`）。各フォルダには、流したバッチ（`run.cmd`）・ログ・画面と、あれば受け取ったバイト列がある。ログには日時も pid も無いので、2 回の結果を diff で比べられる。実行日時と道具の版は、回ごとの `environment.json` にだけある。
-
-- 932: [bun 安定版](evidence/cp932/bun/node-test/environment.json)、[bun canary](evidence/cp932/bun-canary/node-test/environment.json)、[bun PR #43662](evidence/cp932/bun-pr-43662/node-test/environment.json)、[bun test](evidence/cp932/bun/bun-test/environment.json)
-- 437: [bun 安定版](evidence/cp437/bun/node-test/environment.json)、[bun canary](evidence/cp437/bun-canary/node-test/environment.json)、[bun PR #43662](evidence/cp437/bun-pr-43662/node-test/environment.json)、[bun test](evidence/cp437/bun/bun-test/environment.json)
-
-### 試験コード
-
-リンクはすべてコミット `5b9f56b` を指すので、行番号はずれない。
-
-- [conhost.exe で新しい窓を起こし、終わるまで待つ](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L49-L78)（new-console.ts の 49〜78 行）。ケースごとに、パスを `%~dp0` からの相対にした ASCII だけのバッチを書く
-- [日時と pid を除いてログをまとめる](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L80-L102)（new-console.ts の 80〜102 行）と、[各ケースの最後に流す共通の後始末](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L104-L113)（104〜113 行）
-- [各ランタイムの中からコードページを読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/console.ts#L20-L47)（console.ts の 20〜47 行）。`bun:ffi` ・ `koffi` ・ `Deno.dlopen` で、読むだけ
-- [送り手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/emit.ts#L1-L15)（emit.ts）、[受け手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/86007f82ef27030bba99c4aa844be52110f587a0/tests/fixtures/sink.ts#L1-L57)（sink.ts。書き方を選べるようにした commit `86007f8` の版）、[中継役](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/hold.ts#L1-L21)（hold.ts）
-- [ReadConsoleOutputCharacterW で画面を読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/probe.ts#L17-L51)（probe.ts の 17〜51 行）
-- [画面 ・ コードページ ・ バイト列の判定](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/judge.ts#L7-L63)（judge.ts の 7〜63 行）
-- 隣のプロセス役: [932 用](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-932.cmd#L1-L6)（neighbor-932.cmd）と [437 用](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-437.cmd#L1-L4)（neighbor-437.cmd）
+**依頼**（[bun#44693](https://github.com/oven-sh/bun/issues/44693)）: コンソールのコードページを一切変えず、画面への出力はすべて `WriteConsoleW` で書いてほしい。判定は、窓が 932（日本語版 Windows）で始まっても 437（英語版 Windows）で始まっても同じだった。詳しくは [結論](#2-結論)、試験の流し方は [条件](#8-条件) にある。
 
 ## 2. 結論
 
 bun は、起動した瞬間（スクリプトが動く前）に窓の入力・出力コードページを 65001 に変え、終了時に「起動時に控えた値」へ戻す。この動きから、計画の害 H1〜H7 がすべて起きることを確かめた。node と deno はコードページを一度も変えず、すべてのケースで正しく動いた。
 
+行は重要な順に並べた。PR #43662 のあとも残る害を先に置く。
+
 | 害 | 内容 | bun ・ canary | bun PR #43662 | node ・ deno | 証拠（932 ／ 437） |
 |---|---|---|---|---|---|
-| H1 | パイプでつないだ相手の表示が化ける | ❌ 起きた | ⚠️ `console.log` と `process.stdout` は直った。`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` では起きる | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) ／ [画面](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json)（T5 の ww）。PR: [画面](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [画面](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)（T5 の ww を fs.writeSync で） |
-| H2 | 結果が起動・終了の順で決まり、実行のたびに変わる | ❌ 起きた | ⚠️ 順番を決めない 20 回で画面は毎回正しかったが、1 回 65001 が残った（H3） | ✅ 起きない | [T5 の bun#43660 と同じ形](#7-t5-bun43660-と同じ形)。T5 の 4 通りの順で結果が 4 つに分かれる |
-| H3 | 終了後に 65001 が窓に残る | ❌ 起きた | ⚠️ 順番を決めたケースでは直ったが、順番を決めない 20 回のうち 1 回、出力側が 65001 のまま残った | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl)（T2、cmd から bun → bun）。PR: [ログ](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)（932、順番を決めない 6 回目。終了後は入力 932・出力 65001） |
 | H4 | 同じ窓の別のプロセスが巻き込まれる | ❌ 起きた | ❌ 起きる。bun が動いているあいだと、強制終了のあと、窓は 65001 | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t4-bun/screen.json) ／ [画面](evidence/cp437/bun/node-test/t4-bun/screen.json)（T4。隣のプロセス役が化け、chcp が 65001 を示す）。PR: [ログ](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) ／ [ログ](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)（T1、実行中は 65001） |
-| H5 | コードページが開始の値に戻った状態で、bun が UTF-8 のバイト列をそのまま書いて化ける | ❌ 起きた | ⚠️ H1 と同じ | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl)（T5 の ww。受け手が書く直前のコードページが開始の値） |
 | H6 | 強制終了すると元に戻らない | ❌ 起きた | ❌ 起きる | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t3-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t3-bun/log.jsonl)（T3）。PR: [画面](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) ／ [画面](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json) |
+| H1 | パイプでつないだ相手の表示が化ける | ❌ 起きた | ⚠️ `console.log` と `process.stdout` は直った。`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` では起きる | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) ／ [画面](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json)（T5 の ww）。PR: [画面](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [画面](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)（T5 の ww を fs.writeSync で） |
+| H5 | コードページが開始の値に戻った状態で、bun が UTF-8 のバイト列をそのまま書いて化ける | ❌ 起きた | ⚠️ H1 と同じ | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl)（T5 の ww。受け手が書く直前のコードページが開始の値） |
+| H3 | 終了後に 65001 が窓に残る | ❌ 起きた | ⚠️ 順番を決めたケースでは直ったが、順番を決めない 20 回のうち 1 回、出力側が 65001 のまま残った | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl)（T2、cmd から bun → bun）。PR: [ログ](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)（932、順番を決めない 6 回目。終了後は入力 932・出力 65001） |
+| H2 | 結果が起動・終了の順で決まり、実行のたびに変わる | ❌ 起きた | ⚠️ 順番を決めない 20 回で画面は毎回正しかったが、1 回 65001 が残った（H3） | ✅ 起きない | [T5 の bun#43660 と同じ形](#7-t5-bun43660-と同じ形)。T5 の 4 通りの順で結果が 4 つに分かれる |
 | H7 | bun 同士が直接つながっていなくても起きる | ❌ 起きた | ✅ 直った | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t5-bun-relay-console-1/screen.json) ／ [画面](evidence/cp437/bun/node-test/t5-bun-relay-console-1/screen.json)（T5 の relay、`bun \| node \| bun`） |
 
 ### PR #43662（bun#43660 への、Open の修正）
@@ -275,6 +242,49 @@ bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin
 - 同じコマンドでも、bun は回ごとに結果が変わり、化ける回数も流すたびに変わった（H2）。2 本のどちらが先に起動・終了するかで決まり、その順は OS の都合で毎回揺れる
 - bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった
 - PR #43662 の版は 20 回とも正しく出したが、932 の 1 回で出力側のコードページを 65001 のまま残した（[結論](#2-結論) を参照）
+
+## 8. 条件
+
+| 項目 | 値 |
+|---|---|
+| OS | Windows 11 Home 10.0.26300（日本語版） |
+| 窓 | ケースごとに `conhost.exe` で新しい窓を起こす。開始のコードページは、ほかと共有しないその専用の窓の中で `chcp` して 932 か 437 にする。そのあと試験はコードページに触らない |
+| bun | 1.4.2+744846f84 |
+| bun canary | 1.4.3-canary.1+bbdc5a519（準備の時点の最新） |
+| bun PR #43662 | 1.4.3-canary.1+576eb251a。bun#43660 への修正で Open の [PR #43662](https://github.com/oven-sh/bun/pull/43662) の、CI の Windows x64 のビルド（先頭コミット 576eb251a、Buildkite のビルド 119166） |
+| node | v26.10.0 |
+| deno | 2.9.7 |
+| pwsh ／ Windows PowerShell | 7.6.6 ／ 5.1.26100.9549 |
+| 送る文字列 | `abc 東京大阪 xyz`。化けると、932 では `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz`、437 では `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` |
+| 流し方 | `tools\10_setup\setup-runtimes.cmd` が上のランタイムを公式の配布元から `_bin\` に取り、`tools\40_test\run-tests.cmd` がそれを PATH の先頭に置いて全件を流す。PC に入っているものは使わない |
+
+### 判定の方法
+
+- **コードページ:** 各プロセスが起動直後・書く直前・終了直前に `GetConsoleCP` ／ `GetConsoleOutputCP` を読む。窓の前後は観測役の node が読む（T1 で node がコードページを変えないことを確かめている）
+- **画面:** 観測役が `ReadConsoleOutputCharacterW` で窓の文字を読み取る。人の目には頼らない
+- **隣のプロセス:** 各ケースの最後に、同じ窓で `chcp` と隣のプロセス役の cmd を流す。cmd は開始のコードページで書いてある（932 用は SJIS の `neighbor: 東京大阪`、437 用は CP437 の `neighbor: café`）
+- **バイト列:** 受け手が受け取ったバイト列をそのままファイルに書き、正しい UTF-8 かを見る
+
+✅ 期待どおり（あるべき姿と同じ） ／ ❌ 期待と違う。**下の表の ✅ と ❌ は、1 つ 1 つがそのケースの証拠ファイルへのリンク**になっている。画面（`screen.json`）、コードページの記録（`log.jsonl`）、受け取ったバイト列（`out.bin`）のどれか。
+
+### 証拠
+
+証拠はすべて `research/evidence/` にあり、ケースごとに 1 フォルダ（`cp<コードページ>/<bun か bun-canary>/<流した道具>/<ケース>/`）。各フォルダには、流したバッチ（`run.cmd`）・ログ・画面と、あれば受け取ったバイト列がある。ログには日時も pid も無いので、2 回の結果を diff で比べられる。実行日時と道具の版は、回ごとの `environment.json` にだけある。
+
+- 932: [bun 安定版](evidence/cp932/bun/node-test/environment.json)、[bun canary](evidence/cp932/bun-canary/node-test/environment.json)、[bun PR #43662](evidence/cp932/bun-pr-43662/node-test/environment.json)、[bun test](evidence/cp932/bun/bun-test/environment.json)
+- 437: [bun 安定版](evidence/cp437/bun/node-test/environment.json)、[bun canary](evidence/cp437/bun-canary/node-test/environment.json)、[bun PR #43662](evidence/cp437/bun-pr-43662/node-test/environment.json)、[bun test](evidence/cp437/bun/bun-test/environment.json)
+
+### 試験コード
+
+リンクはすべてコミット `5b9f56b` を指すので、行番号はずれない。
+
+- [conhost.exe で新しい窓を起こし、終わるまで待つ](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L49-L78)（new-console.ts の 49〜78 行）。ケースごとに、パスを `%~dp0` からの相対にした ASCII だけのバッチを書く
+- [日時と pid を除いてログをまとめる](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L80-L102)（new-console.ts の 80〜102 行）と、[各ケースの最後に流す共通の後始末](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L104-L113)（104〜113 行）
+- [各ランタイムの中からコードページを読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/console.ts#L20-L47)（console.ts の 20〜47 行）。`bun:ffi` ・ `koffi` ・ `Deno.dlopen` で、読むだけ
+- [送り手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/emit.ts#L1-L15)（emit.ts）、[受け手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/86007f82ef27030bba99c4aa844be52110f587a0/tests/fixtures/sink.ts#L1-L57)（sink.ts。書き方を選べるようにした commit `86007f8` の版）、[中継役](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/hold.ts#L1-L21)（hold.ts）
+- [ReadConsoleOutputCharacterW で画面を読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/probe.ts#L17-L51)（probe.ts の 17〜51 行）
+- [画面 ・ コードページ ・ バイト列の判定](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/judge.ts#L7-L63)（judge.ts の 7〜63 行）
+- 隣のプロセス役: [932 用](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-932.cmd#L1-L6)（neighbor-932.cmd）と [437 用](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-437.cmd#L1-L4)（neighbor-437.cmd）
 
 [⌂](../README-JP.md)
 

@@ -8,71 +8,38 @@ Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.2, B
 
 [日本語](codepage-test-results-JP.md)
 
-**Summary:** at startup Bun saves the console's input and output code pages and sets both to 65001, and at exit it restores the saved values. The code page belongs to the console and is shared by every process attached to it, so concurrent Bun processes overwrite each other's saved value. Output gets garbled, 65001 is left on the console, and other programs in the same console break. Node.js and Deno never change the code page and were correct in every case. Every verdict was the same whether the console started at 932 (Japanese Windows) or 437 (English Windows). The build of [PR #43662](https://github.com/oven-sh/bun/pull/43662), the open fix for bun#43660, fixes the garbled `console.log` output, but still switches the console to 65001 while it runs, still leaves it after a forced kill (and once in 20 unordered runs even after a normal exit), and still garbles `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)`. Details are in [Conclusion](#2-conclusion).
-
-1. [Conditions](#1-conditions)
+1. [Key points](#1-key-points)
 2. [Conclusion](#2-conclusion)
 3. [T1. Code page over time](#3-t1-code-page-over-time)
 4. [T2. Pipe combinations](#4-t2-pipe-combinations)
 5. [T3, T4. Forced kill and neighboring processes](#5-t3-t4-forced-kill-and-neighboring-processes)
 6. [T5. Reproduction with fixed ordering](#6-t5-reproduction-with-fixed-ordering)
 7. [T5. Same shape as bun#43660](#7-t5-same-shape-as-bun43660)
+8. [Conditions](#8-conditions)
 
-## 1. Conditions
+## 1. Key points
 
-| Item | Value |
-|---|---|
-| OS | Windows 11 Home 10.0.26300 (Japanese) |
-| Console | A new console is created with `conhost.exe` for every case. Its starting code page is set to 932 or 437 with `chcp` inside that dedicated console, which nothing else shares. The tests never change the code page after that |
-| Bun | 1.4.2+744846f84 |
-| Bun canary | 1.4.3-canary.1+bbdc5a519 (the latest at setup time) |
-| Bun PR #43662 | 1.4.3-canary.1+576eb251a: the Windows x64 CI build of [PR #43662](https://github.com/oven-sh/bun/pull/43662), the open fix for bun#43660 (head commit 576eb251a, Buildkite build 119166) |
-| Node.js | v26.10.0 |
-| Deno | 2.9.7 |
-| pwsh / Windows PowerShell | 7.6.6 / 5.1.26100.9549 |
-| Text sent | `abc 東京大阪 xyz` ("Tokyo Osaka"). Garbled it becomes `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz` at 932 and `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` at 437 |
-| How to run | `tools\10_setup\setup-runtimes.cmd` downloads the runtimes above from their official sources into `_bin\`, and `tools\40_test\run-tests.cmd` puts them first on PATH and runs everything. Nothing installed on the PC is used |
+1. **Bun switches the console to code page 65001 at startup, and restores the value it saved at exit.** The code page belongs to the console and is shared by every process attached to it. Source: `init()` ([output.rs lines 561 to 567](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)) and `restore()` ([output.rs lines 517 to 524](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). Evidence, the code page while Bun runs: [932](evidence/cp932/bun/node-test/t1-bun/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-bun/log.jsonl) (T1)
+2. **Two Bun processes in one console overwrite each other's saved value.** Output is garbled, 65001 is left on the console, and other programs in the same console break. Evidence: garbled screen [932](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) / [437](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json) (T5), broken neighbor [932](evidence/cp932/bun/node-test/t4-bun/screen.json) / [437](evidence/cp437/bun/node-test/t4-bun/screen.json) (T4), forced kill [932](evidence/cp932/bun/node-test/t3-bun/log.jsonl) / [437](evidence/cp437/bun/node-test/t3-bun/log.jsonl) (T3)
+3. **PR #43662, the open fix for bun#43660, does not remove the cause.** It fixes `console.log` output, but Bun still switches the console to 65001 while it runs ([932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) / [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)), a forced kill still leaves 65001 ([932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)), `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` are still garbled ([932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)), and restoring still lost a race once in 20 unordered runs ([932](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl))
+4. **Node.js and Deno never change the code page** and print correctly in every case: Node.js [932](evidence/cp932/bun/node-test/t1-node/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-node/log.jsonl), Deno [932](evidence/cp932/bun/node-test/t1-deno/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-deno/log.jsonl) (T1)
 
-### How results are judged
-
-- **Code page:** each process reads `GetConsoleCP` / `GetConsoleOutputCP` right after start, right before writing and right before exit. Before and after each case, an observer Node.js process reads them (T1 shows that Node.js does not change the code page)
-- **Screen:** the observer reads the characters on the console with `ReadConsoleOutputCharacterW`. Nobody has to look at the screen
-- **Neighboring processes:** at the end of each case, `chcp` and a neighbor cmd script run in the same console. The script is saved in the starting code page (Shift_JIS `neighbor: 東京大阪` for 932, CP437 `neighbor: café` for 437)
-- **Bytes:** the reader writes the received bytes unchanged to a file, which is checked for correct UTF-8
-
-✅ as expected (same as the expected behavior) / ❌ not as expected. **Every ✅ and ❌ in the tables below is a link to the evidence file of that case**: the screen (`screen.json`), the log with the code pages (`log.jsonl`) or the received bytes (`out.bin`).
-
-### Evidence
-
-All files are in `research/evidence/`, one folder per case: `cp<code page>/<bun or bun-canary>/<runner>/<case>/`. Each case folder holds the batch file it ran (`run.cmd`), the log, the screen and, if any, the received bytes. The logs hold no date and no pid, so two runs can be compared with diff. The run time and the tool versions are only in the `environment.json` of each pass:
-
-- 932: [Bun stable](evidence/cp932/bun/node-test/environment.json), [Bun canary](evidence/cp932/bun-canary/node-test/environment.json), [Bun PR #43662](evidence/cp932/bun-pr-43662/node-test/environment.json), [bun test](evidence/cp932/bun/bun-test/environment.json)
-- 437: [Bun stable](evidence/cp437/bun/node-test/environment.json), [Bun canary](evidence/cp437/bun-canary/node-test/environment.json), [Bun PR #43662](evidence/cp437/bun-pr-43662/node-test/environment.json), [bun test](evidence/cp437/bun/bun-test/environment.json)
-
-### Test code
-
-All links point to commit `5b9f56b`, so the line numbers do not move.
-
-- [Creating a new console with conhost.exe and waiting for it](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L49-L78) (new-console.ts lines 49 to 78). Each case is written as an ASCII-only batch file whose paths are relative to `%~dp0`
-- [Merging the logs without date and pid](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L80-L102) (new-console.ts lines 80 to 102) and [the common tail of every case](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L104-L113) (lines 104 to 113)
-- [Reading the code page from inside each runtime](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/console.ts#L20-L47) (console.ts lines 20 to 47): `bun:ffi`, `koffi` and `Deno.dlopen`, read only
-- [The writer](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/emit.ts#L1-L15) (emit.ts), [the reader](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/86007f82ef27030bba99c4aa844be52110f587a0/tests/fixtures/sink.ts#L1-L57) (sink.ts, at commit `86007f8`, which added the choice of write API) and [the relay](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/hold.ts#L1-L21) (hold.ts)
-- [Reading the screen with ReadConsoleOutputCharacterW](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/probe.ts#L17-L51) (probe.ts lines 17 to 51)
-- [How the screen, code page and bytes are judged](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/judge.ts#L7-L63) (judge.ts lines 7 to 63)
-- The neighbor processes: [for 932](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-932.cmd#L1-L6) (neighbor-932.cmd) and [for 437](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-437.cmd#L1-L4) (neighbor-437.cmd)
+**Request** ([bun#44693](https://github.com/oven-sh/bun/issues/44693)): do not change the console code page at all, and write all console output with `WriteConsoleW`. Every verdict was the same whether the console started at 932 (Japanese Windows) or 437 (English Windows). The details follow in [Conclusion](#2-conclusion); how the tests were run is in [Conditions](#8-conditions).
 
 ## 2. Conclusion
 
 Bun switches the console input and output code pages to 65001 the moment it starts (before any script code runs), and on exit restores "the value it saved at start". This alone causes every harm H1 to H7 in the plan. Node.js and Deno never changed the code page and behaved correctly in every case.
 
+The rows are in order of importance: the harms that remain even with PR #43662 come first.
+
 | Harm | Description | Bun, canary | Bun PR #43662 | Node.js, Deno | Evidence (932 / 437) |
 |---|---|---|---|---|---|
-| H1 | The output of a piped peer is garbled | ❌ happens | ⚠️ fixed for `console.log` and `process.stdout`; still happens with `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` | ✅ never | [screen](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) / [screen](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json) (T5 ww); PR: [screen](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [screen](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) (T5 ww with fs.writeSync) |
-| H2 | The result is decided by the start and exit order, so it changes from run to run | ❌ happens | ⚠️ the screen was correct in all 20 unordered runs, but 65001 was left once (H3) | ✅ never | [T5, same shape as bun#43660](#7-t5-same-shape-as-bun43660): the four fixed orders in T5 give four different outcomes |
-| H3 | 65001 is left on the console after exit | ❌ happens | ⚠️ fixed in every fixed order, but the output code page was left at 65001 in 1 of the 20 unordered runs | ✅ never | [log](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl) (T2, cmd, bun → bun); PR: [log](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl) (932, unordered run 6: after exit input 932, output 65001) |
 | H4 | Other processes in the same console are affected | ❌ happens | ❌ still happens: the console is at 65001 while Bun runs, and after a forced kill | ✅ never | [screen](evidence/cp932/bun/node-test/t4-bun/screen.json) / [screen](evidence/cp437/bun/node-test/t4-bun/screen.json) (T4: the neighbor script is garbled and chcp shows 65001); PR: [log](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) / [log](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl) (T1, 65001 while running) |
-| H5 | After the code page is put back to the starting value, Bun writes raw UTF-8 bytes and they are garbled | ❌ happens | ⚠️ same as H1 | ✅ never | [log](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) / [log](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl) (T5 ww: the reader's code page right before writing is the starting value) |
 | H6 | A forced kill leaves the code page changed | ❌ happens | ❌ still happens | ✅ never | [log](evidence/cp932/bun/node-test/t3-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t3-bun/log.jsonl) (T3); PR: [screen](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) / [screen](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json) |
+| H1 | The output of a piped peer is garbled | ❌ happens | ⚠️ fixed for `console.log` and `process.stdout`; still happens with `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` | ✅ never | [screen](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) / [screen](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json) (T5 ww); PR: [screen](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [screen](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) (T5 ww with fs.writeSync) |
+| H5 | After the code page is put back to the starting value, Bun writes raw UTF-8 bytes and they are garbled | ❌ happens | ⚠️ same as H1 | ✅ never | [log](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) / [log](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl) (T5 ww: the reader's code page right before writing is the starting value) |
+| H3 | 65001 is left on the console after exit | ❌ happens | ⚠️ fixed in every fixed order, but the output code page was left at 65001 in 1 of the 20 unordered runs | ✅ never | [log](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl) (T2, cmd, bun → bun); PR: [log](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl) (932, unordered run 6: after exit input 932, output 65001) |
+| H2 | The result is decided by the start and exit order, so it changes from run to run | ❌ happens | ⚠️ the screen was correct in all 20 unordered runs, but 65001 was left once (H3) | ✅ never | [T5, same shape as bun#43660](#7-t5-same-shape-as-bun43660): the four fixed orders in T5 give four different outcomes |
 | H7 | It happens even when the two Bun processes are not directly connected | ❌ happens | ✅ fixed | ✅ never | [screen](evidence/cp932/bun/node-test/t5-bun-relay-console-1/screen.json) / [screen](evidence/cp437/bun/node-test/t5-bun-relay-console-1/screen.json) (T5 relay, `bun \| node \| bun`) |
 
 ### PR #43662 (the open fix for bun#43660)
@@ -275,6 +242,49 @@ Test code: [same shape as bun#43660 (codepage.test.ts lines 140 to 161)](https:/
 - With the same command, Bun's result changed from run to run (H2), and the number of garbled runs also changed from run to run. It is decided by which of the two processes starts and exits first, and that order varies with OS scheduling
 - The garbling reported in bun#43660 was the garbled side of this variation
 - The build of PR #43662 printed correctly in all 20 runs, but in one run at 932 it left the output code page at 65001 (see [Conclusion](#2-conclusion))
+
+## 8. Conditions
+
+| Item | Value |
+|---|---|
+| OS | Windows 11 Home 10.0.26300 (Japanese) |
+| Console | A new console is created with `conhost.exe` for every case. Its starting code page is set to 932 or 437 with `chcp` inside that dedicated console, which nothing else shares. The tests never change the code page after that |
+| Bun | 1.4.2+744846f84 |
+| Bun canary | 1.4.3-canary.1+bbdc5a519 (the latest at setup time) |
+| Bun PR #43662 | 1.4.3-canary.1+576eb251a: the Windows x64 CI build of [PR #43662](https://github.com/oven-sh/bun/pull/43662), the open fix for bun#43660 (head commit 576eb251a, Buildkite build 119166) |
+| Node.js | v26.10.0 |
+| Deno | 2.9.7 |
+| pwsh / Windows PowerShell | 7.6.6 / 5.1.26100.9549 |
+| Text sent | `abc 東京大阪 xyz` ("Tokyo Osaka"). Garbled it becomes `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz` at 932 and `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` at 437 |
+| How to run | `tools\10_setup\setup-runtimes.cmd` downloads the runtimes above from their official sources into `_bin\`, and `tools\40_test\run-tests.cmd` puts them first on PATH and runs everything. Nothing installed on the PC is used |
+
+### How results are judged
+
+- **Code page:** each process reads `GetConsoleCP` / `GetConsoleOutputCP` right after start, right before writing and right before exit. Before and after each case, an observer Node.js process reads them (T1 shows that Node.js does not change the code page)
+- **Screen:** the observer reads the characters on the console with `ReadConsoleOutputCharacterW`. Nobody has to look at the screen
+- **Neighboring processes:** at the end of each case, `chcp` and a neighbor cmd script run in the same console. The script is saved in the starting code page (Shift_JIS `neighbor: 東京大阪` for 932, CP437 `neighbor: café` for 437)
+- **Bytes:** the reader writes the received bytes unchanged to a file, which is checked for correct UTF-8
+
+✅ as expected (same as the expected behavior) / ❌ not as expected. **Every ✅ and ❌ in the tables below is a link to the evidence file of that case**: the screen (`screen.json`), the log with the code pages (`log.jsonl`) or the received bytes (`out.bin`).
+
+### Evidence
+
+All files are in `research/evidence/`, one folder per case: `cp<code page>/<bun or bun-canary>/<runner>/<case>/`. Each case folder holds the batch file it ran (`run.cmd`), the log, the screen and, if any, the received bytes. The logs hold no date and no pid, so two runs can be compared with diff. The run time and the tool versions are only in the `environment.json` of each pass:
+
+- 932: [Bun stable](evidence/cp932/bun/node-test/environment.json), [Bun canary](evidence/cp932/bun-canary/node-test/environment.json), [Bun PR #43662](evidence/cp932/bun-pr-43662/node-test/environment.json), [bun test](evidence/cp932/bun/bun-test/environment.json)
+- 437: [Bun stable](evidence/cp437/bun/node-test/environment.json), [Bun canary](evidence/cp437/bun-canary/node-test/environment.json), [Bun PR #43662](evidence/cp437/bun-pr-43662/node-test/environment.json), [bun test](evidence/cp437/bun/bun-test/environment.json)
+
+### Test code
+
+All links point to commit `5b9f56b`, so the line numbers do not move.
+
+- [Creating a new console with conhost.exe and waiting for it](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L49-L78) (new-console.ts lines 49 to 78). Each case is written as an ASCII-only batch file whose paths are relative to `%~dp0`
+- [Merging the logs without date and pid](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L80-L102) (new-console.ts lines 80 to 102) and [the common tail of every case](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/new-console.ts#L104-L113) (lines 104 to 113)
+- [Reading the code page from inside each runtime](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/console.ts#L20-L47) (console.ts lines 20 to 47): `bun:ffi`, `koffi` and `Deno.dlopen`, read only
+- [The writer](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/emit.ts#L1-L15) (emit.ts), [the reader](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/86007f82ef27030bba99c4aa844be52110f587a0/tests/fixtures/sink.ts#L1-L57) (sink.ts, at commit `86007f8`, which added the choice of write API) and [the relay](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/hold.ts#L1-L21) (hold.ts)
+- [Reading the screen with ReadConsoleOutputCharacterW](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/probe.ts#L17-L51) (probe.ts lines 17 to 51)
+- [How the screen, code page and bytes are judged](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/harness/judge.ts#L7-L63) (judge.ts lines 7 to 63)
+- The neighbor processes: [for 932](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-932.cmd#L1-L6) (neighbor-932.cmd) and [for 437](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/fixtures/neighbor-437.cmd#L1-L4) (neighbor-437.cmd)
 
 [⌂](../README.md)
 
