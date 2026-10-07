@@ -50,10 +50,11 @@ footer .navbar { margin-top: 0; }
 <p>The garbled output of Bun piped to Bun, reported in bun#43660, is the tip of the iceberg. The root problem is that Bun changes the console code page while it runs. This project collects reproducible evidence of the harm that change causes, and files a Bun issue asking Bun not to change the code page, which also fixes bun#43660. Node.js and Deno are measured the same way for comparison.</p>
 <p>Bun maintainers: start with <a href="research/codepage-test-results.html">Code page test results</a>.</p>
 <p>To run the same tests on any Windows PC after cloning (nothing installed on the PC is used):</p>
-<pre><code class="language-batch">tools\10_setup\setup-runtimes.cmd   &amp;rem download Bun, Bun canary, Node.js, Deno and pwsh into _bin\, then npm ci
-tools\40_test\run-tests.cmd         &amp;rem run every test at code pages 932 and 437 into research\evidence_last\
-_bin\node\node tools\50_run\compare-evidence.ts   &amp;rem compare research\evidence_last\ with research\evidence\
-</code></pre>
+<ol>
+<li>Setup: download Bun, Bun canary, Node.js, Deno and pwsh into <code>_bin\</code>, then run <code>npm ci</code>: <code>tools\10_setup\setup-runtimes.cmd</code></li>
+<li>Test: run every test at code pages 932 and 437; the results go to <code>research\evidence_last\</code>: <code>tools\40_test\run-tests.cmd</code></li>
+<li>Compare: compare <code>research\evidence_last\</code> with the committed <code>research\evidence\</code>: <code>_bin\node\node tools\50_run\compare-evidence.ts</code></li>
+</ol>
 
 <nav class="toc"><ol>
 <li class="ch01"><a href="#ch01">Plan</a></li>

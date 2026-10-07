@@ -16,11 +16,9 @@ Bun maintainers: start with [Code page test results](research/codepage-test-resu
 
 To run the same tests on any Windows PC after cloning (nothing installed on the PC is used):
 
-```batch
-tools\10_setup\setup-runtimes.cmd   &rem download Bun, Bun canary, Node.js, Deno and pwsh into _bin\, then npm ci
-tools\40_test\run-tests.cmd         &rem run every test at code pages 932 and 437 into research\evidence_last\
-_bin\node\node tools\50_run\compare-evidence.ts   &rem compare research\evidence_last\ with research\evidence\
-```
+1. Setup: download Bun, Bun canary, Node.js, Deno and pwsh into `_bin\`, then run `npm ci`: `tools\10_setup\setup-runtimes.cmd`
+2. Test: run every test at code pages 932 and 437; the results go to `research\evidence_last\`: `tools\40_test\run-tests.cmd`
+3. Compare: compare `research\evidence_last\` with the committed `research\evidence\`: `_bin\node\node tools\50_run\compare-evidence.ts`
 
 1. [Plan](#1-plan)
 2. [Research](#2-research)

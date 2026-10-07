@@ -50,10 +50,11 @@ footer .navbar { margin-top: 0; }
 <p>bun#43660 で報告した bun 同士のパイプの文字化けは、氷山の一角である。根本の問題は、bun が実行中にコンソールのコードページを変えること。このプロジェクトは、その変更がもたらす害の証拠を再現できる形で集め、コードページを変えないよう求める Issue を bun へ出す。そうすれば bun#43660 も同時に直る。node と deno も同じ方法で測り、比べる。</p>
 <p>bun の開発者向けの入口は <a href="research/codepage-test-results-JP.html">コードページ試験の結果</a>。</p>
 <p>clone したあと、どの Windows の PC でも同じ試験を流せる（PC に入っているものは使わない）。</p>
-<pre><code class="language-batch">tools\10_setup\setup-runtimes.cmd   &amp;rem bun ・ bun canary ・ node ・ deno ・ pwsh を _bin\ に取り、npm ci を流す
-tools\40_test\run-tests.cmd         &amp;rem コードページ 932 と 437 で全件を流し、research\evidence_last\ に置く
-_bin\node\node tools\50_run\compare-evidence.ts   &amp;rem research\evidence_last\ と research\evidence\ を比べる
-</code></pre>
+<ol>
+<li>準備: bun ・ bun canary ・ node ・ deno ・ pwsh を <code>_bin\</code> に取り、<code>npm ci</code> を流す。<code>tools\10_setup\setup-runtimes.cmd</code></li>
+<li>試験: コードページ 932 と 437 で全件を流し、結果を <code>research\evidence_last\</code> に置く。<code>tools\40_test\run-tests.cmd</code></li>
+<li>比較: <code>research\evidence_last\</code> と、commit してある <code>research\evidence\</code> を比べる。<code>_bin\node\node tools\50_run\compare-evidence.ts</code></li>
+</ol>
 
 <nav class="toc"><ol>
 <li class="ch01"><a href="#ch01">計画</a></li>

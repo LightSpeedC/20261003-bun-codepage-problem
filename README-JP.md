@@ -16,11 +16,9 @@ bun の開発者向けの入口は [コードページ試験の結果](research/
 
 clone したあと、どの Windows の PC でも同じ試験を流せる（PC に入っているものは使わない）。
 
-```batch
-tools\10_setup\setup-runtimes.cmd   &rem bun ・ bun canary ・ node ・ deno ・ pwsh を _bin\ に取り、npm ci を流す
-tools\40_test\run-tests.cmd         &rem コードページ 932 と 437 で全件を流し、research\evidence_last\ に置く
-_bin\node\node tools\50_run\compare-evidence.ts   &rem research\evidence_last\ と research\evidence\ を比べる
-```
+1. 準備: bun ・ bun canary ・ node ・ deno ・ pwsh を `_bin\` に取り、`npm ci` を流す。`tools\10_setup\setup-runtimes.cmd`
+2. 試験: コードページ 932 と 437 で全件を流し、結果を `research\evidence_last\` に置く。`tools\40_test\run-tests.cmd`
+3. 比較: `research\evidence_last\` と、commit してある `research\evidence\` を比べる。`_bin\node\node tools\50_run\compare-evidence.ts`
 
 1. [計画](#1-計画)
 2. [調査](#2-調査)
