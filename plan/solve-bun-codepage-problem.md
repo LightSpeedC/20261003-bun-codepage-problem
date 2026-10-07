@@ -2,7 +2,7 @@
 
 bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-07
+> 📅 Created: 2026-10-03 / Updated: 2026-10-08
 
 [⌂](../README.md)
 
@@ -268,7 +268,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 5. Compare versions with T6 (done: stable and canary side by side in the same tables)
 6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693); text in [Issue bun#44693](../issue/bun-44693.md))
 7. Add a cross-reference to the new issue on bun#43660 (done: [comment](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127))
-8. Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (measured: the Conclusion of the results has a column for the PR; the comment is [drafted](../issue/bun-44693.md#4-follow-up-comment-on-bun44693-pr-43662); #44693 was filed without noticing the PR)
+8. Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (done: the Conclusion of the results has a column for the PR; posted as [a comment on #44693](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500) and [a comment on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802), text in [Issue bun#44693](../issue/bun-44693.md#4-follow-up-comment-on-bun44693httpsgithubcomoven-shbunissues44693-pr-43662httpsgithubcomoven-shbunpull43662); #44693 was filed without noticing the PR)
 9. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 
 [⌂](../README.md)

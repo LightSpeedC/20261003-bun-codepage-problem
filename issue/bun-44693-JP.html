@@ -16,20 +16,22 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .titlebar .inner { max-width: 1600px; margin: 0 auto; }
 .titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
 .titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
-.titlebar .lead a { color: #fff; background: transparent; }
+.titlebar .lead a, .titlebar h1 a { color: #fff; background: transparent; }
 .wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
-.ch03 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
-.ch04 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(210,78%,25%); --accent2: hsl(210,58%,55%); --soft: hsl(210,28%,95%); }
+.ch03 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch04 { --accent: hsl(70,78%,25%); --accent2: hsl(70,58%,55%); --soft: hsl(70,28%,95%); }
+.ch05 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .toc ol a::before { content: counter(tocnum) ". "; }
 section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
 section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+section h1 a { color: #fff; background: transparent; }
 code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
 pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); white-space: pre-wrap; }
 pre code { border: none; background: transparent; padding: 0; }
@@ -39,9 +41,9 @@ footer .navbar { margin-top: 0; }
 </head>
 <body>
 <div class="titlebar"><div class="inner">
-<h1>Issue bun#44693</h1>
-<p class="lead">oven-sh/bun に Bug Report のテンプレートで出した本文と、bun#43660 に書き足したコメントの日本語訳。投稿したのは英語版で、<a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> になった</p>
-<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-07</p>
+<h1>Issue <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a></h1>
+<p class="lead">oven-sh/bun に Bug Report のテンプレートで出した本文と、<a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a> ・ <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> ・ <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> に書き足したコメントの日本語訳。投稿したのは英語版で、<a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> になった</p>
+<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-08</p>
 </div></div>
 
 <div class="wrap">
@@ -54,12 +56,14 @@ footer .navbar { margin-top: 0; }
 <li class="ch02"><a href="#ch02">補足（Additional information）</a></li>
 <li class="ch03"><a href="#ch03">bun#43660 へのコメント</a></li>
 <li class="ch04"><a href="#ch04">bun#44693 への続報のコメント（PR #43662）</a></li>
+<li class="ch05"><a href="#ch05">PR #43662 へのコメント</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
 <h1>タイトルとテンプレートの欄</h1>
+<p><a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> として投稿した。投稿したのは英語版。</p>
 <p><strong>タイトル</strong></p>
-<pre><code class="language-text">Windows: bun が起動時にコンソールのコードページを 65001 に切り替え、出力を化けさせ、同じ窓のほかのプロセスを壊す（#43660 の根本原因）</code></pre>
+<pre><code class="language-text">Windows: bun が起動時にコンソールのコードページを 65001 に切り替え、出力を化けさせ、同じ窓のほかのプロセスを壊す（<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> の根本原因）</code></pre>
 
 <p><strong>bun の版（What version of Bun is running?）</strong></p>
 <pre><code class="language-text">1.4.2+744846f84（1.4.3-canary.1+bbdc5a519 でも再現）</code></pre>
@@ -68,7 +72,7 @@ footer .navbar { margin-top: 0; }
 <pre><code class="language-text">Microsoft Windows NT 10.0.26300.0 x64</code></pre>
 
 <p><strong>再現手順（What steps can reproduce the bug?）</strong></p>
-<pre><code class="language-markdown">bun は起動時にコンソールの入力・出力コードページを控えて両方 65001 にし、終了時に控えた値へ戻す（ソースの `init()` と `restore()` へのリンク）。コードページはコンソールに属し、つながる全プロセスで共有されるため、1 つの窓で 2 本の bun が動くと、互いの控えを上書きしてしまう。これが #43660 の根本原因。
+<pre><code class="language-markdown">bun は起動時にコンソールの入力・出力コードページを控えて両方 65001 にし、終了時に控えた値へ戻す（ソースの `init()` と `restore()` へのリンク）。コードページはコンソールに属し、つながる全プロセスで共有されるため、1 つの窓で 2 本の bun が動くと、互いの控えを上書きしてしまう。これが <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> の根本原因。
 
 **新しい `cmd.exe` の窓**（65001 以外ならどのコードページでもよい。英語版 Windows は 437、日本語版は 932）を開き、次を流す:
 
@@ -107,14 +111,15 @@ Active code page: 65001
 
 <section class="ch02" id="ch02">
 <h1>補足（Additional information）</h1>
+<p><a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> の一部として投稿した。投稿したのは英語版。</p>
 <pre><code class="language-markdown">**依頼: コンソールのコードページを一切変えないでほしい。** 画面への出力は `WriteConsoleW`（UTF-8 → UTF-16）、パイプ・ファイルへはバイト列をそのまま、コンソールからの入力は `ReadConsoleW` で読む。どれもコードページに依存しない。node と deno は一度も変えず、下のすべてのケースで正しく出す。GitHub のコード検索では、リポジトリに `WriteConsoleW` の使用は見つからない。
 
 控えて戻すやり方は安全にできない。1 つの窓で複数のプロセスが同じ共有の値を控えては戻すので、終わる順で何が残るかが決まる。強制終了では戻す処理そのものが走らない（ソースのコメントにも「強制終了されると戻らないことがある」と書かれている）。ソースへのリンクはいまの `main` を指す。
 
 **測った害**（Windows 11 10.0.26300、conhost、開始のコードページ 932 と 437 の窓、bun 1.4.2 と canary。比べる相手は node v26.10.0 と deno 2.9.7。各プロセスが自分で `GetConsoleCP` / `GetConsoleOutputCP` を読み、画面は `ReadConsoleOutputCharacterW` で読み取った）。node と deno ではどれも起きず、順番を決めたケースの判定は 932 と 437 ですべて同じだった。
 
-1. **パイプでつないだ相手の出力が化ける**（#43660 の症状）。bun 同士が直接つながっていなくても起きる（`bun | node | bun`）
-2. **回ごとに結果が変わる。** #43660 のコマンドを毎回新しい窓で 10 回流すと、932 では 1.4.2 が 6 回、canary が 7 回、437 では 3 回と 9 回化けた。回数も流すたびに変わる。node と deno は毎回正しかった。起動・終了の順を決めると、どの順も 3 回中 3 回同じ結果になった
+1. **パイプでつないだ相手の出力が化ける**（<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> の症状）。bun 同士が直接つながっていなくても起きる（`bun | node | bun`）
+2. **回ごとに結果が変わる。** <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> のコマンドを毎回新しい窓で 10 回流すと、932 では 1.4.2 が 6 回、canary が 7 回、437 では 3 回と 9 回化けた。回数も流すたびに変わる。node と deno は毎回正しかった。起動・終了の順を決めると、どの順も 3 回中 3 回同じ結果になった
 3. **窓に 65001 が残る。** 通常終了でも順番によって残り、強制終了（`taskkill /F`）でも残る
 4. **65001 が残ると、同じ窓のほかのプログラムが壊れる。** `cmd.exe` が SJIS のバッチファイルの残りを読み違え（日本語の行が `�������` になる）、`chcp` や `pause` のメッセージが英語になる
 5. **パイプのデータそのものは壊れない。** 害はすべて、共有されたコンソールの状態を変えることから起きている
@@ -124,12 +129,13 @@ Active code page: 65001
 - 全結果（表 ・ 時系列 ・ 画面。結果の 1 つ 1 つから証拠ファイルと試験コードへリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
 - 上のすべてを新しい窓で再現するテストコード: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts)（リポジトリ: https://github.com/LightSpeedC/20261003-bun-codepage-problem ）
 - どの Windows の PC でも全件を流せる（版を決めた bun ・ node ・ deno ・ pwsh をリポジトリの中に取り、PC に入っているものは使わない）: `tools\10_setup\setup-runtimes.cmd` のあと `tools\40_test\run-tests.cmd`
-- 関連: #43660
+- 関連: <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a>
 </code></pre>
 </section>
 
 <section class="ch03" id="ch03">
-<h1>bun#43660 へのコメント</h1>
+<h1><a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a> へのコメント</h1>
+<p><a href="https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127">bun#43660 へのコメント</a>として投稿した。<code>{NEW}</code> は 44693 にした。投稿したのは英語版。</p>
 <pre><code class="language-markdown">続報: ここで報告した文字化けは、もっと広い問題の症状の 1 つだった。bun は起動時にコンソールのコードページを控えて変え、終了時に戻すが、コードページは窓の全プロセスで共有されるため、同時に動く bun 同士が互いの控えを上書きする。
 
 順番を決めた再現（英語版 Windows の 437 でも再現する）と、node ・ deno と比べた実測を #{NEW} に出した。bun がコードページを変えなくなれば、この Issue も解消する。
@@ -137,25 +143,43 @@ Active code page: 65001
 </section>
 
 <section class="ch04" id="ch04">
-<h1>bun#44693 への続報のコメント（PR #43662）</h1>
-<p>まだ投稿していない。この Issue を出したとき、bun#43660 への Open の修正 PR #43662 を見落としていた。そのあと PR の版を同じ試験一式で測った。投稿するのは英語版。</p>
-<pre><code class="language-markdown">続報: この Issue を出したとき、#43660 にすでに Open の修正 #43662 があることを見落としていた。その CI の Windows x64 のビルド（1.4.3-canary.1+576eb251a）を、同じ試験一式で、コードページ 932 と 437 で始めた窓で流した。
+<h1><a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> への続報のコメント（<a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a>）</h1>
+<p><a href="https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500">bun#44693 へのコメント</a>として投稿した。この Issue を出したとき、<a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a> への Open の修正 <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> を見落としていた。そのあと PR の版を同じ試験一式で測った。投稿したのは英語版。</p>
+<pre><code class="language-markdown">続報: この Issue を出したとき、<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> にすでに Open の修正 <a href="https://github.com/oven-sh/bun/pull/43662">#43662</a> があることを見落としていた。その CI の Windows x64 のビルド（1.4.3-canary.1+576eb251a）を、同じ試験一式で、コードページ 932 と 437 で始めた窓で流した。
 
-**#43662 で直るもの**（どちらのコードページでも全ケース）:
+**<a href="https://github.com/oven-sh/bun/pull/43662">#43662</a> で直るもの**（どちらのコードページでも全ケース）:
 
-- `console.log` ／ `process.stdout` の出力は、どの起動・終了の順でも化けなくなった。#43660 のコマンド（20 回とも正しい。各コードページで 10 回）と `bun | node | bun` も含む。
+- `console.log` ／ `process.stdout` の出力は、どの起動・終了の順でも化けなくなった。<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> のコマンド（20 回とも正しい。各コードページで 10 回）と `bun | node | bun` も含む。
 - 起動・終了の順を決めた形では、通常終了のあとに 65001 が残らなくなった。
 
-**#43662 のあとも残るもの:**
+**<a href="https://github.com/oven-sh/bun/pull/43662">#43662</a> のあとも残るもの:**
 
 1. bun は起動時に窓を 65001 に切り替えたまま（入力と出力。プロセスの中から読んだ値）。bun が動いているあいだ、窓のほかのプロセスはすべて 65001 にさらされる。
 2. 強制終了（`taskkill /F`）では 65001 が残り、そのあと同じ窓で流すバッチファイルは読み違えられる。
 3. `fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は `WriteFile` のまま。送り手が先に終わる順では化ける（どの API も、932 と 437 で 3 回中 3 回）。PR の説明文とレビューにもそう書かれている。
-4. 「自分が変えたコードページだけを戻す」でも、競合に負けることがある。#43660 のコマンドを 20 回流したうち 1 回、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。考えられる順: 送り手が 65001 にしたあとで受け手が出力側の値を控え、送り手が終わって 932 に戻し、そのあと受け手が 65001 にする。受け手は 65001 を控えているので、戻さない。
+4. 「自分が変えたコードページだけを戻す」でも、競合に負けることがある。<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> のコマンドを 20 回流したうち 1 回、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。考えられる順: 送り手が 65001 にしたあとで受け手が出力側の値を控え、送り手が終わって 932 に戻し、そのあと受け手が 65001 にする。受け手は 65001 を控えているので、戻さない。
 
 なので、ここでの依頼は変わらない。コンソールのコードページを一切変えず、画面への出力はすべて `WriteConsoleW` で書いてほしい。そうすれば控えて戻す処理は要らず、強制終了でも何も残らない。
 
-#43662 の列を加えた結果（結果の 1 つ 1 つから証拠ファイルへリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#ch02
+<a href="https://github.com/oven-sh/bun/pull/43662">#43662</a> の列を加えた結果（結果の 1 つ 1 つから証拠ファイルへリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#ch02
+</code></pre>
+</section>
+
+<section class="ch05" id="ch05">
+<h1><a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> へのコメント</h1>
+<p><a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802">PR #43662 へのコメント</a>として投稿した。投稿したのは英語版。</p>
+<pre><code class="language-markdown">この PR の Windows x64 のビルド（1.4.3-canary.1+576eb251a）を、再現できる試験一式で、コードページ 932 と 437 で始めた窓で流した。Bun 1.4.2 ・ canary ・ Node.js ・ Deno と並べている。
+
+<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> は直っている。`console.log` ／ `process.stdout` の出力は、どの起動・終了の順でも正しかった。<a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> のコマンドも含む（20 回中 20 回）。
+
+残るものが 4 つある:
+
+1. bun は起動時に窓を 65001 にしたまま。bun が動いているあいだ、同じ窓のほかのプロセスにも 65001 が見える。
+2. 強制終了（`taskkill /F`）では 65001 が残る。
+3. `fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は `WriteFile` のままで、送り手が先に終わると化ける。
+4. 「自分が変えたときだけ戻す」判定は、まだ競合に負けることがある。20 回中 1 回、出力側のコードページが 65001 のまま残った。
+
+コンソールのコードページを一切変えないよう依頼する <a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> を出した。詳しい内容と証拠はそちら。
 </code></pre>
 </section>
 </div>

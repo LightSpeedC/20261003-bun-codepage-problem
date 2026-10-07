@@ -16,20 +16,22 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .titlebar .inner { max-width: 1600px; margin: 0 auto; }
 .titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
 .titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
-.titlebar .lead a { color: #fff; background: transparent; }
+.titlebar .lead a, .titlebar h1 a { color: #fff; background: transparent; }
 .wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
-.ch03 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
-.ch04 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(210,78%,25%); --accent2: hsl(210,58%,55%); --soft: hsl(210,28%,95%); }
+.ch03 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch04 { --accent: hsl(70,78%,25%); --accent2: hsl(70,58%,55%); --soft: hsl(70,28%,95%); }
+.ch05 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .toc ol a::before { content: counter(tocnum) ". "; }
 section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
 section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+section h1 a { color: #fff; background: transparent; }
 code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
 pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); white-space: pre-wrap; }
 pre code { border: none; background: transparent; padding: 0; }
@@ -39,9 +41,9 @@ footer .navbar { margin-top: 0; }
 </head>
 <body>
 <div class="titlebar"><div class="inner">
-<h1>Issue bun#44693</h1>
-<p class="lead">The text posted to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Posted as <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a></p>
-<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-07</p>
+<h1>Issue <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a></h1>
+<p class="lead">The text posted to oven-sh/bun with the Bug Report template, and the comments on <a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a>, <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> and <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a>. Posted as <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a></p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-08</p>
 </div></div>
 
 <div class="wrap">
@@ -54,12 +56,14 @@ footer .navbar { margin-top: 0; }
 <li class="ch02"><a href="#ch02">Additional information</a></li>
 <li class="ch03"><a href="#ch03">Comment on bun#43660</a></li>
 <li class="ch04"><a href="#ch04">Follow-up comment on bun#44693 (PR #43662)</a></li>
+<li class="ch05"><a href="#ch05">Comment on PR #43662</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
 <h1>Title and template fields</h1>
+<p>Posted as <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a>.</p>
 <p><strong>Title</strong></p>
-<pre><code class="language-text">Windows: Bun switches the console code page to 65001 at startup, which garbles output and breaks other processes in the same console (root cause of #43660)</code></pre>
+<pre><code class="language-text">Windows: Bun switches the console code page to 65001 at startup, which garbles output and breaks other processes in the same console (root cause of <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a>)</code></pre>
 
 <p><strong>What version of Bun is running?</strong></p>
 <pre><code class="language-text">1.4.2+744846f84 (also reproduced on 1.4.3-canary.1+bbdc5a519)</code></pre>
@@ -68,7 +72,7 @@ footer .navbar { margin-top: 0; }
 <pre><code class="language-text">Microsoft Windows NT 10.0.26300.0 x64</code></pre>
 
 <p><strong>What steps can reproduce the bug?</strong></p>
-<pre><code class="language-markdown">At startup Bun saves the console's input/output code pages and sets both to 65001; at exit it restores the saved values ([`init()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567), [`restore()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). The code page belongs to the console and is shared by every process attached to it, so two Bun processes in one console overwrite each other's saved value. This is the root cause of #43660.
+<pre><code class="language-markdown">At startup Bun saves the console's input/output code pages and sets both to 65001; at exit it restores the saved values ([`init()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567), [`restore()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). The code page belongs to the console and is shared by every process attached to it, so two Bun processes in one console overwrite each other's saved value. This is the root cause of <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a>.
 
 Open a **new `cmd.exe` window** (any code page other than 65001; 437 on English Windows, 932 on Japanese Windows) and run:
 
@@ -116,14 +120,15 @@ What happens:
 
 <section class="ch02" id="ch02">
 <h1>Additional information</h1>
+<p>Posted as part of <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a>.</p>
 <pre><code class="language-markdown">**Request: please don't change the console code page at all.** Write console output with `WriteConsoleW` (UTF-8 → UTF-16), write bytes unchanged to pipes and files, and read console input with `ReadConsoleW`. None of these depend on the code page. Node.js and Deno never change it and print correctly in every case below. GitHub code search finds no use of `WriteConsoleW` in the repository.
 
 Saving and restoring cannot be made safe: several processes in one console save and restore the same shared value, so the exit order decides what remains, and a forced kill skips the restore entirely (the [source comment](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L482-L484) already says restoration "may not be applied if the process is killed abruptly"). Source links point to the current `main`.
 
 **Harms measured** on Windows 11 (10.0.26300), conhost, in consoles started at code page 932 and at 437, Bun 1.4.2 and canary, compared with Node.js v26.10.0 and Deno 2.9.7. Each process read `GetConsoleCP` / `GetConsoleOutputCP` itself, and the screen was read back with `ReadConsoleOutputCharacterW`. Node.js and Deno showed none of these, and every fixed-order verdict was the same at 932 and 437.
 
-1. **Garbled output** in a piped peer (the #43660 symptom), also when the two Bun processes are not directly connected (`bun | node | bun`).
-2. **Results change from run to run.** The #43660 command, run 10 times in fresh consoles, was garbled 6 times on 1.4.2 and 7 times on canary at 932, and 3 and 9 times at 437; the counts change on every run. Node.js and Deno were correct every time. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
+1. **Garbled output** in a piped peer (the <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> symptom), also when the two Bun processes are not directly connected (`bun | node | bun`).
+2. **Results change from run to run.** The <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> command, run 10 times in fresh consoles, was garbled 6 times on 1.4.2 and 7 times on canary at 932, and 3 and 9 times at 437; the counts change on every run. Node.js and Deno were correct every time. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
 3. **65001 is left on the console** after a normal exit in some orders, and after a forced kill (`taskkill /F`).
 4. **Other programs in the same console break** once 65001 is left: `cmd.exe` misreads the rest of a Shift_JIS batch file (Japanese lines become `�������`), and `chcp` and `pause` switch their messages to English.
 5. **The data in the pipe is never corrupted.** Every harm comes from changing shared console state.
@@ -133,12 +138,13 @@ Saving and restoring cannot be made safe: several processes in one console save 
 - Full results (tables, timelines, screens; every result links to its evidence file and to the test code): https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
 - Test code that reproduces all of the above in fresh consoles: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts) (repository: https://github.com/LightSpeedC/20261003-bun-codepage-problem )
 - To run everything on any Windows PC (it downloads pinned Bun, Node.js, Deno and pwsh into the repository and does not use what is installed): `tools\10_setup\setup-runtimes.cmd`, then `tools\40_test\run-tests.cmd`
-- Related: #43660
+- Related: <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a>
 </code></pre>
 </section>
 
 <section class="ch03" id="ch03">
-<h1>Comment on bun#43660</h1>
+<h1>Comment on <a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a></h1>
+<p>Posted as <a href="https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127">a comment on bun#43660</a>, with <code>{NEW}</code> replaced by 44693.</p>
 <pre><code class="language-markdown">Follow-up: the garbling reported here is one symptom of a broader problem. Bun saves and changes the console code page at startup and restores it at exit, but the code page is shared by every process in the console, so concurrent Bun processes overwrite each other's saved value.
 
 I filed #{NEW} with a deterministic reproduction (it also reproduces at code page 437 on English Windows) and measurements against Node.js and Deno. If Bun stops changing the code page, this issue goes away too.
@@ -146,25 +152,43 @@ I filed #{NEW} with a deterministic reproduction (it also reproduces at code pag
 </section>
 
 <section class="ch04" id="ch04">
-<h1>Follow-up comment on bun#44693 (PR #43662)</h1>
-<p>Not posted yet. When this issue was filed, PR #43662 (the open fix for bun#43660) had been missed. Its build was then measured with the same suite.</p>
-<pre><code class="language-markdown">Update: when I filed this I missed that #43660 already has an open fix, #43662. I ran its Windows x64 CI build (1.4.3-canary.1+576eb251a) through the same test suite, in consoles started at code page 932 and at 437.
+<h1>Follow-up comment on <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> (<a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a>)</h1>
+<p>Posted as <a href="https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500">a comment on bun#44693</a>. When this issue was filed, <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> (the open fix for <a href="https://github.com/oven-sh/bun/issues/43660">bun#43660</a>) had been missed. Its build was then measured with the same suite.</p>
+<pre><code class="language-markdown">Update: when I filed this I missed that <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> already has an open fix, <a href="https://github.com/oven-sh/bun/pull/43662">#43662</a>. I ran its Windows x64 CI build (1.4.3-canary.1+576eb251a) through the same test suite, in consoles started at code page 932 and at 437.
 
-**What #43662 fixes** (every case, at both code pages):
+**What <a href="https://github.com/oven-sh/bun/pull/43662">#43662</a> fixes** (every case, at both code pages):
 
-- `console.log` / `process.stdout` output is no longer garbled in any start/exit order, including the #43660 command (correct in all 20 runs, 10 at each code page) and `bun | node | bun`.
+- `console.log` / `process.stdout` output is no longer garbled in any start/exit order, including the <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> command (correct in all 20 runs, 10 at each code page) and `bun | node | bun`.
 - With a fixed start/exit order, 65001 is no longer left on the console after a normal exit.
 
-**What remains with #43662:**
+**What remains with <a href="https://github.com/oven-sh/bun/pull/43662">#43662</a>:**
 
 1. Bun still switches the console to 65001 at startup (input and output, read from inside the process), so every other process in that console sees 65001 while Bun runs.
 2. A forced kill (`taskkill /F`) still leaves 65001 behind, and a batch file run afterwards in the same console is misread.
 3. `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still go through `WriteFile`. With the writer exiting first, their output is garbled (3 of 3 runs for each API, at 932 and at 437), as the PR description and its review say.
-4. Restoring "only a code page this process changed" can still lose the race. In 1 of the 20 runs of the #43660 command, the output code page stayed at 65001 after both processes exited, while the input code page was back at 932. A likely order: the reader saves the output code page after the writer has set 65001, the writer exits and restores 932, then the reader sets 65001 and, having saved 65001, never restores it.
+4. Restoring "only a code page this process changed" can still lose the race. In 1 of the 20 runs of the <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> command, the output code page stayed at 65001 after both processes exited, while the input code page was back at 932. A likely order: the reader saves the output code page after the writer has set 65001, the writer exits and restores 932, then the reader sets 65001 and, having saved 65001, never restores it.
 
 So the request here stays the same: don't change the console code page at all, and write all console output with `WriteConsoleW`. Then the save/restore logic is not needed, and a forced kill leaves nothing behind.
 
-Results with a column for #43662, each result linked to its evidence file: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#ch02
+Results with a column for <a href="https://github.com/oven-sh/bun/pull/43662">#43662</a>, each result linked to its evidence file: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#ch02
+</code></pre>
+</section>
+
+<section class="ch05" id="ch05">
+<h1>Comment on <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a></h1>
+<p>Posted as <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802">a comment on PR #43662</a>.</p>
+<pre><code class="language-markdown">I ran this PR's Windows x64 build (1.4.3-canary.1+576eb251a) through a reproducible test suite in consoles started at code page 932 and at 437, next to Bun 1.4.2, canary, Node.js and Deno.
+
+It fixes <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a>: `console.log` / `process.stdout` output was correct in every start/exit order, including the <a href="https://github.com/oven-sh/bun/issues/43660">#43660</a> command (20 of 20 runs).
+
+Four things remain:
+
+1. Bun still sets the console to 65001 at startup, so other processes in the same console see 65001 while Bun runs.
+2. A forced kill (`taskkill /F`) leaves 65001 behind.
+3. `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still use `WriteFile` and are garbled when the writer exits first.
+4. The "restore only if this process changed it" check can still lose the race: 1 of the 20 runs left the output code page at 65001.
+
+I filed <a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> asking Bun not to change the console code page at all; the details and the evidence are there.
 </code></pre>
 </section>
 </div>

@@ -2,7 +2,7 @@
 
 bun#43660 は氷山の一角。根本の問題は bun がコンソールのコードページを変えることにある。その害を実測で示し、変えない実装を求める Issue を出す
 
-> 📅 作成: 2026-10-03 / 更新: 2026-10-07
+> 📅 作成: 2026-10-03 / 更新: 2026-10-08
 
 [⌂](../README-JP.md)
 
@@ -268,7 +268,7 @@ tools/50_run/
 5. T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）
 6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（済: [bun#44693](https://github.com/oven-sh/bun/issues/44693) として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md)）
 7. bun#43660 に、新しい Issue への関連を書き足す（済: [コメント](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127)）
-8. bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（測定は済: 結果資料の結論に PR の列を足した。コメントは [下書き](../issue/bun-44693-JP.md#4-bun44693-への続報のコメントpr-43662) まで。PR を見落としたまま #44693 を出したため）
+8. bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（済: 結果資料の結論に PR の列を足した。[#44693 へのコメント](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500)と [PR #43662 へのコメント](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#4-bun44693httpsgithubcomoven-shbunissues44693-への続報のコメントpr-43662httpsgithubcomoven-shbunpull43662)。PR を見落としたまま #44693 を出したため）
 9. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
 
 [⌂](../README-JP.md)
