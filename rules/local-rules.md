@@ -2,7 +2,7 @@
 
 Rules that apply only to this project. Where they differ from the common rules, these take precedence
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-07
+> 📅 Created: 2026-10-03 / Updated: 2026-10-08
 
 [⌂](../README.md)
 
@@ -62,6 +62,17 @@ Reason: there is only one plan, and short English names keep the published URLs 
 - **Use only the develop branch. GitHub Pages is published from develop, and release and master are not created**
 
 Reason: this project only publishes documents with GitHub Pages, so there are no separate released versions to keep apart.
+
+### Overrides the common rules on making one fix at a time with confirmation, and on confirming serious operations
+
+- **When a piece of work is finished, commit and push it without waiting to be told**. The words "commit" and "push" are not needed
+- **A piece of work is what answers one instruction from the user**. Commit only after the checks pass (html2md, check-markdown, check-contrast; the full test run when the test code changed)
+- **Commit only the files changed by that work**. Name them in `git add <path>` and check with `git diff --cached --name-only`
+- **After pushing, wait until GitHub Pages has rebuilt and the published page shows the change, then report**
+- **Operations that are hard to undo still need confirmation**: posting to Bun (issues and comments, under the conditions above), `git reset`, `--amend`, force push, and deleting files not named in the instruction
+- Do not commit `research/evidence_last/`
+
+Reason: this project publishes documents with GitHub Pages for the Bun developers to read, and nothing reaches the published pages until it is pushed.
 
 [⌂](../README.md)
 

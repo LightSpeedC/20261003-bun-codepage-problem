@@ -40,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>ローカルルール</h1>
 <p class="lead">このプロジェクトでだけ通る決めごと。共通ルールと食い違う箇所は、ここに書いたものが優先する</p>
-<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-07</p>
+<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-08</p>
 </div></div>
 
 <div class="wrap">
@@ -105,6 +105,16 @@ AGENTS.md
 <li><strong>ブランチは develop だけを使う。GitHub Pages も develop から公開し、release と master は作らない</strong></li>
 </ul>
 <p>理由: 資料を GitHub Pages で公開するだけのプロジェクトで、配布する版を分ける必要がないため。</p>
+<h2>上書きする共通ルール: 「修正は1点ずつ、確認を重視」「重大な操作の確認方法」</h2>
+<ul>
+<li><strong>作業が一区切りついたら、指示を待たずに commit して push する</strong>。「commitして」「pushして」の語は要らない</li>
+<li><strong>一区切りは、利用者の 1 回の指示に応えた作業</strong>。検査（html2md ・ check-markdown ・ check-contrast。試験のコードを変えたら全件の試験）を通してから commit する</li>
+<li><strong>載せるのは、その作業で自分が変えたファイルだけ</strong>。<code>git add &lt;path&gt;</code> で名指しし、<code>git diff --cached --name-only</code> で確かめる</li>
+<li><strong>push のあと、GitHub Pages の作り直しが終わって公開ページに反映されたことを確かめてから報告する</strong></li>
+<li><strong>取り消しにくい操作は、これまでどおり確認を取る</strong>。bun への投稿（Issue ・ コメント。上の条件に従う）、<code>git reset</code> ・ <code>--amend</code> ・ force push、指示に無いファイルの削除</li>
+<li><code>research/evidence_last/</code> は commit しない</li>
+</ul>
+<p>理由: 資料を GitHub Pages で公開し、bun の開発者に読んでもらうプロジェクトで、push するまで公開ページに反映されないため。</p>
 </section>
 </div>
 

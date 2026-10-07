@@ -40,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Local rules</h1>
 <p class="lead">Rules that apply only to this project. Where they differ from the common rules, these take precedence</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-07</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-08</p>
 </div></div>
 
 <div class="wrap">
@@ -105,6 +105,16 @@ AGENTS.md
 <li><strong>Use only the develop branch. GitHub Pages is published from develop, and release and master are not created</strong></li>
 </ul>
 <p>Reason: this project only publishes documents with GitHub Pages, so there are no separate released versions to keep apart.</p>
+<h2>Overrides the common rules on making one fix at a time with confirmation, and on confirming serious operations</h2>
+<ul>
+<li><strong>When a piece of work is finished, commit and push it without waiting to be told</strong>. The words "commit" and "push" are not needed</li>
+<li><strong>A piece of work is what answers one instruction from the user</strong>. Commit only after the checks pass (html2md, check-markdown, check-contrast; the full test run when the test code changed)</li>
+<li><strong>Commit only the files changed by that work</strong>. Name them in <code>git add &lt;path&gt;</code> and check with <code>git diff --cached --name-only</code></li>
+<li><strong>After pushing, wait until GitHub Pages has rebuilt and the published page shows the change, then report</strong></li>
+<li><strong>Operations that are hard to undo still need confirmation</strong>: posting to Bun (issues and comments, under the conditions above), <code>git reset</code>, <code>--amend</code>, force push, and deleting files not named in the instruction</li>
+<li>Do not commit <code>research/evidence_last/</code></li>
+</ul>
+<p>Reason: this project publishes documents with GitHub Pages for the Bun developers to read, and nothing reaches the published pages until it is pushed.</p>
 </section>
 </div>
 
