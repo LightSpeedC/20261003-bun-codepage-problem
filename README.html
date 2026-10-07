@@ -40,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Bun console code page problem</h1>
 <p class="lead">Evidence that Bun changes the Windows console code page, compared with Node.js and Deno</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-06</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-07</p>
 </div></div>
 
 <div class="wrap">
@@ -49,6 +49,11 @@ footer .navbar { margin-top: 0; }
 <p>On Windows, the console code page is shared by every process attached to the same console window. On Japanese Windows, a freshly opened <code>cmd</code> window starts at code page 932.</p>
 <p>The garbled output of Bun piped to Bun, reported in bun#43660, is the tip of the iceberg. The root problem is that Bun changes the console code page while it runs. This project collects reproducible evidence of the harm that change causes, and files a Bun issue asking Bun not to change the code page, which also fixes bun#43660. Node.js and Deno are measured the same way for comparison.</p>
 <p>Bun maintainers: start with <a href="research/codepage-test-results.html">Code page test results</a>.</p>
+<p>To run the same tests on any Windows PC after cloning (nothing installed on the PC is used):</p>
+<pre><code class="language-batch">tools\10_setup\setup-runtimes.cmd   &amp;rem download Bun, Bun canary, Node.js, Deno and pwsh into _bin\, then npm ci
+tools\40_test\run-tests.cmd         &amp;rem run every test at code pages 932 and 437 into research\evidence_last\
+_bin\node\node tools\50_run\compare-evidence.ts   &amp;rem compare research\evidence_last\ with research\evidence\
+</code></pre>
 
 <nav class="toc"><ol>
 <li class="ch01"><a href="#ch01">Plan</a></li>

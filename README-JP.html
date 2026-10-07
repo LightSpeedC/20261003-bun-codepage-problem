@@ -30,6 +30,8 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
 section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
 code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); }
+pre code { border: none; background: transparent; padding: 0; }
 footer { max-width: 1600px; margin: 0 auto; padding: 18px 30px 30px; }
 footer .navbar { margin-top: 0; }
 </style>
@@ -38,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>bun のコンソール・コードページ問題</h1>
 <p class="lead">bun が Windows のコンソールのコードページを書き換える証拠を、node ・ deno と比べて集める</p>
-<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-06</p>
+<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-07</p>
 </div></div>
 
 <div class="wrap">
@@ -47,6 +49,11 @@ footer .navbar { margin-top: 0; }
 <p>Windows のコンソールのコードページは、同じ窓につながる全プロセスで共有される。日本語版 Windows では、開いた直後の <code>cmd</code> の窓は 932 である。</p>
 <p>bun#43660 で報告した bun 同士のパイプの文字化けは、氷山の一角である。根本の問題は、bun が実行中にコンソールのコードページを変えること。このプロジェクトは、その変更がもたらす害の証拠を再現できる形で集め、コードページを変えないよう求める Issue を bun へ出す。そうすれば bun#43660 も同時に直る。node と deno も同じ方法で測り、比べる。</p>
 <p>bun の開発者向けの入口は <a href="research/codepage-test-results-JP.html">コードページ試験の結果</a>。</p>
+<p>clone したあと、どの Windows の PC でも同じ試験を流せる（PC に入っているものは使わない）。</p>
+<pre><code class="language-batch">tools\10_setup\setup-runtimes.cmd   &amp;rem bun ・ bun canary ・ node ・ deno ・ pwsh を _bin\ に取り、npm ci を流す
+tools\40_test\run-tests.cmd         &amp;rem コードページ 932 と 437 で全件を流し、research\evidence_last\ に置く
+_bin\node\node tools\50_run\compare-evidence.ts   &amp;rem research\evidence_last\ と research\evidence\ を比べる
+</code></pre>
 
 <nav class="toc"><ol>
 <li class="ch01"><a href="#ch01">計画</a></li>

@@ -2,7 +2,7 @@
 
 bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-04
+> 📅 Created: 2026-10-03 / Updated: 2026-10-07
 
 [⌂](../README.md)
 
@@ -13,7 +13,8 @@ bun#43660 is the tip of the iceberg. The root problem is that Bun changes the co
 3. [Baseline and expected behavior](#3-baseline-and-expected-behavior)
 4. [Test cases](#4-test-cases)
 5. [Test layout](#5-test-layout)
-6. [Steps](#6-steps)
+6. [The same tests on any PC](#6-the-same-tests-on-any-pc)
+7. [Steps](#7-steps)
 
 ## 1. Goal
 
@@ -176,16 +177,20 @@ tests/
     sink.ts             reader that writes the received bytes unchanged to the screen or a file
     hold.ts             relay that holds the data for a set time before passing it on (node wait in T5)
     probe.ts            observer (Node.js): records the code page and reads the characters on the console screen
-    sjis-echo.cmd       neighbor process (Shift_JIS + CRLF)
+    neighbor-932.cmd    neighbor process for 932 (Shift_JIS + CRLF)
+    neighbor-437.cmd    neighbor process for 437 (CP437 + CRLF)
   harness/
     new-console.ts      creates a new console with conhost.exe, runs a case inside it and waits for it to end
-    judge.ts            judges the screen, bytes and code page, and records them under tmp/results/
+    judge.ts            judges the screen, bytes and code page, and records them in results.jsonl in the evidence folder
   manual/
     issue-43660-repro.cmd   runs the same shape of command as bun#43660 by hand (screen checked by eye)
+tools/10_setup/
+  setup-runtimes.ps1 / .cmd   setup phase: downloads the runtimes into _bin/ and runs npm ci
 tools/40_test/
-  run-tests.ps1 / run-tests.cmd   runs everything with both node --test and bun test
+  run-tests.ps1 / run-tests.cmd   test phase: runs node --test and bun test at 932 and 437
 tools/50_run/
-  summarize-results.ts  prints the material for the result tables from tmp/results/
+  summarize-results.ts  prints the material for the result tables from the evidence folder
+  compare-evidence.ts   compares the verdicts in research/evidence_last/ and research/evidence/
   verify-issue-repro.ts runs the reproduction command in the issue text in new consoles and prints the screen
 ```
 
@@ -196,7 +201,60 @@ tools/50_run/
 - The expectations are the expected behavior. Bun cases fail until Bun is fixed, so they are marked todo: the failures are recorded as evidence without stopping the suite. bun test does not run todo cases, so the evidence for Bun comes from node --test
 - The screen is judged by the observer reading the console characters with `ReadConsoleOutputCharacterW`. No one needs to look at it
 
-## 6. Steps
+## 6. The same tests on any PC
+
+Anyone who clones the repository on Windows can run the same tests. Nothing depends on the Bun, Node.js or Deno installed on that PC.
+
+### Setup phase
+
+`tools/10_setup/setup-runtimes.cmd` (backed by the ps1 of the same name) downloads pinned versions from the official sources and places them under `_bin/`, which is not tracked by Git. Anything already in place is not downloaded again.
+
+| Runtime | Version | Location |
+|---|---|---|
+| Bun | 1.4.2 | `_bin/bun/` |
+| Bun canary | latest at setup time (it cannot be pinned, so the version is recorded) | `_bin/bun-canary/` |
+| Node.js | v26.10.0 | `_bin/node/` |
+| Deno | 2.9.7 | `_bin/deno/` |
+| pwsh | 7.6.6 | `_bin/pwsh/` |
+
+Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
+
+### Test phase
+
+1. `tools/40_test/run-tests.cmd` puts the downloaded runtimes on PATH with `set PATH=…\_bin\…;%PATH%`
+2. `where` confirms that bun, node, deno and pwsh resolve to the ones under `_bin/`. Otherwise it stops
+3. The version of each runtime (`bun --revision`, `node -v`, `deno --version`, pwsh) is written to `versions.txt`
+4. All tests run. The per-case batch file (`run.cmd`) calls the runtimes by name only, and every path is relative to `%~dp0`. No path containing a user name appears anywhere
+
+### Decisions
+
+- **PATH:** the downloaded runtimes always go first on PATH. Whatever is installed on the PC is not used
+- **Bun and canary:** both are named `bun`, so they run in separate passes with PATH switched. The canary pass runs only the cases that involve Bun
+- **Starting code page:** both 932 and 437. Each dedicated test console runs `chcp` first (the console is not shared with anything else). Verdicts are relative to the starting value
+- **Neighbor process:** one for 932 (`neighbor: 東京大阪` in Shift_JIS) and one for 437 (`neighbor: café` in CP437)
+- **pwsh:** downloaded and used
+- **Passes:** three per code page: node --test (Bun stable, Node.js, Deno), node --test (canary; only cases involving Bun), bun test (the Node.js and Deno cases)
+- **Logs:** no date or pid. Only the elapsed time (ms) from the start of each case, so two runs can be compared with diff
+- **Environment file:** each pass writes `environment.json` with the starting code page, tool names, tool versions and the run time in UTC Z format (for example `2026-10-07T03:45:12Z`). This is the only file with a date
+
+### Where the evidence goes
+
+| Location | Handling |
+|---|---|
+| `research/evidence_last/` | Overwritten on every run. Not excluded by Git, but not committed |
+| `research/evidence/` | Committed as the baseline. Copied from `evidence_last` after it is checked, when the user says so |
+
+- Contents: `versions.txt`, the result records (for node --test and bun test), and per case the `run.cmd`, logs, the screen read back, and the bytes the reader received
+- `tools/50_run/compare-evidence.ts` compares the two and shows only differences in the verdicts (✅ / ❌), not in timings
+- Before saving, the evidence is checked for paths that contain a user name
+
+### Done together with this
+
+- Source comments in English first, followed by Japanese (local rule)
+- Links from the cells of the result tables to the relevant test code lines and to the evidence files in `research/evidence/`
+- Separate commits for the mechanism, the evidence, and the document links
+
+## 7. Steps
 
 1. Install Deno (done: 2.9.7)
 2. Build the fixtures and the harness, and confirm with T1 that the new-console mechanism works (done)
@@ -205,6 +263,7 @@ tools/50_run/
 5. Compare versions with T6 (done: stable and canary side by side in the same tables)
 6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (draft done: [Draft of the new issue](../issue/new-issue-draft.md); not posted yet)
 7. Add a cross-reference to the new issue on bun#43660
+8. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (mechanism done; every test ran at 932 and 437 into `research/evidence_last/`; copying to `research/evidence/` not done)
 
 [⌂](../README.md)
 

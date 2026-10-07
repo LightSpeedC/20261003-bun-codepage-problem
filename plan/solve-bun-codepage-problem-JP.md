@@ -2,7 +2,7 @@
 
 bun#43660 は氷山の一角。根本の問題は bun がコンソールのコードページを変えることにある。その害を実測で示し、変えない実装を求める Issue を出す
 
-> 📅 作成: 2026-10-03 / 更新: 2026-10-04
+> 📅 作成: 2026-10-03 / 更新: 2026-10-07
 
 [⌂](../README-JP.md)
 
@@ -13,7 +13,8 @@ bun#43660 は氷山の一角。根本の問題は bun がコンソールのコ�
 3. [前提とあるべき姿](#3-前提とあるべき姿)
 4. [テスト項目](#4-テスト項目)
 5. [テストの作り](#5-テストの作り)
-6. [進め方](#6-進め方)
+6. [どの PC でも同じ試験を流す](#6-どの-pc-でも同じ試験を流す)
+7. [進め方](#7-進め方)
 
 ## 1. 目的
 
@@ -176,16 +177,20 @@ tests/
     sink.ts             受け取ったバイト列を画面かファイルへそのまま書く受け手
     hold.ts             受け取ったデータを決めた時間だけ持ってから流す中継（T5 の node wait）
     probe.ts            観測役（node）。コードページを記録し、窓の画面の文字を読み取る
-    sjis-echo.cmd       隣のプロセス役（SJIS ＋ CRLF）
+    neighbor-932.cmd    932 用の隣のプロセス役（SJIS ＋ CRLF）
+    neighbor-437.cmd    437 用の隣のプロセス役（CP437 ＋ CRLF）
   harness/
     new-console.ts      conhost.exe で新しいコンソールを起こし、その中で実行して終わるまで待つ
-    judge.ts            画面・バイト列・コードページの判定と、tmp/results/ への記録
+    judge.ts            画面・バイト列・コードページの判定と、証拠の置き場の results.jsonl への記録
   manual/
     issue-43660-repro.cmd   bun#43660 と同じ形のコマンドを手で流す（画面を目で見る）
+tools/10_setup/
+  setup-runtimes.ps1 / .cmd   準備フェーズ。ランタイムを _bin/ に取り、npm ci を流す
 tools/40_test/
-  run-tests.ps1 / run-tests.cmd   node --test と bun test の両方で全件流す
+  run-tests.ps1 / run-tests.cmd   試験実施フェーズ。932 と 437 で、node --test と bun test を流す
 tools/50_run/
-  summarize-results.ts  tmp/results/ の記録から結果表の材料を出す
+  summarize-results.ts  証拠の置き場の記録から、結果表の材料を出す
+  compare-evidence.ts   research/evidence_last/ と research/evidence/ の判定を比べる
   verify-issue-repro.ts Issue の本文に載せる再現コマンドを新しい窓で流し、画面を出す
 ```
 
@@ -196,7 +201,60 @@ tools/50_run/
 - 期待値は「あるべき姿」にする。bun のケースは直るまで失敗するため todo 扱いにし、失敗を証拠として記録しながら全体は止めない。bun test は todo のケースを実行しないため、bun のケースの証拠は node --test 側で取る
 - 画面の判定は、観測役が `ReadConsoleOutputCharacterW` で窓の文字を読み取って行う。人が目で見なくてよい
 
-## 6. 進め方
+## 6. どの PC でも同じ試験を流す
+
+リポジトリを clone した人が、Windows なら誰でも同じ試験を流せるようにする。その PC に入っている bun ・ node ・ deno には頼らない。
+
+### 準備フェーズ
+
+`tools/10_setup/setup-runtimes.cmd`（中身は同名の ps1）が、版を決めた実行ファイルを公式の配布元から取り、`_bin/` に置く。`_bin/` は Git の管理外。すでに置いてあれば取り直さない。
+
+| ランタイム | 版 | 置き場 |
+|---|---|---|
+| bun | 1.4.2 | `_bin/bun/` |
+| bun canary | 取った時点の最新（版を固定できないので、取った版を記録する） | `_bin/bun-canary/` |
+| node | v26.10.0 | `_bin/node/` |
+| deno | 2.9.7 | `_bin/deno/` |
+| pwsh | 7.6.6 | `_bin/pwsh/` |
+
+取ったあと、`_bin/node/` の npm で `npm ci` を流す（koffi と型チェック用）。
+
+### 試験実施フェーズ
+
+1. `tools/40_test/run-tests.cmd` が `set PATH=…\_bin\…;%PATH%` で、取った実行ファイルを PATH に置く
+2. `where` で、bun ・ node ・ deno ・ pwsh が `_bin/` の下のものに解決されることを確かめる。違えば止める
+3. 各ランタイムの版（`bun --revision` ・ `node -v` ・ `deno --version` ・ pwsh の版）を `versions.txt` に書く
+4. 全件を流す。ケースごとのバッチ（`run.cmd`）は、実行ファイルを名前だけで呼び、パスは `%~dp0` からの相対にする。ユーザー名を含むパスはどこにも入らない
+
+### 決めたこと
+
+- **PATH:** 取った実行ファイルを、いつも PATH の先頭に置く。PC に入っているものは使わない
+- **bun と canary:** どちらも `bun` の名前なので、PATH を入れ替えて別の回に流す。canary の回は、bun を含むケースだけを流す
+- **開始のコードページ:** 932 と 437 の両方で流す。試験専用の窓の中で、最初に `chcp` してから始める（窓はほかと共有しない）。判定は開始の値を基準にする
+- **隣のプロセス役:** 932 用（SJIS で `neighbor: 東京大阪`）と 437 用（CP437 で `neighbor: café`）を分ける
+- **pwsh:** 取って使う
+- **流す回:** コードページごとに 3 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary。bun を含むケースだけ）、bun test（node と deno のケース）
+- **ログ:** 日時と pid を書かない。各ケースの最初からの経過時間（ms）だけを書き、2 回の結果を diff で比べられるようにする
+- **環境ファイル:** 回ごとに `environment.json` を置き、開始のコードページ ・ ツール名 ・ ツールの版 ・ 実行日時（UTC の Z 形式。例 `2026-10-07T03:45:12Z`）を書く。日時を書くのはこのファイルだけ
+
+### 証拠の置き場
+
+| 置き場 | 扱い |
+|---|---|
+| `research/evidence_last/` | 流すたびに上書きする。Git で除外しないが、commit しない |
+| `research/evidence/` | 基準として commit する。`evidence_last` を確かめてから、利用者の指示で写す |
+
+- 置く中身: `versions.txt`、集計（node --test と bun test の分）、ケースごとの `run.cmd` ・ ログ ・ 画面の読み取り ・ 受け手のバイト列
+- `tools/50_run/compare-evidence.ts` で 2 つを比べ、判定（✅ ／ ❌）の違いだけを出す。時刻は比べない
+- 保存の前に、ユーザー名を含むパスが入っていないことを検査する
+
+### あわせて行うこと
+
+- ソースのコメントを、英語を先に、日本語を併記する形にする（ローカルルール）
+- 結果資料の表のセルから、該当する試験コードの行と、`research/evidence/` の証拠ファイルへリンクする
+- commit は、仕組みの変更 ・ 証拠 ・ 資料のリンク、のように分ける
+
+## 7. 進め方
 
 1. deno を導入する（済: 2.9.7）
 2. fixtures とハーネスを作り、T1 で新しいコンソールの仕組みが動くことを確かめる（済）
@@ -205,6 +263,7 @@ tools/50_run/
 5. T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）
 6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（本文案は済: [新しい Issue の下書き](../issue/new-issue-draft-JP.md)。投稿は未）
 7. bun#43660 に、新しい Issue への関連を書き足す
+8. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（仕組みは済。932 と 437 で全件を流し、`research/evidence_last/` に置いた。`research/evidence/` への写しは未）
 
 [⌂](../README-JP.md)
 

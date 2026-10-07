@@ -2,7 +2,7 @@
 
 bun が Windows のコンソールのコードページを書き換える証拠を、node ・ deno と比べて集める
 
-> 📅 作成: 2026-10-03 / 更新: 2026-10-06
+> 📅 作成: 2026-10-03 / 更新: 2026-10-07
 
 [⌂](../)
 
@@ -13,6 +13,14 @@ Windows のコンソールのコードページは、同じ窓につながる全
 bun#43660 で報告した bun 同士のパイプの文字化けは、氷山の一角である。根本の問題は、bun が実行中にコンソールのコードページを変えること。このプロジェクトは、その変更がもたらす害の証拠を再現できる形で集め、コードページを変えないよう求める Issue を bun へ出す。そうすれば bun#43660 も同時に直る。node と deno も同じ方法で測り、比べる。
 
 bun の開発者向けの入口は [コードページ試験の結果](research/codepage-test-results-JP.md)。
+
+clone したあと、どの Windows の PC でも同じ試験を流せる（PC に入っているものは使わない）。
+
+```batch
+tools\10_setup\setup-runtimes.cmd   &rem bun ・ bun canary ・ node ・ deno ・ pwsh を _bin\ に取り、npm ci を流す
+tools\40_test\run-tests.cmd         &rem コードページ 932 と 437 で全件を流し、research\evidence_last\ に置く
+_bin\node\node tools\50_run\compare-evidence.ts   &rem research\evidence_last\ と research\evidence\ を比べる
+```
 
 1. [計画](#1-計画)
 2. [調査](#2-調査)

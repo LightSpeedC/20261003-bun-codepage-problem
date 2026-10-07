@@ -20,9 +20,10 @@ Rules that apply only to this project. Where they differ from the common rules, 
 - **English documents link to English documents, Japanese to Japanese**
 - **The English and Japanese versions of a document link to each other**, at the top of the body and in the footer
 - **When one version changes, update the other in the same pass**
-- Agent responses, comments and script messages stay in Japanese, as in the common rules
+- **Source code comments are written in English first, followed by Japanese**
+- Agent responses and script messages stay in Japanese, as in the common rules
 
-Reason: these are evidence documents meant to be read by the Bun developers.
+Reason: these are evidence documents meant to be read by the Bun developers, and they read the test code too.
 
 ## 2. Folder layout and file names
 

@@ -20,11 +20,12 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(224,78%,25%); --accent2: hsl(224,58%,55%); --soft: hsl(224,28%,95%); }
-.ch03 { --accent: hsl(168,78%,25%); --accent2: hsl(168,58%,55%); --soft: hsl(168,28%,95%); }
-.ch04 { --accent: hsl(112,78%,25%); --accent2: hsl(112,58%,55%); --soft: hsl(112,28%,95%); }
-.ch05 { --accent: hsl(56,78%,25%); --accent2: hsl(56,58%,55%); --soft: hsl(56,28%,95%); }
-.ch06 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(233.3,78%,25%); --accent2: hsl(233.3,58%,55%); --soft: hsl(233.3,28%,95%); }
+.ch03 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
+.ch04 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch05 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
+.ch06 { --accent: hsl(46.7,78%,25%); --accent2: hsl(46.7,58%,55%); --soft: hsl(46.7,28%,95%); }
+.ch07 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
@@ -51,7 +52,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>bun のコードページ問題を解決したい</h1>
 <p class="lead">bun#43660 は氷山の一角。根本の問題は bun がコンソールのコードページを変えることにある。その害を実測で示し、変えない実装を求める Issue を出す</p>
-<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-04</p>
+<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-07</p>
 </div></div>
 
 <div class="wrap">
@@ -63,7 +64,8 @@ footer .navbar { margin-top: 0; }
 <li class="ch03"><a href="#ch03">前提とあるべき姿</a></li>
 <li class="ch04"><a href="#ch04">テスト項目</a></li>
 <li class="ch05"><a href="#ch05">テストの作り</a></li>
-<li class="ch06"><a href="#ch06">進め方</a></li>
+<li class="ch06"><a href="#ch06">どの PC でも同じ試験を流す</a></li>
+<li class="ch07"><a href="#ch07">進め方</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
@@ -207,16 +209,20 @@ footer .navbar { margin-top: 0; }
     sink.ts             受け取ったバイト列を画面かファイルへそのまま書く受け手
     hold.ts             受け取ったデータを決めた時間だけ持ってから流す中継（T5 の node wait）
     probe.ts            観測役（node）。コードページを記録し、窓の画面の文字を読み取る
-    sjis-echo.cmd       隣のプロセス役（SJIS ＋ CRLF）
+    neighbor-932.cmd    932 用の隣のプロセス役（SJIS ＋ CRLF）
+    neighbor-437.cmd    437 用の隣のプロセス役（CP437 ＋ CRLF）
   harness/
     new-console.ts      conhost.exe で新しいコンソールを起こし、その中で実行して終わるまで待つ
-    judge.ts            画面・バイト列・コードページの判定と、tmp/results/ への記録
+    judge.ts            画面・バイト列・コードページの判定と、証拠の置き場の results.jsonl への記録
   manual/
     issue-43660-repro.cmd   bun#43660 と同じ形のコマンドを手で流す（画面を目で見る）
+tools/10_setup/
+  setup-runtimes.ps1 / .cmd   準備フェーズ。ランタイムを _bin/ に取り、npm ci を流す
 tools/40_test/
-  run-tests.ps1 / run-tests.cmd   node --test と bun test の両方で全件流す
+  run-tests.ps1 / run-tests.cmd   試験実施フェーズ。932 と 437 で、node --test と bun test を流す
 tools/50_run/
-  summarize-results.ts  tmp/results/ の記録から結果表の材料を出す
+  summarize-results.ts  証拠の置き場の記録から、結果表の材料を出す
+  compare-evidence.ts   research/evidence_last/ と research/evidence/ の判定を比べる
   verify-issue-repro.ts Issue の本文に載せる再現コマンドを新しい窓で流し、画面を出す
 </code></pre>
 <ul>
@@ -230,6 +236,59 @@ tools/50_run/
 </section>
 
 <section class="ch06" id="ch06">
+<h1>どの PC でも同じ試験を流す</h1>
+<p>リポジトリを clone した人が、Windows なら誰でも同じ試験を流せるようにする。その PC に入っている bun ・ node ・ deno には頼らない。</p>
+<h2>準備フェーズ</h2>
+<p><code>tools/10_setup/setup-runtimes.cmd</code>（中身は同名の ps1）が、版を決めた実行ファイルを公式の配布元から取り、<code>_bin/</code> に置く。<code>_bin/</code> は Git の管理外。すでに置いてあれば取り直さない。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>ランタイム</th><th>版</th><th>置き場</th></tr></thead>
+<tbody>
+<tr><td>bun</td><td class="nowrap">1.4.2</td><td><code>_bin/bun/</code></td></tr>
+<tr><td>bun canary</td><td class="nowrap">取った時点の最新（版を固定できないので、取った版を記録する）</td><td><code>_bin/bun-canary/</code></td></tr>
+<tr><td>node</td><td class="nowrap">v26.10.0</td><td><code>_bin/node/</code></td></tr>
+<tr><td>deno</td><td class="nowrap">2.9.7</td><td><code>_bin/deno/</code></td></tr>
+<tr><td>pwsh</td><td class="nowrap">7.6.6</td><td><code>_bin/pwsh/</code></td></tr>
+</tbody></table></div>
+<p>取ったあと、<code>_bin/node/</code> の npm で <code>npm ci</code> を流す（koffi と型チェック用）。</p>
+<h2>試験実施フェーズ</h2>
+<ol>
+<li><code>tools/40_test/run-tests.cmd</code> が <code>set PATH=…\_bin\…;%PATH%</code> で、取った実行ファイルを PATH に置く</li>
+<li><code>where</code> で、bun ・ node ・ deno ・ pwsh が <code>_bin/</code> の下のものに解決されることを確かめる。違えば止める</li>
+<li>各ランタイムの版（<code>bun --revision</code> ・ <code>node -v</code> ・ <code>deno --version</code> ・ pwsh の版）を <code>versions.txt</code> に書く</li>
+<li>全件を流す。ケースごとのバッチ（<code>run.cmd</code>）は、実行ファイルを名前だけで呼び、パスは <code>%~dp0</code> からの相対にする。ユーザー名を含むパスはどこにも入らない</li>
+</ol>
+<h2>決めたこと</h2>
+<ul>
+<li><strong>PATH:</strong> 取った実行ファイルを、いつも PATH の先頭に置く。PC に入っているものは使わない</li>
+<li><strong>bun と canary:</strong> どちらも <code>bun</code> の名前なので、PATH を入れ替えて別の回に流す。canary の回は、bun を含むケースだけを流す</li>
+<li><strong>開始のコードページ:</strong> 932 と 437 の両方で流す。試験専用の窓の中で、最初に <code>chcp</code> してから始める（窓はほかと共有しない）。判定は開始の値を基準にする</li>
+<li><strong>隣のプロセス役:</strong> 932 用（SJIS で <code>neighbor: 東京大阪</code>）と 437 用（CP437 で <code>neighbor: café</code>）を分ける</li>
+<li><strong>pwsh:</strong> 取って使う</li>
+<li><strong>流す回:</strong> コードページごとに 3 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary。bun を含むケースだけ）、bun test（node と deno のケース）</li>
+<li><strong>ログ:</strong> 日時と pid を書かない。各ケースの最初からの経過時間（ms）だけを書き、2 回の結果を diff で比べられるようにする</li>
+<li><strong>環境ファイル:</strong> 回ごとに <code>environment.json</code> を置き、開始のコードページ ・ ツール名 ・ ツールの版 ・ 実行日時（UTC の Z 形式。例 <code>2026-10-07T03:45:12Z</code>）を書く。日時を書くのはこのファイルだけ</li>
+</ul>
+<h2>証拠の置き場</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>置き場</th><th>扱い</th></tr></thead>
+<tbody>
+<tr><td class="nowrap"><code>research/evidence_last/</code></td><td>流すたびに上書きする。Git で除外しないが、commit しない</td></tr>
+<tr><td class="nowrap"><code>research/evidence/</code></td><td>基準として commit する。<code>evidence_last</code> を確かめてから、利用者の指示で写す</td></tr>
+</tbody></table></div>
+<ul>
+<li>置く中身: <code>versions.txt</code>、集計（node --test と bun test の分）、ケースごとの <code>run.cmd</code> ・ ログ ・ 画面の読み取り ・ 受け手のバイト列</li>
+<li><code>tools/50_run/compare-evidence.ts</code> で 2 つを比べ、判定（✅ ／ ❌）の違いだけを出す。時刻は比べない</li>
+<li>保存の前に、ユーザー名を含むパスが入っていないことを検査する</li>
+</ul>
+<h2>あわせて行うこと</h2>
+<ul>
+<li>ソースのコメントを、英語を先に、日本語を併記する形にする（ローカルルール）</li>
+<li>結果資料の表のセルから、該当する試験コードの行と、<code>research/evidence/</code> の証拠ファイルへリンクする</li>
+<li>commit は、仕組みの変更 ・ 証拠 ・ 資料のリンク、のように分ける</li>
+</ul>
+</section>
+
+<section class="ch07" id="ch07">
 <h1>進め方</h1>
 <ol>
 <li>deno を導入する（済: 2.9.7）</li>
@@ -239,6 +298,7 @@ tools/50_run/
 <li>T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）</li>
 <li>「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（本文案は済: <a href="../issue/new-issue-draft-JP.html">新しい Issue の下書き</a>。投稿は未）</li>
 <li>bun#43660 に、新しい Issue への関連を書き足す</li>
+<li>どの PC でも同じ試験を流せる仕組みにし、証拠を <code>research/evidence/</code> に残す（仕組みは済。932 と 437 で全件を流し、<code>research/evidence_last/</code> に置いた。<code>research/evidence/</code> への写しは未）</li>
 </ol>
 </section>
 </div>
