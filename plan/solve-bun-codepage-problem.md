@@ -277,6 +277,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 - **A cron job checks at 8:30, 11:30, 14:30, 17:30 and 20:30 JST**. Cron jobs live only inside the agent session and expire after 7 days
 - **Run `node tools/80_ops/check-replies.ts`**. It prints only what is new since the last check and leaves out the posting account. The time of the last check is kept in `etc/check-replies.json` (not in Git)
 - **When something is new, read it in full at its link, and report a summary and a proposal for what to do**. A reply is posted only after the user has reviewed the draft and said to send it (local rule "Issue and publishing")
+- **When something is new, also notify the phone with PushNotification**, in one line saying which issue, who and what. It may not arrive (an open bug on the Claude Code side: [anthropics/claude-code#87003](https://github.com/anthropics/claude-code/issues/87003) and others)
 - **When nothing is new, answer in one line** (`✅10/08 08:30 reply check: nothing new`)
 
 [⌂](../README.md)

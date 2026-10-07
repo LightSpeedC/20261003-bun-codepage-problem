@@ -312,6 +312,7 @@ tools/50_run/
 <li><strong>A cron job checks at 8:30, 11:30, 14:30, 17:30 and 20:30 JST</strong>. Cron jobs live only inside the agent session and expire after 7 days</li>
 <li><strong>Run <code>node tools/80_ops/check-replies.ts</code></strong>. It prints only what is new since the last check and leaves out the posting account. The time of the last check is kept in <code>etc/check-replies.json</code> (not in Git)</li>
 <li><strong>When something is new, read it in full at its link, and report a summary and a proposal for what to do</strong>. A reply is posted only after the user has reviewed the draft and said to send it (local rule "Issue and publishing")</li>
+<li><strong>When something is new, also notify the phone with PushNotification</strong>, in one line saying which issue, who and what. It may not arrive (an open bug on the Claude Code side: <a href="https://github.com/anthropics/claude-code/issues/87003">anthropics/claude-code#87003</a> and others)</li>
 <li><strong>When nothing is new, answer in one line</strong> (<code>✅10/08 08:30 reply check: nothing new</code>)</li>
 </ul>
 </section>

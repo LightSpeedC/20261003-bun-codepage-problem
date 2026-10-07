@@ -312,6 +312,7 @@ tools/50_run/
 <li><strong>8:30 ・ 11:30 ・ 14:30 ・ 17:30 ・ 20:30（JST）に cron で確かめる</strong>。cron はエージェントのセッションの中だけで生き、7 日で切れる</li>
 <li><strong><code>node tools/80_ops/check-replies.ts</code> を流す</strong>。前回の確認から増えたものだけを出し、投稿した本人の分は除く。前回の確認の時刻は <code>etc/check-replies.json</code> に残る（Git 管理外）</li>
 <li><strong>新着があれば、リンク先の全文を読み、要旨と、こちらがすべきことの案を報告する</strong>。返信を投稿するのは、本文の案を利用者が確認し「送って」と言ってから（ローカルルール「Issue と公開」）</li>
+<li><strong>新着があれば、PushNotification でスマホにも知らせる</strong>。どの Issue に誰が何をしたかを 1 行で。届かないことがある（Claude Code 側の未解決の不具合。<a href="https://github.com/anthropics/claude-code/issues/87003">anthropics/claude-code#87003</a> ほか）</li>
 <li><strong>新着が無ければ、1 行だけ返す</strong>（<code>✅10/08 08:30 返事の確認: 新着なし</code>）</li>
 </ul>
 </section>
