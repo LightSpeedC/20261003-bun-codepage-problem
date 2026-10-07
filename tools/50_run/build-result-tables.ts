@@ -151,14 +151,17 @@ function t5(lang: Lang): string {
 		const label = `${code(range[0], range[1], `${t(lang, en, ja)} (${id})`)}<br>${t(lang, mode === 'console' ? 'reader writes to the screen' : 'reader writes to a file', mode === 'console' ? '受け手は画面に書く' : '受け手はファイルに書く')}`;
 		return [label, ...RTS.map((rt) => CPS.map((cp) => {
 			const runs = rows.filter((x) => x.test === 'T5' && x.cp === cp && x.rt === rt && x.order === id && x.mode === mode).sort((p, q) => p.rep - q.rep);
+			// Case folder name: the rows with another write API (ww-*) have no mode in their name.
+			// ケースのフォルダ名。ほかの書き方の行（ww-*）は、名前に mode を含まない。
+			const caseOf = (rep: number) => (id.startsWith('ww-') ? `t5-${rt}-${id}-${rep}` : `t5-${rt}-${id}-${mode}-${rep}`);
 			// Rows run only with Bun builds have no runs for Node.js and Deno.
 			// bun の版だけで流す行は、node と deno の回が無い。
 			if (!runs.length) return `${cp}: —`;
 			const out = runs.map((r) => {
-				const name = `t5-${rt}-${id}-${mode}-${r.rep}`;
+				const name = caseOf(r.rep);
 				return mode === 'console' ? a(ev(cp, [rt], name, 'screen.json'), mark(r.screen === 'ok')) : a(ev(cp, [rt], name, 'out.bin'), mark(r.bytesOk));
 			}).join('');
-			const aft = runs.map((r) => a(ev(cp, [rt], `t5-${rt}-${id}-${mode}-${r.rep}`, 'log.jsonl'), mark(cpOk(r)))).join('');
+			const aft = runs.map((r) => a(ev(cp, [rt], caseOf(r.rep), 'log.jsonl'), mark(cpOk(r)))).join('');
 			return `${cp}: ${out} ／ ${aft}`;
 		}).join('<br>'))];
 	}));

@@ -1,4 +1,4 @@
 {"t":0,"tag":"before","rt":"node","event":"probe","in":437,"out":437}
-{"t":58,"tag":"w","rt":"bun","event":"start","in":65001,"out":65001}
-{"t":60,"tag":"w","rt":"bun","event":"before-write","in":65001,"out":65001}
-{"t":3485,"tag":"after","rt":"node","event":"probe","in":65001,"out":65001}
+{"t":42,"tag":"w","rt":"bun","event":"start","in":65001,"out":65001}
+{"t":44,"tag":"w","rt":"bun","event":"before-write","in":65001,"out":65001}
+{"t":3408,"tag":"after","rt":"node","event":"probe","in":65001,"out":65001}

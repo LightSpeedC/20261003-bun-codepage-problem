@@ -134,6 +134,7 @@ footer .navbar { margin-top: 0; }
 <tbody>
 <tr><td>bun</td><td class="nowrap">1.4.2+744846f84</td><td>調べる対象（安定版）</td></tr>
 <tr><td>bun canary</td><td class="nowrap">準備の時点の最新（全件の試験では 1.4.3-canary.1+bbdc5a519）</td><td>調べる対象。<code>_bin/bun-canary/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
+<tr><td>bun PR #43662</td><td class="nowrap">1.4.3-canary.1+576eb251a</td><td>bun#43660 への修正の PR の版。何が直り、何が残るかを見る。<code>_bin/bun-pr-43662/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
 <tr><td>node</td><td class="nowrap">v26.10.0</td><td>比べる相手</td></tr>
 <tr><td>deno</td><td class="nowrap">2.9.7</td><td>比べる相手</td></tr>
 </tbody></table></div>
@@ -184,6 +185,7 @@ footer .navbar { margin-top: 0; }
 <tr><td class="nowrap"><code>node | node wait | node</code></td><td>同上</td><td>比べる相手</td></tr>
 <tr><td class="nowrap"><code>deno | node wait | deno</code></td><td>同上</td><td>比べる相手</td></tr>
 <tr><td class="nowrap">bun#43660 と同じ形</td><td>順番を決めない（<code>-e</code> で 2 本を同時に起動）。10 回流す</td><td>結果が回ごとに変わるか（H2）</td></tr>
+<tr><td class="nowrap">ww を別の書き方で</td><td>ww の順で、受け手が <code>fs.writeSync(1)</code> ・ <code>fs.write(1)</code> ・ <code>Bun.write(Bun.stdout)</code> で画面に書く。bun の版だけ</td><td>PR #43662 が手当てしていない書き方で化けるか</td></tr>
 </tbody></table></div>
 <p>仮説（各 bun が起動時に今の値を控えて 65001 にし、終了時に控えた値へ戻す）から予想する <code>bun | bun</code> の結果:</p>
 <div class="tablewrap"><table>
@@ -218,6 +220,7 @@ footer .navbar { margin-top: 0; }
     issue-43660-repro.cmd   bun#43660 と同じ形のコマンドを手で流す（画面を目で見る）
 tools/10_setup/
   setup-runtimes.ps1 / .cmd   準備フェーズ。ランタイムを _bin/ に取り、npm ci を流す
+  fetch-bun-pr.ts       bun の PR の Windows x64 のビルドを、bun の CI（Buildkite）から取る
 tools/40_test/
   run-tests.ps1 / run-tests.cmd   試験実施フェーズ。932 と 437 で、node --test と bun test を流す
 tools/50_run/
@@ -249,6 +252,7 @@ tools/50_run/
 <tr><td>node</td><td class="nowrap">v26.10.0</td><td><code>_bin/node/</code></td></tr>
 <tr><td>deno</td><td class="nowrap">2.9.7</td><td><code>_bin/deno/</code></td></tr>
 <tr><td>pwsh</td><td class="nowrap">7.6.6</td><td><code>_bin/pwsh/</code></td></tr>
+<tr><td>bun PR #43662</td><td class="nowrap">PR の先頭コミットのビルド</td><td><code>_bin/bun-pr-43662/</code>。bun の CI（Buildkite）の成果物を <code>tools/10_setup/fetch-bun-pr.ts</code> で取り、SHA-1 を照らし合わせる</td></tr>
 </tbody></table></div>
 <p>取ったあと、<code>_bin/node/</code> の npm で <code>npm ci</code> を流す（koffi と型チェック用）。</p>
 <h2>試験実施フェーズ</h2>
@@ -265,7 +269,7 @@ tools/50_run/
 <li><strong>開始のコードページ:</strong> 932 と 437 の両方で流す。試験専用の窓の中で、最初に <code>chcp</code> してから始める（窓はほかと共有しない）。判定は開始の値を基準にする</li>
 <li><strong>隣のプロセス役:</strong> 932 用（SJIS で <code>neighbor: 東京大阪</code>）と 437 用（CP437 で <code>neighbor: café</code>）を分ける</li>
 <li><strong>pwsh:</strong> 取って使う</li>
-<li><strong>流す回:</strong> コードページごとに 3 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary。bun を含むケースだけ）、bun test（node と deno のケース）</li>
+<li><strong>流す回:</strong> コードページごとに 4 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary と PR #43662 の版。bun を含むケースだけ）、bun test（node と deno のケース）</li>
 <li><strong>ログ:</strong> 日時と pid を書かない。各ケースの最初からの経過時間（ms）だけを書き、2 回の結果を diff で比べられるようにする</li>
 <li><strong>環境ファイル:</strong> 回ごとに <code>environment.json</code> を置き、開始のコードページ ・ ツール名 ・ ツールの版 ・ 実行日時（UTC の Z 形式。例 <code>2026-10-07T03:45:12Z</code>）を書く。日時を書くのはこのファイルだけ</li>
 </ul>
@@ -299,6 +303,7 @@ tools/50_run/
 <li>T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）</li>
 <li>「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（済: <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a> として投稿した。本文は <a href="../issue/bun-44693-JP.html">Issue bun#44693</a>）</li>
 <li>bun#43660 に、新しい Issue への関連を書き足す（済: <a href="https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127">コメント</a>）</li>
+<li>bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（測定は済: 結果資料の結論に PR の列を足した。コメントは <a href="../issue/bun-44693-JP.html#ch04">下書き</a> まで。PR を見落としたまま #44693 を出したため）</li>
 <li>どの PC でも同じ試験を流せる仕組みにし、証拠を <code>research/evidence/</code> に残す（済。932 と 437 で全件を流し、<code>research/evidence/</code> に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）</li>
 </ol>
 </section>

@@ -134,6 +134,7 @@ footer .navbar { margin-top: 0; }
 <tbody>
 <tr><td>Bun</td><td class="nowrap">1.4.2+744846f84</td><td>Under test (stable)</td></tr>
 <tr><td>Bun canary</td><td class="nowrap">latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run)</td><td>Under test. Placed in <code>_bin/bun-canary/</code> and called with PATH switched</td></tr>
+<tr><td>Bun PR #43662</td><td class="nowrap">1.4.3-canary.1+576eb251a</td><td>The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in <code>_bin/bun-pr-43662/</code> and called with PATH switched</td></tr>
 <tr><td>Node.js</td><td class="nowrap">v26.10.0</td><td>Reference</td></tr>
 <tr><td>Deno</td><td class="nowrap">2.9.7</td><td>Reference</td></tr>
 </tbody></table></div>
@@ -184,6 +185,7 @@ footer .navbar { margin-top: 0; }
 <tr><td class="nowrap"><code>node | node wait | node</code></td><td>Same</td><td>Reference</td></tr>
 <tr><td class="nowrap"><code>deno | node wait | deno</code></td><td>Same</td><td>Reference</td></tr>
 <tr><td class="nowrap">Same shape as bun#43660</td><td>No fixed order (both started together with <code>-e</code>). Run 10 times</td><td>Whether the result changes from run to run (H2)</td></tr>
+<tr><td class="nowrap">ww with other write APIs</td><td>The ww order, with the reader writing to the screen with <code>fs.writeSync(1)</code>, <code>fs.write(1)</code> or <code>Bun.write(Bun.stdout)</code>. Bun builds only</td><td>Whether the write APIs PR #43662 does not route through <code>WriteConsoleW</code> are garbled</td></tr>
 </tbody></table></div>
 <p>Expected results for <code>bun | bun</code> under the hypothesis (each Bun process saves the current value and sets 65001 at start, and restores the saved value at exit):</p>
 <div class="tablewrap"><table>
@@ -218,6 +220,7 @@ footer .navbar { margin-top: 0; }
     issue-43660-repro.cmd   runs the same shape of command as bun#43660 by hand (screen checked by eye)
 tools/10_setup/
   setup-runtimes.ps1 / .cmd   setup phase: downloads the runtimes into _bin/ and runs npm ci
+  fetch-bun-pr.ts       downloads the Windows x64 build of a Bun PR from Bun's CI (Buildkite)
 tools/40_test/
   run-tests.ps1 / run-tests.cmd   test phase: runs node --test and bun test at 932 and 437
 tools/50_run/
@@ -249,6 +252,7 @@ tools/50_run/
 <tr><td>Node.js</td><td class="nowrap">v26.10.0</td><td><code>_bin/node/</code></td></tr>
 <tr><td>Deno</td><td class="nowrap">2.9.7</td><td><code>_bin/deno/</code></td></tr>
 <tr><td>pwsh</td><td class="nowrap">7.6.6</td><td><code>_bin/pwsh/</code></td></tr>
+<tr><td>Bun PR #43662</td><td class="nowrap">build of the PR head commit</td><td><code>_bin/bun-pr-43662/</code>. The artifact from Bun's CI (Buildkite), fetched by <code>tools/10_setup/fetch-bun-pr.ts</code> and checked against its SHA-1</td></tr>
 </tbody></table></div>
 <p>Then <code>npm ci</code> runs with the npm in <code>_bin/node/</code> (for koffi and type checking).</p>
 <h2>Test phase</h2>
@@ -265,7 +269,7 @@ tools/50_run/
 <li><strong>Starting code page:</strong> both 932 and 437. Each dedicated test console runs <code>chcp</code> first (the console is not shared with anything else). Verdicts are relative to the starting value</li>
 <li><strong>Neighbor process:</strong> one for 932 (<code>neighbor: 東京大阪</code> in Shift_JIS) and one for 437 (<code>neighbor: café</code> in CP437)</li>
 <li><strong>pwsh:</strong> downloaded and used</li>
-<li><strong>Passes:</strong> three per code page: node --test (Bun stable, Node.js, Deno), node --test (canary; only cases involving Bun), bun test (the Node.js and Deno cases)</li>
+<li><strong>Passes:</strong> four per code page: node --test (Bun stable, Node.js, Deno), node --test (canary and the build of PR #43662; only cases involving Bun), bun test (the Node.js and Deno cases)</li>
 <li><strong>Logs:</strong> no date or pid. Only the elapsed time (ms) from the start of each case, so two runs can be compared with diff</li>
 <li><strong>Environment file:</strong> each pass writes <code>environment.json</code> with the starting code page, tool names, tool versions and the run time in UTC Z format (for example <code>2026-10-07T03:45:12Z</code>). This is the only file with a date</li>
 </ul>
@@ -299,6 +303,7 @@ tools/50_run/
 <li>Compare versions with T6 (done: stable and canary side by side in the same tables)</li>
 <li>Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a>; text in <a href="../issue/bun-44693.html">Issue bun#44693</a>)</li>
 <li>Add a cross-reference to the new issue on bun#43660 (done: <a href="https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127">comment</a>)</li>
+<li>Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (measured: the Conclusion of the results has a column for the PR; the comment is <a href="../issue/bun-44693.html#ch04">drafted</a>; #44693 was filed without noticing the PR)</li>
 <li>Make the same tests runnable on any PC, and keep the evidence in <code>research/evidence/</code> (done: every test ran at 932 and 437, the results were copied to <code>research/evidence/</code>, and every ✅ / ❌ in the result tables links to its evidence file)</li>
 </ol>
 </section>

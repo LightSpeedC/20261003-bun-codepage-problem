@@ -92,6 +92,7 @@ bun は実行中にコンソールの入力・出力コードページを書き�
 |---|---|---|
 | bun | 1.4.2+744846f84 | 調べる対象（安定版） |
 | bun canary | 準備の時点の最新（全件の試験では 1.4.3-canary.1+bbdc5a519） | 調べる対象。`_bin/bun-canary/` に置き、PATH を入れ替えて呼ぶ |
+| bun PR #43662 | 1.4.3-canary.1+576eb251a | bun#43660 への修正の PR の版。何が直り、何が残るかを見る。`_bin/bun-pr-43662/` に置き、PATH を入れ替えて呼ぶ |
 | node | v26.10.0 | 比べる相手 |
 | deno | 2.9.7 | 比べる相手 |
 
@@ -150,6 +151,7 @@ bun | bun の直後（通常終了・強制終了）に、SJIS で書いた cmd 
 | `node \| node wait \| node` | 同上 | 比べる相手 |
 | `deno \| node wait \| deno` | 同上 | 比べる相手 |
 | bun#43660 と同じ形 | 順番を決めない（`-e` で 2 本を同時に起動）。10 回流す | 結果が回ごとに変わるか（H2） |
+| ww を別の書き方で | ww の順で、受け手が `fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` で画面に書く。bun の版だけ | PR #43662 が手当てしていない書き方で化けるか |
 
 仮説（各 bun が起動時に今の値を控えて 65001 にし、終了時に控えた値へ戻す）から予想する `bun | bun` の結果:
 
@@ -186,6 +188,7 @@ tests/
     issue-43660-repro.cmd   bun#43660 と同じ形のコマンドを手で流す（画面を目で見る）
 tools/10_setup/
   setup-runtimes.ps1 / .cmd   準備フェーズ。ランタイムを _bin/ に取り、npm ci を流す
+  fetch-bun-pr.ts       bun の PR の Windows x64 のビルドを、bun の CI（Buildkite）から取る
 tools/40_test/
   run-tests.ps1 / run-tests.cmd   試験実施フェーズ。932 と 437 で、node --test と bun test を流す
 tools/50_run/
@@ -217,6 +220,7 @@ tools/50_run/
 | node | v26.10.0 | `_bin/node/` |
 | deno | 2.9.7 | `_bin/deno/` |
 | pwsh | 7.6.6 | `_bin/pwsh/` |
+| bun PR #43662 | PR の先頭コミットのビルド | `_bin/bun-pr-43662/`。bun の CI（Buildkite）の成果物を `tools/10_setup/fetch-bun-pr.ts` で取り、SHA-1 を照らし合わせる |
 
 取ったあと、`_bin/node/` の npm で `npm ci` を流す（koffi と型チェック用）。
 
@@ -234,7 +238,7 @@ tools/50_run/
 - **開始のコードページ:** 932 と 437 の両方で流す。試験専用の窓の中で、最初に `chcp` してから始める（窓はほかと共有しない）。判定は開始の値を基準にする
 - **隣のプロセス役:** 932 用（SJIS で `neighbor: 東京大阪`）と 437 用（CP437 で `neighbor: café`）を分ける
 - **pwsh:** 取って使う
-- **流す回:** コードページごとに 3 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary。bun を含むケースだけ）、bun test（node と deno のケース）
+- **流す回:** コードページごとに 4 回。node --test（bun 安定版 ・ node ・ deno）、node --test（canary と PR #43662 の版。bun を含むケースだけ）、bun test（node と deno のケース）
 - **ログ:** 日時と pid を書かない。各ケースの最初からの経過時間（ms）だけを書き、2 回の結果を diff で比べられるようにする
 - **環境ファイル:** 回ごとに `environment.json` を置き、開始のコードページ ・ ツール名 ・ ツールの版 ・ 実行日時（UTC の Z 形式。例 `2026-10-07T03:45:12Z`）を書く。日時を書くのはこのファイルだけ
 
@@ -264,7 +268,8 @@ tools/50_run/
 5. T6 で版を比べる（済: 安定版と canary 版を同じ表に並べた）
 6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（済: [bun#44693](https://github.com/oven-sh/bun/issues/44693) として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md)）
 7. bun#43660 に、新しい Issue への関連を書き足す（済: [コメント](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127)）
-8. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
+8. bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（測定は済: 結果資料の結論に PR の列を足した。コメントは [下書き](../issue/bun-44693-JP.md#4-bun44693-への続報のコメントpr-43662) まで。PR を見落としたまま #44693 を出したため）
+9. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
 
 [⌂](../README-JP.md)
 

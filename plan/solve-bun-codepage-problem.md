@@ -92,6 +92,7 @@ None of these depends on the code page, so there is no reason to change it. T1 c
 |---|---|---|
 | Bun | 1.4.2+744846f84 | Under test (stable) |
 | Bun canary | latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
+| Bun PR #43662 | 1.4.3-canary.1+576eb251a | The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in `_bin/bun-pr-43662/` and called with PATH switched |
 | Node.js | v26.10.0 | Reference |
 | Deno | 2.9.7 | Reference |
 
@@ -150,6 +151,7 @@ Fix the order in which two or more processes start and exit by inserting delays,
 | `node \| node wait \| node` | Same | Reference |
 | `deno \| node wait \| deno` | Same | Reference |
 | Same shape as bun#43660 | No fixed order (both started together with `-e`). Run 10 times | Whether the result changes from run to run (H2) |
+| ww with other write APIs | The ww order, with the reader writing to the screen with `fs.writeSync(1)`, `fs.write(1)` or `Bun.write(Bun.stdout)`. Bun builds only | Whether the write APIs PR #43662 does not route through `WriteConsoleW` are garbled |
 
 Expected results for `bun | bun` under the hypothesis (each Bun process saves the current value and sets 65001 at start, and restores the saved value at exit):
 
@@ -186,6 +188,7 @@ tests/
     issue-43660-repro.cmd   runs the same shape of command as bun#43660 by hand (screen checked by eye)
 tools/10_setup/
   setup-runtimes.ps1 / .cmd   setup phase: downloads the runtimes into _bin/ and runs npm ci
+  fetch-bun-pr.ts       downloads the Windows x64 build of a Bun PR from Bun's CI (Buildkite)
 tools/40_test/
   run-tests.ps1 / run-tests.cmd   test phase: runs node --test and bun test at 932 and 437
 tools/50_run/
@@ -217,6 +220,7 @@ Anyone who clones the repository on Windows can run the same tests. Nothing depe
 | Node.js | v26.10.0 | `_bin/node/` |
 | Deno | 2.9.7 | `_bin/deno/` |
 | pwsh | 7.6.6 | `_bin/pwsh/` |
+| Bun PR #43662 | build of the PR head commit | `_bin/bun-pr-43662/`. The artifact from Bun's CI (Buildkite), fetched by `tools/10_setup/fetch-bun-pr.ts` and checked against its SHA-1 |
 
 Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 
@@ -234,7 +238,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 - **Starting code page:** both 932 and 437. Each dedicated test console runs `chcp` first (the console is not shared with anything else). Verdicts are relative to the starting value
 - **Neighbor process:** one for 932 (`neighbor: 東京大阪` in Shift_JIS) and one for 437 (`neighbor: café` in CP437)
 - **pwsh:** downloaded and used
-- **Passes:** three per code page: node --test (Bun stable, Node.js, Deno), node --test (canary; only cases involving Bun), bun test (the Node.js and Deno cases)
+- **Passes:** four per code page: node --test (Bun stable, Node.js, Deno), node --test (canary and the build of PR #43662; only cases involving Bun), bun test (the Node.js and Deno cases)
 - **Logs:** no date or pid. Only the elapsed time (ms) from the start of each case, so two runs can be compared with diff
 - **Environment file:** each pass writes `environment.json` with the starting code page, tool names, tool versions and the run time in UTC Z format (for example `2026-10-07T03:45:12Z`). This is the only file with a date
 
@@ -264,7 +268,8 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 5. Compare versions with T6 (done: stable and canary side by side in the same tables)
 6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693); text in [Issue bun#44693](../issue/bun-44693.md))
 7. Add a cross-reference to the new issue on bun#43660 (done: [comment](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127))
-8. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
+8. Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (measured: the Conclusion of the results has a column for the PR; the comment is [drafted](../issue/bun-44693.md#4-follow-up-comment-on-bun44693-pr-43662); #44693 was filed without noticing the PR)
+9. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 
 [⌂](../README.md)
 

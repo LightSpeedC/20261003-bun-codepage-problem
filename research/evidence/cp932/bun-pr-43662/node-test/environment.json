@@ -1,0 +1,32 @@
+{
+    "runAt":  "2026-10-07T13:48:42Z",
+    "codePage":  932,
+    "runner":  "node-test",
+    "tools":  [
+                  {
+                      "name":  "bun",
+                      "folder":  "_bin/bun-pr-43662",
+                      "version":  "1.4.3-canary.1+576eb251a"
+                  },
+                  {
+                      "name":  "node",
+                      "folder":  "_bin/node",
+                      "version":  "v26.10.0"
+                  },
+                  {
+                      "name":  "deno",
+                      "folder":  "_bin/deno",
+                      "version":  "deno 2.9.7 (stable, release, x86_64-pc-windows-msvc)"
+                  },
+                  {
+                      "name":  "pwsh",
+                      "folder":  "_bin/pwsh",
+                      "version":  "7.6.6"
+                  },
+                  {
+                      "name":  "powershell",
+                      "folder":  "(Windows)",
+                      "version":  "5.1.26100.9549"
+                  }
+              ]
+}

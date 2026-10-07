@@ -21,8 +21,9 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
-.ch03 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
+.ch03 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
+.ch04 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
@@ -52,6 +53,7 @@ footer .navbar { margin-top: 0; }
 <li class="ch01"><a href="#ch01">タイトルとテンプレートの欄</a></li>
 <li class="ch02"><a href="#ch02">補足（Additional information）</a></li>
 <li class="ch03"><a href="#ch03">bun#43660 へのコメント</a></li>
+<li class="ch04"><a href="#ch04">bun#44693 への続報のコメント（PR #43662）</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
@@ -131,6 +133,29 @@ Active code page: 65001
 <pre><code class="language-markdown">続報: ここで報告した文字化けは、もっと広い問題の症状の 1 つだった。bun は起動時にコンソールのコードページを控えて変え、終了時に戻すが、コードページは窓の全プロセスで共有されるため、同時に動く bun 同士が互いの控えを上書きする。
 
 順番を決めた再現（英語版 Windows の 437 でも再現する）と、node ・ deno と比べた実測を #{NEW} に出した。bun がコードページを変えなくなれば、この Issue も解消する。
+</code></pre>
+</section>
+
+<section class="ch04" id="ch04">
+<h1>bun#44693 への続報のコメント（PR #43662）</h1>
+<p>まだ投稿していない。この Issue を出したとき、bun#43660 への Open の修正 PR #43662 を見落としていた。そのあと PR の版を同じ試験一式で測った。投稿するのは英語版。</p>
+<pre><code class="language-markdown">続報: この Issue を出したとき、#43660 にすでに Open の修正 #43662 があることを見落としていた。その CI の Windows x64 のビルド（1.4.3-canary.1+576eb251a）を、同じ試験一式で、コードページ 932 と 437 で始めた窓で流した。
+
+**#43662 で直るもの**（どちらのコードページでも全ケース）:
+
+- `console.log` ／ `process.stdout` の出力は、どの起動・終了の順でも化けなくなった。#43660 のコマンド（20 回とも正しい。各コードページで 10 回）と `bun | node | bun` も含む。
+- 起動・終了の順を決めた形では、通常終了のあとに 65001 が残らなくなった。
+
+**#43662 のあとも残るもの:**
+
+1. bun は起動時に窓を 65001 に切り替えたまま（入力と出力。プロセスの中から読んだ値）。bun が動いているあいだ、窓のほかのプロセスはすべて 65001 にさらされる。
+2. 強制終了（`taskkill /F`）では 65001 が残り、そのあと同じ窓で流すバッチファイルは読み違えられる。
+3. `fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は `WriteFile` のまま。送り手が先に終わる順では化ける（どの API も、932 と 437 で 3 回中 3 回）。PR の説明文とレビューにもそう書かれている。
+4. 「自分が変えたコードページだけを戻す」でも、競合に負けることがある。#43660 のコマンドを 20 回流したうち 1 回、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。考えられる順: 送り手が 65001 にしたあとで受け手が出力側の値を控え、送り手が終わって 932 に戻し、そのあと受け手が 65001 にする。受け手は 65001 を控えているので、戻さない。
+
+なので、ここでの依頼は変わらない。コンソールのコードページを一切変えず、画面への出力はすべて `WriteConsoleW` で書いてほしい。そうすれば控えて戻す処理は要らず、強制終了でも何も残らない。
+
+#43662 の列を加えた結果（結果の 1 つ 1 つから証拠ファイルへリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#ch02
 </code></pre>
 </section>
 </div>

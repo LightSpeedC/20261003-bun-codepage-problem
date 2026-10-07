@@ -1,0 +1,8 @@
+{"t":0,"tag":"before","rt":"node","event":"probe","in":437,"out":437}
+{"t":314,"tag":"w","rt":"node","event":"start","in":437,"out":437}
+{"t":331,"tag":"w","rt":"node","event":"before-write","in":437,"out":437}
+{"t":347,"tag":"w","rt":"node","event":"before-exit","in":437,"out":437}
+{"t":388,"tag":"r","rt":"bun","event":"start","in":65001,"out":65001}
+{"t":406,"tag":"r","rt":"bun","event":"before-write","in":65001,"out":65001,"bytes":22}
+{"t":411,"tag":"r","rt":"bun","event":"before-exit","in":65001,"out":65001}
+{"t":561,"tag":"after","rt":"node","event":"probe","in":437,"out":437}
