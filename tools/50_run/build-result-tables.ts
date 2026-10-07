@@ -23,28 +23,36 @@ if (execFileSync('git', ['-C', root, 'status', '--porcelain', '--', 'tests'], { 
 
 type Lang = 'en' | 'ja';
 const CPS = [932, 437] as const;
-const RTS = ['bun', 'canary', 'node', 'deno'] as const;
+const RTS = ['bun', 'canary', 'pr43662', 'node', 'deno'] as const;
 type Rt = (typeof RTS)[number];
-const LABEL: Record<Rt, string> = { bun: 'bun 1.4.2', canary: 'bun canary', node: 'node', deno: 'deno' };
+const LABEL: Record<Rt, string> = { bun: 'bun 1.4.2', canary: 'bun canary', pr43662: 'bun PR #43662', node: 'node', deno: 'deno' };
+// Bun builds other than the stable one, and the evidence folder of their pass. Their cases are named with "bun".
+// 安定版以外の bun と、その回の証拠のフォルダ。ケース名には "bun" を使っている。
+const FLAVORS: Partial<Record<Rt, string>> = { canary: 'bun-canary', pr43662: 'bun-pr-43662' };
+const isBunFlavor = (rt: Rt) => rt === 'bun' || rt in FLAVORS;
 
 // ---- evidence ----
 type Row = Record<string, any>;
-function load(cp: number, folder: string, asCanary: boolean): Row[] {
+function load(cp: number, folder: string, alias: Rt): Row[] {
 	const file = path.join(evidence, `cp${cp}`, folder, 'node-test', 'results.jsonl');
 	if (!existsSync(file)) throw new Error(`証拠が無い: ${file}`);
-	const rename = (v: unknown) => (asCanary && v === 'bun' ? 'canary' : v);
+	const rename = (v: unknown) => (v === 'bun' ? alias : v);
 	return readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => {
 		const r = JSON.parse(l);
 		return { ...r, cp, rt: rename(r.rt), w: rename(r.w), r: rename(r.r) };
 	});
 }
-const rows: Row[] = CPS.flatMap((cp) => [...load(cp, 'bun', false), ...load(cp, 'bun-canary', true)]);
+const rows: Row[] = CPS.flatMap((cp) => [
+	...load(cp, 'bun', 'bun'),
+	...Object.entries(FLAVORS).flatMap(([rt, folder]) => load(cp, folder!, rt as Rt)),
+]);
 
-// Path of one evidence file, relative to research/. The canary pass names its cases with "bun".
-// 証拠ファイル 1 つの、research/ からの相対パス。canary の回は、ケース名に "bun" を使っている。
+// Path of one evidence file, relative to research/. Passes of other Bun builds name their cases with "bun".
+// 証拠ファイル 1 つの、research/ からの相対パス。安定版以外の bun の回は、ケース名に "bun" を使っている。
 function ev(cp: number, rts: Rt[], caseName: string, file: string): string {
-	const folder = rts.includes('canary') ? 'bun-canary' : 'bun';
-	return `evidence/cp${cp}/${folder}/node-test/${caseName.replaceAll('canary', 'bun')}/${file}`;
+	const flavor = rts.find((rt) => rt in FLAVORS);
+	const folder = flavor ? FLAVORS[flavor]! : 'bun';
+	return `evidence/cp${cp}/${folder}/node-test/${flavor ? caseName.replaceAll(flavor, 'bun') : caseName}/${file}`;
 }
 const a = (href: string, text: string, title = '') => `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
 const mark = (ok: boolean) => (ok ? '✅' : '❌');
@@ -98,7 +106,9 @@ function t1(lang: Lang): string {
 function t2(lang: Lang): string {
 	const pairs: [Rt, Rt][] = [];
 	for (const w of RTS) for (const r of RTS) {
-		if ((w === 'canary' && r === 'bun') || (w === 'bun' && r === 'canary')) continue;
+		// Two different Bun builds never run in the same pass.
+		// 別々の bun の版は、同じ回では流さない。
+		if (w !== r && isBunFlavor(w) && isBunFlavor(r)) continue;
 		pairs.push([w, r]);
 	}
 	const body = pairs.map(([w, rr]) => [`${w} → ${rr}`, ...['cmd', 'pwsh', 'powershell'].map((l) => CPS.map((cp) => {
@@ -131,12 +141,19 @@ function t5(lang: Lang): string {
 		['rw', 'Reader starts first, writer exits first', '受け手が先に起動し、送り手が先に終わる', ['console', 'file']],
 		['rr', 'Reader starts first and exits first', '受け手が先に起動し、受け手が先に終わる', ['console', 'file']],
 		['relay', 'Node.js in the middle; writer starts first and exits first', '間に node を挟み、送り手が先に起動して先に終わる', ['console']],
+		['ww-fswritesync', 'ww, reader writes with fs.writeSync(1)', 'ww で、受け手は fs.writeSync(1) で書く', ['console']],
+		['ww-fswrite', 'ww, reader writes with fs.write(1)', 'ww で、受け手は fs.write(1) で書く', ['console']],
+		['ww-bunwrite', 'ww, reader writes with Bun.write(Bun.stdout)', 'ww で、受け手は Bun.write(Bun.stdout) で書く', ['console']],
 	];
+	const viaRange = [lineOf(/const vias = /), T.T5[1] - 1] as const;
 	const body = orders.flatMap(([id, en, ja, modes]) => modes.map((mode) => {
-		const range = orderLine(id);
+		const range = id.startsWith('ww-') ? viaRange : orderLine(id);
 		const label = `${code(range[0], range[1], `${t(lang, en, ja)} (${id})`)}<br>${t(lang, mode === 'console' ? 'reader writes to the screen' : 'reader writes to a file', mode === 'console' ? '受け手は画面に書く' : '受け手はファイルに書く')}`;
 		return [label, ...RTS.map((rt) => CPS.map((cp) => {
 			const runs = rows.filter((x) => x.test === 'T5' && x.cp === cp && x.rt === rt && x.order === id && x.mode === mode).sort((p, q) => p.rep - q.rep);
+			// Rows run only with Bun builds have no runs for Node.js and Deno.
+			// bun の版だけで流す行は、node と deno の回が無い。
+			if (!runs.length) return `${cp}: —`;
 			const out = runs.map((r) => {
 				const name = `t5-${rt}-${id}-${mode}-${r.rep}`;
 				return mode === 'console' ? a(ev(cp, [rt], name, 'screen.json'), mark(r.screen === 'ok')) : a(ev(cp, [rt], name, 'out.bin'), mark(r.bytesOk));

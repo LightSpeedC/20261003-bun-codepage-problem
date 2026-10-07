@@ -181,4 +181,30 @@ describe('T5. 順番を固定した再現', () => {
 			}
 		}
 	}
+	// The ww order again, with the reader writing to the screen through other APIs. PR #43662 routes console.log and
+	// process.stdout through WriteConsoleW, but says fs.writeSync(1), fs.write and Bun.write(Bun.stdout) keep WriteFile.
+	// Bun only: Bun.write exists only in Bun, and Node.js writes fs.writeSync(1) with WriteFile too.
+	// ww の順番を、受け手がほかの API で画面に書く形でもう一度流す。PR #43662 は console.log と process.stdout を
+	// WriteConsoleW にしたが、fs.writeSync(1) ・ fs.write ・ Bun.write(Bun.stdout) は WriteFile のままとしている。
+	// bun だけで流す。Bun.write は bun にしか無く、node も fs.writeSync(1) は WriteFile で書くため。
+	const vias = ['fswritesync', 'fswrite', 'bunwrite'] as const;
+	for (const via of vias) {
+		test(`bun | bun（送り手が先に起動し、先に終わる、受け手は ${via} で画面に書く）でも、画面に正しく出て、終了後も開始のコードページのまま（${REPEAT} 回）`, opts('bun'), () => {
+			const runs = [];
+			for (let i = 1; i <= REPEAT; i++) {
+				const r = runInNewConsole(`t5-bun-ww-${via}-${i}`, [
+					BEFORE,
+					`${emit('bun', '--post 2000')} | (${WAIT1} & ${sink('bun', `--mode console --via ${via} --when eof --delay 800`)})`,
+					...TAIL,
+				]);
+				const item = { test: 'T5', rt: 'bun', order: `ww-${via}`, mode: 'console', rep: i, ...summary(r) };
+				record(item);
+				runs.push(item);
+			}
+			for (const run of runs) {
+				assert.equal(run.screen, 'ok', `${run.rep} 回目の画面: ${run.screen}`);
+				assert.deepEqual(run.after, START, `${run.rep} 回目の終了後`);
+			}
+		});
+	}
 });

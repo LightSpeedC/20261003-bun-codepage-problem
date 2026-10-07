@@ -8,10 +8,15 @@
 // --when first|eof     最初のかたまりが届いたら書くか、送り手が閉じてから書くか
 // --delay <ms>         wait before writing / 書く前に待つ
 // --post <ms>          wait after writing, then exit / 書いた後に待ってから終わる
+// --via stdout|fswritesync|fswrite|bunwrite
+//                      how to write to the screen: process.stdout.write (default), fs.writeSync(1), fs.write(1), Bun.write(Bun.stdout)
+//                      画面への書き方: process.stdout.write（既定）、fs.writeSync(1)、fs.write(1)、Bun.write(Bun.stdout)
 import process from 'node:process';
 import { Buffer } from 'node:buffer';
-import { writeFileSync } from 'node:fs';
+import { write, writeFileSync, writeSync } from 'node:fs';
 import { makeLogger, parseArgs, sleep } from './console.ts';
+
+declare const Bun: any;
 
 const args = parseArgs();
 const log = makeLogger(args.dir, args.tag ?? 'sink');
@@ -29,10 +34,20 @@ async function flush(): Promise<void> {
 	const data = Buffer.concat(chunks);
 	log('before-write', { bytes: data.length });
 	if (mode === 'file') writeFileSync(args.out, data);
-	else await new Promise<void>((resolve) => process.stdout.write(data, () => resolve()));
+	else await writeToScreen(data, args.via ?? 'stdout');
 	await sleep(Number(args.post ?? 0));
 	log('before-exit');
 	process.exit(0);
+}
+
+// The write APIs differ in how they reach the console (bun#43662 hooks only some of them), so each one can be chosen.
+// 書き込みの API ごとに、画面への届き方が違う（bun#43662 が手当てしたのは一部だけ）。そのため 1 つずつ選べるようにする。
+async function writeToScreen(data: Buffer, via: string): Promise<void> {
+	if (via === 'stdout') return new Promise<void>((resolve) => process.stdout.write(data, () => resolve()));
+	if (via === 'fswritesync') { writeSync(1, data); return; }
+	if (via === 'fswrite') return new Promise<void>((resolve, reject) => write(1, data, (e) => (e ? reject(e) : resolve())));
+	if (via === 'bunwrite') { await Bun.write(Bun.stdout, data); return; }
+	throw new Error(`--via が分からない: ${via}`);
 }
 
 process.stdin.on('data', (chunk: Uint8Array) => {

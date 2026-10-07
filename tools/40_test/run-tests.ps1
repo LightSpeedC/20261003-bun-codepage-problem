@@ -6,8 +6,8 @@
 # 結果は research/evidence_last/ に置く。毎回上書きし、commit しない。
 # Each pass also writes environment.json: code page, tool names, versions and the run time (UTC, Z format). No other file holds a date.
 # 回ごとに environment.json も書く（コードページ ・ ツール名 ・ 版 ・ 実行日時（UTC の Z 形式））。日時を書くのはこのファイルだけ。
-# A new console opens and closes, minimized, for every case. All passes take about 40 minutes.
-# ケースごとに新しい窓が最小化で開いては閉じる。全部で 40 分ほどかかる。
+# A new console opens and closes, minimized, for every case. All passes take about 55 minutes.
+# ケースごとに新しい窓が最小化で開いては閉じる。全部で 55 分ほどかかる。
 # Pass "nopause" to skip the final pause.
 # 引数 nopause を付けると最後に止まらない。
 $ErrorActionPreference = 'Stop'
@@ -53,11 +53,12 @@ function Write-Environment([string]$dir, [int]$cp, [string]$runner, [string]$bun
 if (Test-Path -LiteralPath $evidence) { Remove-Item -LiteralPath $evidence -Recurse -Force }
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
 
-# Three passes per code page: node --test with Bun stable, node --test with canary (only cases involving Bun), and bun test.
-# コードページごとに 3 回: bun 安定版での node --test、canary での node --test（bun を含むケースだけ）、bun test。
+# Four passes per code page: node --test with Bun stable, node --test with canary and with the build of PR #43662 (only cases involving Bun), and bun test.
+# コードページごとに 4 回: bun 安定版での node --test、canary と PR #43662 の版での node --test（bun を含むケースだけ）、bun test。
 $passes = @(
 	@{ bun = 'bun'; runner = 'node-test'; onlyBun = '' },
 	@{ bun = 'bun-canary'; runner = 'node-test'; onlyBun = '1' },
+	@{ bun = 'bun-pr-43662'; runner = 'node-test'; onlyBun = '1' },
 	@{ bun = 'bun'; runner = 'bun-test'; onlyBun = '' }
 )
 $summary = @()

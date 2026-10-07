@@ -56,5 +56,29 @@ try {
 	Pop-Location
 }
 
+# Bun pull requests to compare with: the Windows x64 build from Bun's CI, through Node.js (see fetch-bun-pr.ts).
+# 比べる bun の PR: bun の CI の Windows x64 のビルドを、Node.js を通して取る（fetch-bun-pr.ts を参照）。
+# PR #43662 writes to the console with WriteConsoleW and restores only a code page it changed.
+# PR #43662 は、画面への出力を WriteConsoleW にし、自分が変えたコードページだけを戻す。
+foreach ($pr in @('43662')) {
+	$dest = Join-Path $bin "bun-pr-$pr"
+	if ((Test-Path -LiteralPath (Join-Path $dest 'bun.exe')) -and -not $force) {
+		Write-Host "置き済み: _bin/bun-pr-$pr"
+		continue
+	}
+	Write-Host "取得中: _bin/bun-pr-$pr"
+	$zip = Join-Path $bin "bun-pr-$pr.zip"
+	$tmp = Join-Path $bin "bun-pr-$pr.tmp"
+	& (Join-Path $bin 'node/node.exe') (Join-Path $root 'tools/10_setup/fetch-bun-pr.ts') $pr $zip
+	if ($LASTEXITCODE -ne 0) { throw "PR #$pr のビルドを取れませんでした（終了コード $LASTEXITCODE）" }
+	if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Recurse -Force }
+	Expand-Archive -LiteralPath $zip -DestinationPath $tmp
+	if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
+	Move-Item -LiteralPath (Join-Path $tmp 'bun-windows-x64') -Destination $dest
+	Remove-Item -LiteralPath $tmp -Recurse -Force
+	Remove-Item -LiteralPath $zip -Force
+	if (-not (Test-Path -LiteralPath (Join-Path $dest 'bun.exe'))) { throw "_bin/bun-pr-$pr/bun.exe がありません" }
+}
+
 Write-Host '準備が終わりました'
 if ($args -notcontains 'nopause') { Read-Host '終わりました。Enter で閉じます' | Out-Null }

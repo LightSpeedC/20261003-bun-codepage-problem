@@ -11,24 +11,24 @@ const root = path.resolve(import.meta.dirname, '../..');
 const cpArg = Number(process.argv[2] ?? 932);
 const evidence = path.resolve(process.argv[3] ?? path.join(root, 'research/evidence_last'));
 
-function read(rel: string, asCanary: boolean): any[] {
+function read(rel: string, alias: string): any[] {
 	const file = path.join(evidence, `cp${cpArg}`, rel, 'results.jsonl');
 	if (!existsSync(file)) return [];
-	const rename = (v: unknown) => (asCanary && v === 'bun' ? 'canary' : v);
+	const rename = (v: unknown) => (v === 'bun' ? alias : v);
 	return readFileSync(file, 'utf8').trim().split('\n').filter(Boolean).map((l) => {
 		const r = JSON.parse(l);
 		return { ...r, rt: rename(r.rt), w: rename(r.w), r: rename(r.r) };
 	});
 }
 
-const rows = [...read('bun/node-test', false), ...read('bun-canary/node-test', true)];
-const rts = ['bun', 'canary', 'node', 'deno'];
+const rows = [...read('bun/node-test', 'bun'), ...read('bun-canary/node-test', 'canary'), ...read('bun-pr-43662/node-test', 'pr43662')];
+const rts = ['bun', 'canary', 'pr43662', 'node', 'deno'];
 const cp = (a: { in: number; out: number }) => (a.in === cpArg && a.out === cpArg ? `✅${cpArg}` : `❌${a.in}/${a.out}`);
 const scr = (s: string) => ({ ok: '✅', garbled: '❌化け', missing: '❓無し' } as Record<string, string>)[s] ?? s;
 const ok = (b: boolean) => (b ? '✅' : '❌');
 
 console.log(`# コードページ ${cpArg}`);
-for (const rel of ['bun/node-test', 'bun-canary/node-test', 'bun/bun-test']) {
+for (const rel of ['bun/node-test', 'bun-canary/node-test', 'bun-pr-43662/node-test', 'bun/bun-test']) {
 	const env = path.join(evidence, `cp${cpArg}`, rel, 'environment.json');
 	if (existsSync(env)) {
 		const e = JSON.parse(readFileSync(env, 'utf8'));
@@ -43,7 +43,8 @@ for (const r of rows.filter((r) => r.test === 'T1')) {
 
 console.log('\n## T2 バイト列 / 終了後（行: 送り手→受け手、列: cmd pwsh powershell）');
 for (const w of rts) for (const rr of rts) {
-	if ((w === 'canary' && rr === 'bun') || (w === 'bun' && rr === 'canary')) continue;
+	const bunLike = (x: string) => x === 'bun' || x === 'canary' || x === 'pr43662';
+	if (w !== rr && bunLike(w) && bunLike(rr)) continue;
 	const cells = ['cmd', 'pwsh', 'powershell'].map((l) => {
 		const r = rows.find((x) => x.test === 'T2' && x.launcher === l && x.w === w && x.r === rr);
 		if (!r) return '⬜';
