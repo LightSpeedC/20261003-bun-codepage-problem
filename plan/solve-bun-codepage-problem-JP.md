@@ -271,6 +271,14 @@ tools/50_run/
 8. bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（済: 結果資料の結論に PR の列を足した。[#44693 へのコメント](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500)と [PR #43662 へのコメント](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#4-bun44693httpsgithubcomoven-shbunissues44693-への続報のコメントpr-43662httpsgithubcomoven-shbunpull43662)。PR を見落としたまま #44693 を出したため）
 9. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
 
+### 返事を見張る
+
+- **対象は oven-sh/bun の #44693 ・ #43660 ・ PR #43662**。コメント ・ レビュー ・ 行へのコメント ・ コミット ・ ラベル ・ close ・ ほかからの参照
+- **8:30 ・ 11:30 ・ 14:30 ・ 17:30 ・ 20:30（JST）に cron で確かめる**。cron はエージェントのセッションの中だけで生き、7 日で切れる
+- **`node tools/80_ops/check-replies.ts` を流す**。前回の確認から増えたものだけを出し、投稿した本人の分は除く。前回の確認の時刻は `etc/check-replies.json` に残る（Git 管理外）
+- **新着があれば、リンク先の全文を読み、要旨と、こちらがすべきことの案を報告する**。返信を投稿するのは、本文の案を利用者が確認し「送って」と言ってから（ローカルルール「Issue と公開」）
+- **新着が無ければ、1 行だけ返す**（`✅10/08 08:30 返事の確認: 新着なし`）
+
 [⌂](../README-JP.md)
 
 [English](solve-bun-codepage-problem.md)

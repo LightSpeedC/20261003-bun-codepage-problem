@@ -306,6 +306,14 @@ tools/50_run/
 <li>Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (done: the Conclusion of the results has a column for the PR; posted as <a href="https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500">a comment on #44693</a> and <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802">a comment on PR #43662</a>, text in <a href="../issue/bun-44693.html#ch04">Issue bun#44693</a>; #44693 was filed without noticing the PR)</li>
 <li>Make the same tests runnable on any PC, and keep the evidence in <code>research/evidence/</code> (done: every test ran at 932 and 437, the results were copied to <code>research/evidence/</code>, and every ✅ / ❌ in the result tables links to its evidence file)</li>
 </ol>
+<h2>Watching for replies</h2>
+<ul>
+<li><strong>Targets: oven-sh/bun #44693, #43660 and PR #43662</strong>: comments, reviews, line comments, commits, labels, closing, and references from elsewhere</li>
+<li><strong>A cron job checks at 8:30, 11:30, 14:30, 17:30 and 20:30 JST</strong>. Cron jobs live only inside the agent session and expire after 7 days</li>
+<li><strong>Run <code>node tools/80_ops/check-replies.ts</code></strong>. It prints only what is new since the last check and leaves out the posting account. The time of the last check is kept in <code>etc/check-replies.json</code> (not in Git)</li>
+<li><strong>When something is new, read it in full at its link, and report a summary and a proposal for what to do</strong>. A reply is posted only after the user has reviewed the draft and said to send it (local rule "Issue and publishing")</li>
+<li><strong>When nothing is new, answer in one line</strong> (<code>✅10/08 08:30 reply check: nothing new</code>)</li>
+</ul>
 </section>
 </div>
 

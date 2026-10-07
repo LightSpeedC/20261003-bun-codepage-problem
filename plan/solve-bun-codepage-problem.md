@@ -271,6 +271,14 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 8. Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (done: the Conclusion of the results has a column for the PR; posted as [a comment on #44693](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500) and [a comment on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802), text in [Issue bun#44693](../issue/bun-44693.md#4-follow-up-comment-on-bun44693httpsgithubcomoven-shbunissues44693-pr-43662httpsgithubcomoven-shbunpull43662); #44693 was filed without noticing the PR)
 9. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 
+### Watching for replies
+
+- **Targets: oven-sh/bun #44693, #43660 and PR #43662**: comments, reviews, line comments, commits, labels, closing, and references from elsewhere
+- **A cron job checks at 8:30, 11:30, 14:30, 17:30 and 20:30 JST**. Cron jobs live only inside the agent session and expire after 7 days
+- **Run `node tools/80_ops/check-replies.ts`**. It prints only what is new since the last check and leaves out the posting account. The time of the last check is kept in `etc/check-replies.json` (not in Git)
+- **When something is new, read it in full at its link, and report a summary and a proposal for what to do**. A reply is posted only after the user has reviewed the draft and said to send it (local rule "Issue and publishing")
+- **When nothing is new, answer in one line** (`✅10/08 08:30 reply check: nothing new`)
+
 [⌂](../README.md)
 
 [日本語](solve-bun-codepage-problem-JP.md)
