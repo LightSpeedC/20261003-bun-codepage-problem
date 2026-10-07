@@ -235,7 +235,7 @@ bun ・ canary の結果は、932 と 437 のどちらでも、すべての組�
 bun#43660 と同じ形で、2 本を同時に起動し、順番を決めずに 10 回流した。文字列は `\u` エスケープで渡した `abc 東京大阪 xyz`（deno は `deno eval`）。
 
 ```batch
-bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"
+bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin.pipe(process.stdout)"
 ```
 
 試験コード: [bun#43660 と同じ形（codepage.test.ts の 140〜161 行）](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts#L140-L161)

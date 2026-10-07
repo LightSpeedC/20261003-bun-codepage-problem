@@ -286,7 +286,7 @@ neighbor: 東京大阪            neighbor: café
 <section class="ch07" id="ch07">
 <h1>T5. bun#43660 と同じ形</h1>
 <p>bun#43660 と同じ形で、2 本を同時に起動し、順番を決めずに 10 回流した。文字列は <code>\u</code> エスケープで渡した <code>abc 東京大阪 xyz</code>（deno は <code>deno eval</code>）。</p>
-<pre><code class="language-batch">bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"
+<pre><code class="language-batch">bun -e "console.log('abc &#92;u6771&#92;u4eac&#92;u5927&#92;u962a xyz')" | bun -e "process.stdin.pipe(process.stdout)"
 </code></pre>
 <!-- AUTO:asis -->
 <p>試験コード: <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts#L140-L161">bun#43660 と同じ形（codepage.test.ts の 140〜161 行）</a></p>

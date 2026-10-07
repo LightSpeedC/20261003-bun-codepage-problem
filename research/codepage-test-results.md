@@ -235,7 +235,7 @@ From [this log](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl). Val
 The same shape as bun#43660: both processes start together, with no fixed order, ten times. The text is `abc 東京大阪 xyz`, passed with `\u` escapes (`deno eval` for Deno).
 
 ```batch
-bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"
+bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin.pipe(process.stdout)"
 ```
 
 Test code: [same shape as bun#43660 (codepage.test.ts lines 140 to 161)](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/5b9f56b36bce4914d1bf90eff7e755022ccd1967/tests/codepage.test.ts#L140-L161)

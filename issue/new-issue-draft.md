@@ -42,7 +42,7 @@ At startup Bun saves the console's input/output code pages and sets both to 6500
 Open a **new `cmd.exe` window** (any code page other than 65001; 437 on English Windows, 932 on Japanese Windows) and run:
 
 ```bat
-bun -e "console.log('abc 東京大阪 xyz'); setTimeout(() => {}, 2000)" | (ping -n 2 127.0.0.1 >nul & bun -e "let d = ''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => setTimeout(() => process.stdout.write(d), 800))")
+bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz'); setTimeout(() => {}, 2000)" | (ping -n 2 127.0.0.1 >nul & bun -e "let d = ''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => setTimeout(() => process.stdout.write(d), 800))")
 chcp
 ```
 
