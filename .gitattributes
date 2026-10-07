@@ -3,3 +3,7 @@
 *.ps1 text eol=crlf
 *.cmd text eol=crlf
 *.bat text eol=crlf
+
+# Evidence is kept byte for byte as the tests wrote it (out.bin is the exact bytes a reader received).
+# 証拠は試験が書いたバイト列のまま残す（out.bin は受け手が受け取ったバイト列そのもの）。
+research/evidence/** -text

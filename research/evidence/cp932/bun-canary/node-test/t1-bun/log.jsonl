@@ -1,0 +1,5 @@
+{"t":0,"tag":"before","rt":"node","event":"probe","in":932,"out":932}
+{"t":42,"tag":"x","rt":"bun","event":"start","in":65001,"out":65001}
+{"t":345,"tag":"x","rt":"bun","event":"before-write","in":65001,"out":65001}
+{"t":648,"tag":"x","rt":"bun","event":"before-exit","in":65001,"out":65001}
+{"t":769,"tag":"after","rt":"node","event":"probe","in":932,"out":932}
