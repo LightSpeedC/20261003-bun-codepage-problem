@@ -32,15 +32,18 @@ Reason: these are evidence documents meant to be read by the Bun developers, and
 ```text
 README.html / README-JP.html
 plan/solve-bun-codepage-problem.html / -JP.html
+research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
+research/evidence/
+issue/new-issue-draft.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 ```
 
-- **Do not use `notes/`**. The plan lives in `plan/`, research results in `research/`, local rules in `rules/`
+- **Do not use `notes/`**. The plan lives in `plan/`, research results in `research/` (test evidence in `research/evidence/`), issue drafts in `issue/`, local rules in `rules/`
 - **File names are English, without a number prefix**
 - **`AGENTS.md` includes the Japanese `rules/local-rules-JP.md`**
-- **Pass every target to html2md**: `html2md --dir plan --dir rules --dir research --extra README-JP.html`
+- **Pass every target to html2md**: `html2md --dir plan --dir rules --dir research --dir issue --extra README-JP.html`
 
 Reason: there is only one plan, and short English names keep the published URLs readable. Agents read their instructions in the same language as the user.
 

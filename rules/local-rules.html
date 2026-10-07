@@ -71,15 +71,18 @@ footer .navbar { margin-top: 0; }
 <h2>Overrides the common rules on folder layout, file names and local rules</h2>
 <pre><code class="language-text">README.html / README-JP.html
 plan/solve-bun-codepage-problem.html / -JP.html
+research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
+research/evidence/
+issue/new-issue-draft.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 </code></pre>
 <ul>
-<li><strong>Do not use <code>notes/</code></strong>. The plan lives in <code>plan/</code>, research results in <code>research/</code>, local rules in <code>rules/</code></li>
+<li><strong>Do not use <code>notes/</code></strong>. The plan lives in <code>plan/</code>, research results in <code>research/</code> (test evidence in <code>research/evidence/</code>), issue drafts in <code>issue/</code>, local rules in <code>rules/</code></li>
 <li><strong>File names are English, without a number prefix</strong></li>
 <li><strong><code>AGENTS.md</code> includes the Japanese <code>rules/local-rules-JP.md</code></strong></li>
-<li><strong>Pass every target to html2md</strong>: <code>html2md --dir plan --dir rules --dir research --extra README-JP.html</code></li>
+<li><strong>Pass every target to html2md</strong>: <code>html2md --dir plan --dir rules --dir research --dir issue --extra README-JP.html</code></li>
 </ul>
 <p>Reason: there is only one plan, and short English names keep the published URLs readable. Agents read their instructions in the same language as the user.</p>
 </section>

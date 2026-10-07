@@ -71,15 +71,18 @@ footer .navbar { margin-top: 0; }
 <h2>上書きする共通ルール: 「プロジェクトフォルダ構成」「ファイル名」「ローカルルール（プロジェクトルール）」</h2>
 <pre><code class="language-text">README.html / README-JP.html
 plan/solve-bun-codepage-problem.html / -JP.html
+research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
+research/evidence/
+issue/new-issue-draft.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 </code></pre>
 <ul>
-<li><strong><code>notes/</code> を使わない</strong>。計画は <code>plan/</code>、調査結果は <code>research/</code>、ローカルルールは <code>rules/</code> に置く</li>
+<li><strong><code>notes/</code> を使わない</strong>。計画は <code>plan/</code>、調査結果は <code>research/</code>（試験の証拠は <code>research/evidence/</code>）、Issue の下書きは <code>issue/</code>、ローカルルールは <code>rules/</code> に置く</li>
 <li><strong>ファイル名は英語にし、番号（<code>p yymmdd-nn</code>）を付けない</strong></li>
 <li><strong><code>AGENTS.md</code> は日本語版の <code>rules/local-rules-JP.md</code> を取り込む</strong></li>
-<li><strong>html2md は全対象を渡す</strong>: <code>html2md --dir plan --dir rules --dir research --extra README-JP.html</code></li>
+<li><strong>html2md は全対象を渡す</strong>: <code>html2md --dir plan --dir rules --dir research --dir issue --extra README-JP.html</code></li>
 </ul>
 <p>理由: 計画は 1 本だけで、公開の URL を読みやすくするため。エージェントへの指示は利用者と同じ言語で読ませるため。</p>
 </section>

@@ -32,15 +32,18 @@
 ```text
 README.html / README-JP.html
 plan/solve-bun-codepage-problem.html / -JP.html
+research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
+research/evidence/
+issue/new-issue-draft.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 ```
 
-- **`notes/` を使わない**。計画は `plan/`、調査結果は `research/`、ローカルルールは `rules/` に置く
+- **`notes/` を使わない**。計画は `plan/`、調査結果は `research/`（試験の証拠は `research/evidence/`）、Issue の下書きは `issue/`、ローカルルールは `rules/` に置く
 - **ファイル名は英語にし、番号（`p yymmdd-nn`）を付けない**
 - **`AGENTS.md` は日本語版の `rules/local-rules-JP.md` を取り込む**
-- **html2md は全対象を渡す**: `html2md --dir plan --dir rules --dir research --extra README-JP.html`
+- **html2md は全対象を渡す**: `html2md --dir plan --dir rules --dir research --dir issue --extra README-JP.html`
 
 理由: 計画は 1 本だけで、公開の URL を読みやすくするため。エージェントへの指示は利用者と同じ言語で読ませるため。
 
