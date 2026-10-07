@@ -9,12 +9,14 @@ const times = Number(process.argv[2] ?? 3);
 const startCp = process.argv[3];
 const w = "console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz'); setTimeout(() => {}, 2000)";
 const r = "let d = ''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => setTimeout(() => process.stdout.write(d), 800))";
-for (const name of ['bun', 'canary', 'node'] as const) {
+// deno は -e ではなく eval で式を流す
+const evalCmd = (name: keyof typeof RUNTIMES) => (name === 'deno' ? `"${RUNTIMES.deno.exe}" eval` : `${RUNTIMES[name].cmd} -e`);
+for (const name of ['bun', 'canary', 'node', 'deno'] as const) {
 	for (let i = 1; i <= times; i++) {
-		const x = RUNTIMES[name].cmd;
+		const x = evalCmd(name);
 		const res = runInNewConsole(`verify-${name}-${i}`, [
 			...(startCp ? [`chcp ${startCp} >nul`] : []),
-			`${x} -e "${w}" | (ping -n 2 127.0.0.1 >nul & ${x} -e "${r}")`,
+			`${x} "${w}" | (ping -n 2 127.0.0.1 >nul & ${x} "${r}")`,
 			'chcp',
 			'{node} "{fix}/probe.ts" --dir "{dir}" --tag after --screen "{dir}/screen.json"',
 		]);

@@ -2,7 +2,7 @@
 
 Results of T1 to T6 in the plan, run with Bun 1.4.2, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-06
+> 📅 Created: 2026-10-04 / Updated: 2026-10-07
 
 [⌂](../README.md)
 
@@ -40,6 +40,17 @@ Results of T1 to T6 in the plan, run with Bun 1.4.2, Bun canary, Node.js and Den
 
 ✅ as expected (same as the expected behavior) / ❌ not as expected. When a combination runs several times, the results are listed in run order.
 
+### Test code
+
+All links point to commit `62d7990`, so the line numbers do not move.
+
+- [Creating a new console with conhost.exe and waiting for it](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/new-console.ts#L65-L80) (new-console.ts lines 65 to 80). Each case is written as an ASCII-only batch file and run in its own console
+- [The common tail of every case](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/new-console.ts#L94-L100) (new-console.ts lines 94 to 100): `chcp`, the Shift_JIS cmd script, then the observer reads the screen
+- [Reading the code page from inside each runtime](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/console.ts#L18-L43) (console.ts lines 18 to 43): `bun:ffi`, `koffi` and `Deno.dlopen`, read only
+- [The writer](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/emit.ts#L1-L14) (emit.ts), [the reader](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/sink.ts#L1-L39) (sink.ts) and [the relay](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/hold.ts#L1-L20) (hold.ts)
+- [Reading the screen with ReadConsoleOutputCharacterW](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/probe.ts#L14-L46) (probe.ts lines 14 to 46)
+- [How the screen, code page and bytes are judged](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/judge.ts#L8-L42) (judge.ts lines 8 to 42)
+
 `現在のコード ページ` is the Japanese form of `Active code page`. Windows prints the English form when the output code page is 65001.
 
 ## 2. Conclusion
@@ -68,11 +79,11 @@ The links point to the current `main`. The timeline in T5 matches this code exac
 
 ### Also at code page 437
 
-The deterministic reproduction in the issue was also run in consoles started at code page 437 (the English Windows default), three times per build. Bun 1.4.2 and canary printed `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` and left `Active code page: 65001` every time; Node.js printed `abc 東京大阪 xyz` and kept 437. The tests above use 932, the Japanese default.
+The deterministic reproduction in the issue was also run in consoles started at code page 437 (the English Windows default), three times per build, with [this script](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/develop/tools/50_run/verify-issue-repro.ts). Bun 1.4.2 and canary printed `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` and left `Active code page: 65001` every time; Node.js and Deno (`deno eval`) printed `abc 東京大阪 xyz` and kept 437 every time. At 932 the same command gave the same picture: Bun garbled the text and left 65001, while Node.js and Deno printed it correctly and kept 932. The tests above use 932, the Japanese default.
 
 ## 3. T1. Code page over time
 
-A single process runs in the console and prints `abc 東京大阪 xyz`. Values are input/output.
+A single process runs in the console and prints `abc 東京大阪 xyz`. Values are input/output. [Test code for T1](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L31-L47) (codepage.test.ts lines 31 to 47).
 
 | Runtime | Right after start | Right before writing | Right before exit | After exit | Screen |
 |---|---|---|---|---|---|
@@ -87,7 +98,7 @@ A single process runs in the console and prints `abc 東京大阪 xyz`. Values a
 
 ## 4. T2. Pipe combinations
 
-The writer and the reader start together, and the reader writes the received bytes to a file. Each cell is "bytes / code page after exit".
+The writer and the reader start together, and the reader writes the received bytes to a file. Each cell is "bytes / code page after exit". [Test code for T2](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L49-L75) (codepage.test.ts lines 49 to 75).
 
 | Writer → reader | From cmd | From pwsh 7 | From Windows PowerShell 5.1 |
 |---|---|---|---|
@@ -105,7 +116,7 @@ The writer and the reader start together, and the reader writes the received byt
 
 ### T3. Forced kill
 
-A single process that has written to the screen and is waiting is stopped with `taskkill /F`.
+A single process that has written to the screen and is waiting is stopped with `taskkill /F`. [Test code for T3](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L77-L96) (codepage.test.ts lines 77 to 96).
 
 | Runtime | Code page after | chcp output | Shift_JIS cmd script |
 |---|---|---|---|
@@ -116,7 +127,7 @@ Because Bun restores the code page on exit, a forced kill leaves 65001 behind (H
 
 ### T4. After a normal exit
 
-The console after `bun | bun` exits normally (the lifetimes overlap and the writer exits first):
+The console after `bun | bun` exits normally (the lifetimes overlap and the writer exits first). [Test code for T4](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L98-L112) (codepage.test.ts lines 98 to 112), and [the Shift_JIS cmd script](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/sjis-echo.cmd#L1-L4) (sjis-echo.cmd):
 
 ```text
 abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
@@ -138,7 +149,7 @@ With both Bun builds, even without a forced kill, the cmd script and the `chcp` 
 
 ## 6. T5. Reproduction with fixed ordering
 
-The second process starts about one second later, and the exit order is decided by delays. The two lifetimes always overlap. Each combination runs three times. Cells are "screen or bytes / 932 after exit".
+The second process starts about one second later, and the exit order is decided by delays. The two lifetimes always overlap. Each combination runs three times. Cells are "screen or bytes / 932 after exit". [How each order is built](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L114-L129) (codepage.test.ts lines 114 to 129) and [the test that runs them](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L151-L173) (lines 151 to 173).
 
 | Shape and order | Reader writes to | Predicted by the hypothesis | Bun 1.4.2 | Bun canary | Node.js, Deno |
 |---|---|---|---|---|---|
@@ -171,7 +182,7 @@ Values are input/output. w is the writer, r the reader, probe the observer Node.
 
 ## 7. T5. Same shape as bun#43660
 
-The same shape as bun#43660: both processes start together, with no fixed order, ten times. The text is `abc 東京大阪 xyz`, passed with `\u` escapes.
+The same shape as bun#43660: both processes start together, with no fixed order, ten times. The text is `abc 東京大阪 xyz`, passed with `\u` escapes. [Test code](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L130-L150) (codepage.test.ts lines 130 to 150).
 
 ```batch
 bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"

@@ -2,7 +2,7 @@
 
 Rules that apply only to this project. Where they differ from the common rules, these take precedence
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-04
+> 📅 Created: 2026-10-03 / Updated: 2026-10-07
 
 [⌂](../README.md)
 
@@ -51,6 +51,12 @@ Reason: there is only one plan, and short English names keep the published URLs 
     - Neither the text nor any pasted log contains a local full path
     - The user has reviewed the draft and explicitly said to send or publish it
 - **GitHub Pages is published from a public repository**
+
+### Overrides the common rules on git branches and on merging develop → release → master
+
+- **Use only the develop branch. GitHub Pages is published from develop, and release and master are not created**
+
+Reason: this project only publishes documents with GitHub Pages, so there are no separate released versions to keep apart.
 
 [⌂](../README.md)
 

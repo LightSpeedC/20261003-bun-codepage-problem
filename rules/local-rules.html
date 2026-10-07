@@ -40,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Local rules</h1>
 <p class="lead">Rules that apply only to this project. Where they differ from the common rules, these take precedence</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-04</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-07</p>
 </div></div>
 
 <div class="wrap">
@@ -95,6 +95,11 @@ AGENTS.md
 </ul></li>
 <li><strong>GitHub Pages is published from a public repository</strong></li>
 </ul>
+<h2>Overrides the common rules on git branches and on merging develop → release → master</h2>
+<ul>
+<li><strong>Use only the develop branch. GitHub Pages is published from develop, and release and master are not created</strong></li>
+</ul>
+<p>Reason: this project only publishes documents with GitHub Pages, so there are no separate released versions to keep apart.</p>
 </section>
 </div>
 

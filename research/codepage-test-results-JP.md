@@ -2,7 +2,7 @@
 
 計画の T1〜T6 を、bun 1.4.2 ・ bun canary ・ node ・ deno で流した結果。bun がコンソールのコードページを変えることで起きる害を、1 つずつ実測で示す
 
-> 📅 作成: 2026-10-04 / 更新: 2026-10-06
+> 📅 作成: 2026-10-04 / 更新: 2026-10-07
 
 [⌂](../README-JP.md)
 
@@ -40,6 +40,17 @@
 
 ✅ 期待どおり（あるべき姿と同じ） ／ ❌ 期待と違う。同じ組を何回か流したものは、回の順に並べる。
 
+### 試験コード
+
+リンクはすべてコミット `62d7990` を指すので、行番号はずれない。
+
+- [conhost.exe で新しい窓を起こし、終わるまで待つ](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/new-console.ts#L65-L80)（new-console.ts の 65〜80 行）。ケースごとに ASCII だけのバッチを書き、専用の窓で流す
+- [各ケースの最後に流す共通の後始末](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/new-console.ts#L94-L100)（new-console.ts の 94〜100 行）。`chcp`、SJIS の cmd、観測役による画面の読み取り
+- [各ランタイムの中からコードページを読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/console.ts#L18-L43)（console.ts の 18〜43 行）。`bun:ffi` ・ `koffi` ・ `Deno.dlopen` で、読むだけ
+- [送り手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/emit.ts#L1-L14)（emit.ts）、[受け手](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/sink.ts#L1-L39)（sink.ts）、[中継役](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/hold.ts#L1-L20)（hold.ts）
+- [ReadConsoleOutputCharacterW で画面を読む](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/probe.ts#L14-L46)（probe.ts の 14〜46 行）
+- [画面 ・ コードページ ・ バイト列の判定](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/harness/judge.ts#L8-L42)（judge.ts の 8〜42 行）
+
 ## 2. 結論
 
 bun は、起動した瞬間（スクリプトが動く前）に窓の入力・出力コードページを 65001 に変え、終了時に「起動時に控えた値」へ戻す。この動きから、計画の害 H1〜H7 がすべて起きることを確かめた。node と deno はコードページを一度も変えず、すべてのケースで正しく動いた。
@@ -66,11 +77,11 @@ bun は、起動した瞬間（スクリプトが動く前）に窓の入力・�
 
 ### コードページ 437 でも再現する
 
-Issue に載せる順番を決めた再現を、コードページ 437（英語版 Windows の既定）で始めた窓でも、各版 3 回ずつ流した。bun 1.4.2 と canary は毎回 `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` と出し、`Active code page: 65001` を残した。node は `abc 東京大阪 xyz` と出し、437 のままだった。上の試験は日本語版の既定の 932 で流している。
+Issue に載せる順番を決めた再現を、コードページ 437（英語版 Windows の既定）で始めた窓でも、[このスクリプト](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/develop/tools/50_run/verify-issue-repro.ts)で各版 3 回ずつ流した。bun 1.4.2 と canary は毎回 `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` と出し、`Active code page: 65001` を残した。node と deno（`deno eval`）は毎回 `abc 東京大阪 xyz` と出し、437 のままだった。932 で始めた窓でも同じ形になり、bun は化けて 65001 を残し、node と deno は正しく出して 932 のままだった。上の試験は日本語版の既定の 932 で流している。
 
 ## 3. T1. コードページの推移
 
-1 本だけを窓で動かし、画面に `abc 東京大阪 xyz` を出す。値は 入力/出力。
+1 本だけを窓で動かし、画面に `abc 東京大阪 xyz` を出す。値は 入力/出力。[T1 の試験コード](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L31-L47)（codepage.test.ts の 31〜47 行）。
 
 | ランタイム | 起動直後 | 書く直前 | 終了直前 | 終了後 | 画面 |
 |---|---|---|---|---|---|
@@ -85,7 +96,7 @@ Issue に載せる順番を決めた再現を、コードページ 437（英語�
 
 ## 4. T2. パイプの組み合わせ
 
-送り手と受け手を同時に起動し、受け手は受け取ったバイト列をファイルに書く。各セルは「バイト列 ／ 終了後のコードページ」。
+送り手と受け手を同時に起動し、受け手は受け取ったバイト列をファイルに書く。各セルは「バイト列 ／ 終了後のコードページ」。[T2 の試験コード](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L49-L75)（codepage.test.ts の 49〜75 行）。
 
 | 送り手 → 受け手 | cmd から | pwsh 7 から | Windows PowerShell 5.1 から |
 |---|---|---|---|
@@ -103,7 +114,7 @@ Issue に載せる順番を決めた再現を、コードページ 437（英語�
 
 ### T3. 強制終了
 
-画面に書いたあと待機している 1 本を `taskkill /F` で止める。
+画面に書いたあと待機している 1 本を `taskkill /F` で止める。[T3 の試験コード](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L77-L96)（codepage.test.ts の 77〜96 行）。
 
 | ランタイム | 終了後のコードページ | chcp の表示 | SJIS の cmd |
 |---|---|---|---|
@@ -114,7 +125,7 @@ bun は終了時に戻す作りのため、強制終了されると 65001 のま
 
 ### T4. 通常終了の後
 
-`bun | bun` が普通に終わった後（2 本の寿命が重なり、送り手が先に終わる順）の窓の画面。
+`bun | bun` が普通に終わった後（2 本の寿命が重なり、送り手が先に終わる順）の窓の画面。[T4 の試験コード](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L98-L112)（codepage.test.ts の 98〜112 行）と、[SJIS の cmd](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/fixtures/sjis-echo.cmd#L1-L4)（sjis-echo.cmd）。
 
 ```text
 abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
@@ -136,7 +147,7 @@ bun ・ canary とも、強制終了しなくても同じ窓の cmd と `chcp` �
 
 ## 6. T5. 順番を固定した再現
 
-2 本目の起動を約 1 秒遅らせ、終了の順は待ち時間で決める。2 本の寿命は必ず重なるようにした。各組 3 回。セルは「画面またはバイト列 ／ 終了後に 932」。
+2 本目の起動を約 1 秒遅らせ、終了の順は待ち時間で決める。2 本の寿命は必ず重なるようにした。各組 3 回。セルは「画面またはバイト列 ／ 終了後に 932」。[各順番の組み立て](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L114-L129)（codepage.test.ts の 114〜129 行）と、[それを流す試験](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L151-L173)（151〜173 行）。
 
 | 形と順番 | 受け手の書き先 | 仮説の予想 | bun 1.4.2 | bun canary | node ・ deno |
 |---|---|---|---|---|---|
@@ -169,7 +180,7 @@ bun ・ canary の結果は、すべての組で仮説の予想と一致し、3 
 
 ## 7. T5. bun#43660 と同じ形
 
-bun#43660 と同じ形で、2 本を同時に起動し、順番を決めずに 10 回流した。文字列は `\u` エスケープで渡した `abc 東京大阪 xyz`。
+bun#43660 と同じ形で、2 本を同時に起動し、順番を決めずに 10 回流した。文字列は `\u` エスケープで渡した `abc 東京大阪 xyz`。[試験コード](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts#L130-L150)（codepage.test.ts の 130〜150 行）。
 
 ```batch
 bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"

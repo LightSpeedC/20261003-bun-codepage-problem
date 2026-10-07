@@ -2,13 +2,13 @@
 
 The text to post to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Not posted yet
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-06
+> 📅 Created: 2026-10-04 / Updated: 2026-10-07
 
 [⌂](../README.md)
 
 [日本語](new-issue-draft-JP.md)
 
-Each block below goes into the field of the same name in the Bug Report template. `{PAGES_URL}` and `{REPO_URL}` are replaced with the URLs measured after the repository and GitHub Pages are published. `{NEW}` is the number of the new issue.
+Each block below goes into the field of the same name in the Bug Report template. `{NEW}` is the number of the new issue.
 
 1. [Title and template fields](#1-title-and-template-fields)
 2. [Additional information](#2-additional-information)
@@ -52,7 +52,7 @@ The `ping` and the timers only fix the order: the writer starts first, the reade
 **What is the expected behavior?**
 
 ```markdown
-The text is printed correctly and the console keeps its code page. This is what Node.js prints when both `bun` are replaced with `node`:
+The text is printed correctly and the console keeps its code page. This is what Node.js prints when both `bun -e` are replaced with `node -e`, and Deno prints the same with `deno eval`:
 
 ```
 abc 東京大阪 xyz
@@ -103,8 +103,8 @@ Saving and restoring cannot be made safe: several processes in one console save 
 
 **Evidence**
 
-- Full results (tables, timelines, screens): {PAGES_URL}/research/codepage-test-results.html
-- Test code that reproduces all of the above in fresh consoles: {REPO_URL} (`tests/codepage.test.ts`)
+- Full results (tables, timelines, screens, and links to the test code for each test): https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
+- Test code that reproduces all of the above in fresh consoles: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts) (repository: https://github.com/LightSpeedC/20261003-bun-codepage-problem )
 - Related: #43660
 ```
 

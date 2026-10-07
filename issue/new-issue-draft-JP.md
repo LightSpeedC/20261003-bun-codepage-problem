@@ -2,13 +2,13 @@
 
 oven-sh/bun に Bug Report のテンプレートで出す本文と、bun#43660 に書き足すコメントの日本語訳。投稿するのは英語版。まだ投稿していない
 
-> 📅 作成: 2026-10-04 / 更新: 2026-10-06
+> 📅 作成: 2026-10-04 / 更新: 2026-10-07
 
 [⌂](../README-JP.md)
 
 [English](new-issue-draft.md)
 
-下の各ブロックは、Bug Report のテンプレートの同じ名前の欄に入れる。`{PAGES_URL}` と `{REPO_URL}` は、リポジトリと GitHub Pages を公開したあとに実測した URL に置き換える。`{NEW}` は新しい Issue の番号。
+下の各ブロックは、Bug Report のテンプレートの同じ名前の欄に入れる。`{NEW}` は新しい Issue の番号。
 
 1. [タイトルとテンプレートの欄](#1-タイトルとテンプレートの欄)
 2. [補足（Additional information）](#2-補足additional-information)
@@ -49,7 +49,7 @@ bun は起動時にコンソールの入力・出力コードページを控え�
 **期待する動き（What is the expected behavior?）**
 
 ```markdown
-文字列が正しく出て、窓のコードページは変わらない。両方の `bun` を `node` にしたときの出力:
+文字列が正しく出て、窓のコードページは変わらない。両方の `bun -e` を `node -e` にしたときの出力（`deno eval` にしても同じ）:
 
 abc 東京大阪 xyz
 Active code page: 437
@@ -94,8 +94,8 @@ Active code page: 65001
 
 **証拠**
 
-- 全結果（表 ・ 時系列 ・ 画面）: {PAGES_URL}/research/codepage-test-results.html
-- 上のすべてを新しい窓で再現するテストコード: {REPO_URL}（`tests/codepage.test.ts`）
+- 全結果（表 ・ 時系列 ・ 画面、各試験の試験コードへのリンク）: https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html
+- 上のすべてを新しい窓で再現するテストコード: [`tests/codepage.test.ts`](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/62d79907b3afaecae64a6ef0ff4cabbbcb5d17c9/tests/codepage.test.ts)（リポジトリ: https://github.com/LightSpeedC/20261003-bun-codepage-problem ）
 - 関連: #43660
 ```
 
