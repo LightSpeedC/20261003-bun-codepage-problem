@@ -28,7 +28,7 @@ clone したあと、どの Windows の PC でも同じ試験を流せる（PC �
 ## 1. 計画
 
 - [bun のコードページ問題を解決したい](plan/solve-bun-codepage-problem-JP.md)
-- [新しい Issue の下書き](issue/new-issue-draft-JP.md)
+- [Issue bun#44693（投稿した本文）](issue/bun-44693-JP.md)
 
 ## 2. 調査
 

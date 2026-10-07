@@ -28,7 +28,7 @@ To run the same tests on any Windows PC after cloning (nothing installed on the 
 ## 1. Plan
 
 - [Solving the Bun code page problem](plan/solve-bun-codepage-problem.md)
-- [Draft of the new issue](issue/new-issue-draft.md)
+- [Issue bun#44693 (the posted text)](issue/bun-44693.md)
 
 ## 2. Research
 

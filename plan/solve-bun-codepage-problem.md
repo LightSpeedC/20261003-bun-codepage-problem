@@ -262,7 +262,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 3. Add T1, T2, T3, T4 and T5 one at a time, running the full suite each time (done)
 4. Publish the result tables in English and Japanese, and update the status of the harms (H1 to H7) (done: [Code page test results](../research/codepage-test-results.md))
 5. Compare versions with T6 (done: stable and canary side by side in the same tables)
-6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693); text in [Draft of the new issue](../issue/new-issue-draft.md))
+6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693); text in [Issue bun#44693](../issue/bun-44693.md))
 7. Add a cross-reference to the new issue on bun#43660 (done: [comment](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127))
 8. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 

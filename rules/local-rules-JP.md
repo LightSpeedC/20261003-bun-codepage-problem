@@ -35,7 +35,7 @@ plan/solve-bun-codepage-problem.html / -JP.html
 research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
 research/evidence/
-issue/new-issue-draft.html / -JP.html
+issue/bun-44693.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 ```
@@ -53,6 +53,7 @@ AGENTS.md
 - **投稿の前に次をすべて満たす**
     - 実測した結果の表がそろい、第三者が再現手順を追える
     - 本文と貼るログに、ローカルのフルパスが入っていない
+    - 関連する Issue のコメントと、そこから参照されている PR を読み、本文がそれらを踏まえている
     - 本文の案を利用者が確認し、「送って」「公開して」の指示を受けている
 - **GitHub Pages は public リポジトリで公開する**
 

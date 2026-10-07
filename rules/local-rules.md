@@ -35,7 +35,7 @@ plan/solve-bun-codepage-problem.html / -JP.html
 research/codepage-test-results.html / -JP.html
 research/reproduce-issue-43660.html / -JP.html
 research/evidence/
-issue/new-issue-draft.html / -JP.html
+issue/bun-44693.html / -JP.html
 rules/local-rules.html / local-rules-JP.html
 AGENTS.md
 ```
@@ -53,6 +53,7 @@ Reason: there is only one plan, and short English names keep the published URLs 
 - **Before posting, all of the following must hold**
     - The measured result tables are complete, and a third party can follow the reproduction steps
     - Neither the text nor any pasted log contains a local full path
+    - The comments on related issues and the PRs they reference have been read, and the text takes them into account
     - The user has reviewed the draft and explicitly said to send or publish it
 - **GitHub Pages is published from a public repository**
 
