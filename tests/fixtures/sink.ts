@@ -1,9 +1,13 @@
-// 受け手。標準入力を受け取り、画面（標準出力）かファイルへそのまま書く
+// Reader: receives stdin and writes it unchanged to the screen (stdout) or to a file.
+// 受け手。標準入力を受け取り、画面（標準出力）かファイルへそのまま書く。
+// --dir <log folder> --tag <name>
 // --dir <ログの置き場> --tag <名前>
+// --mode console|file  where to write; with file, the bytes go unchanged to --out <file>
 // --mode console|file  書き先。file のときは --out <ファイル> にバイト列をそのまま書く
+// --when first|eof     write when the first chunk arrives, or after the writer closes the pipe
 // --when first|eof     最初のかたまりが届いたら書くか、送り手が閉じてから書くか
-// --delay <ms>         書く前に待つ
-// --post <ms>          書いた後に待ってから終わる
+// --delay <ms>         wait before writing / 書く前に待つ
+// --post <ms>          wait after writing, then exit / 書いた後に待ってから終わる
 import process from 'node:process';
 import { Buffer } from 'node:buffer';
 import { writeFileSync } from 'node:fs';

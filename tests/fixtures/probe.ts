@@ -1,6 +1,9 @@
-// 観測役（node 専用）。コードページを記録し、必要なら窓の画面の文字を読み取って書き出す
+// Observer (Node.js only): records the code page and, if asked, reads the characters on the console screen and writes them out.
+// 観測役（node 専用）。コードページを記録し、必要なら窓の画面の文字を読み取って書き出す。
+// --dir <log folder> --tag <name> --screen <where to write the screen>
 // --dir <ログの置き場> --tag <名前> --screen <画面の書き出し先>
-// 読むだけで、コードページも画面も変えない
+// It only reads; it changes neither the code page nor the screen.
+// 読むだけで、コードページも画面も変えない。
 import { writeFileSync } from 'node:fs';
 import { makeLogger, parseArgs, runtime } from './console.ts';
 
@@ -11,7 +14,8 @@ makeLogger(args.dir, args.tag ?? 'probe')('probe');
 
 if (args.screen) writeFileSync(args.screen, JSON.stringify(await readScreen(), null, '\t') + '\n');
 
-// 画面バッファの先頭からカーソルの行までを、1 行ずつの文字列で返す
+// Return the screen buffer from the top down to the cursor line, one string per line.
+// 画面バッファの先頭からカーソルの行までを、1 行ずつの文字列で返す。
 async function readScreen(): Promise<string[]> {
 	const koffi: any = (await import('koffi')).default;
 	const k32 = koffi.load('kernel32.dll');
@@ -25,7 +29,8 @@ async function readScreen(): Promise<string[]> {
 	const ReadChars = k32.func('bool __stdcall ReadConsoleOutputCharacterW(void*, _Out_ uint16*, uint32, COORD, _Out_ uint32*)');
 	const CloseHandle = k32.func('bool __stdcall CloseHandle(void*)');
 
-	// 標準出力がリダイレクトされていても窓の画面を読めるよう、CONOUT$ を開く
+	// Open CONOUT$ so the console screen can be read even when stdout is redirected.
+	// 標準出力がリダイレクトされていても窓の画面を読めるよう、CONOUT$ を開く。
 	const h = CreateFileW('CONOUT$', 0x80000000 | 0x40000000, 1 | 2, null, 3, 0, null);
 	try {
 		const info: any = {};

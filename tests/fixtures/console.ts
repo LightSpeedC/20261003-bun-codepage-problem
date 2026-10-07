@@ -1,5 +1,7 @@
-// bun ・ node ・ deno のどれで動いても、コンソールのコードページを「読むだけ」の共通部品
-// コードページを変える API（SetConsoleCP 等）はここに書かない
+// Shared helpers that only READ the console code page, whether running on Bun, Node.js or Deno.
+// bun ・ node ・ deno のどれで動いても、コンソールのコードページを「読むだけ」の共通部品。
+// APIs that CHANGE the code page (SetConsoleCP and so on) are never written here.
+// コードページを変える API（SetConsoleCP 等）はここに書かない。
 import process from 'node:process';
 import { appendFileSync, writeFileSync } from 'node:fs';
 
@@ -15,10 +17,12 @@ export type CodePages = { in: number; out: number };
 
 type CpReader = () => CodePages;
 
-// ランタイムごとに FFI の書き方が違うため、使う側だけを読み込む
+// Each runtime has its own FFI, so load only the one in use.
+// ランタイムごとに FFI の書き方が違うため、使う側だけを読み込む。
 async function loadCpReader(): Promise<CpReader> {
 	if (runtime === 'bun') {
-		// 'bun:ffi' を直に書くと node の型検査が止まるため、文字列を組み立てて読み込む
+		// Writing 'bun:ffi' literally would stop the Node.js type check, so the name is built at run time.
+		// 'bun:ffi' を直に書くと node の型検査が止まるため、文字列を組み立てて読み込む。
 		const ffi: any = await import('bun' + ':ffi');
 		const lib = ffi.dlopen('kernel32.dll', {
 			GetConsoleCP: { args: [], returns: 'u32' },
@@ -46,7 +50,8 @@ export function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// --name value 形式の引数を読む
+// Read arguments of the form --name value.
+// --name value 形式の引数を読む。
 export function parseArgs(argv: string[] = process.argv.slice(2)): Record<string, string> {
 	const out: Record<string, string> = {};
 	for (let i = 0; i < argv.length; i++) {
@@ -60,7 +65,8 @@ export function parseArgs(argv: string[] = process.argv.slice(2)): Record<string
 	return out;
 }
 
-// 1 プロセス 1 ファイルに、時刻とコードページを 1 行ずつ追記する
+// One file per process; each line holds the time and the code pages. The harness turns the time into an offset and drops the pid.
+// 1 プロセス 1 ファイルに、時刻とコードページを 1 行ずつ追記する。ハーネスが時刻を相対にし、pid を除く。
 export function makeLogger(dir: string | undefined, tag: string) {
 	return (event: string, extra: Record<string, unknown> = {}) => {
 		if (!dir) return;
@@ -74,6 +80,6 @@ export function writePid(file: string | undefined): void {
 	if (file) writeFileSync(file, String(process.pid));
 }
 
-// 送る文字列。偶数文字の日本語を ASCII で挟み、CP932 で読み違えても改行が残るようにする
+// The text that is sent: an even number of Japanese characters between ASCII, so the newline survives even when misread.
+// 送る文字列。偶数文字の日本語を ASCII で挟み、読み違えても改行が残るようにする。
 export const TEXT = 'abc 東京大阪 xyz';
-export const TEXT_GARBLED = 'abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz';
