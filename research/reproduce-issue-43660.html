@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reproducing bun#43660</title>
+<style>
+:root {
+	--navy1: #12224d; --navy2: #2f5fbf; --ink: #1c2330; --ink-soft: #4a5568;
+	--line: #d9dfe8; --code-bg: #f4f6fa; --link: #1a4fa0;
+	--accent: var(--navy1); --accent2: var(--navy2); --soft: #f2f5fb;
+}
+body { margin: 0; background: #fff; color: var(--ink); font-size: 15.5px; line-height: 1.85; font-family: "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif; }
+a { color: var(--link, #1a4fa0); background: transparent; }
+.titlebar { background: linear-gradient(135deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; padding: 34px 30px 30px; }
+.titlebar .inner { max-width: 1600px; margin: 0 auto; }
+.titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
+.titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
+.navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+.navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
+.ch02 { --accent: hsl(210,78%,25%); --accent2: hsl(210,58%,55%); --soft: hsl(210,28%,95%); }
+.ch03 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch04 { --accent: hsl(70,78%,25%); --accent2: hsl(70,58%,55%); --soft: hsl(70,28%,95%); }
+.ch05 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
+.toc ol li { counter-increment: tocnum; }
+.toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.toc ol a::before { content: counter(tocnum) ". "; }
+section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
+section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+section h2 { margin: 30px 0 12px; padding: 6px 12px; font-size: 1.2em; border-left: 6px solid var(--accent, #12224d); background: linear-gradient(90deg, var(--soft, #f2f5fb), #fff); color: var(--accent, #12224d); }
+code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); }
+pre code { border: none; background: transparent; padding: 0; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 10px 0; }
+th { background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; padding: 9px 12px; text-align: left; }
+td { padding: 9px 12px; vertical-align: top; border-top: 1px solid var(--line, #d9dfe8); background: #fff; color: var(--ink); }
+tr:nth-child(even) td { background: #fafbfe; color: var(--ink); }
+.nowrap { white-space: nowrap; }
+.callout { border-left: 6px solid var(--accent, #12224d); background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 14px 0; }
+.callout strong { color: var(--accent, #12224d); background: transparent; }
+footer { max-width: 1600px; margin: 0 auto; padding: 18px 30px 30px; }
+footer .navbar { margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="titlebar"><div class="inner">
+<h1>Reproducing bun#43660</h1>
+<p class="lead">Results of running the bun#43660 commands with Bun 1.4.2 and the canary build in a freshly opened cp932 console</p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-04</p>
+</div></div>
+
+<div class="wrap">
+<div class="navbar"><a href="../README.html" title="README">⌂</a><a href="reproduce-issue-43660-JP.html" title="日本語">日本語</a></div>
+
+<nav class="toc"><ol>
+<li class="ch01"><a href="#ch01">Conditions</a></li>
+<li class="ch02"><a href="#ch02">Results</a></li>
+<li class="ch03"><a href="#ch03">What we first misread</a></li>
+<li class="ch04"><a href="#ch04">Hypothesis</a></li>
+<li class="ch05"><a href="#ch05">Findings and next check</a></li>
+</ol></nav>
+
+<section class="ch01" id="ch01">
+<h1>Conditions</h1>
+<div class="tablewrap"><table>
+<thead><tr><th>Item</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td class="nowrap">Console</td><td>A new <code>cmd</code> opened with <code>conhost.exe</code> (starts at 932). <code>chcp 932</code> is not run</td></tr>
+<tr><td class="nowrap">Bun</td><td>1.4.2+744846f84 / 1.4.3-canary.1+bb35d1b81</td></tr>
+<tr><td class="nowrap">OS</td><td>Windows 11 Home 10.0.26300</td></tr>
+<tr><td class="nowrap">Script</td><td><code>tests/manual/issue-43660-repro.cmd &lt;bun&gt; &lt;log&gt;</code></td></tr>
+</tbody></table></div>
+<p>The script runs the following two lines in order. The two consoles (stable and canary) were opened at the same time.</p>
+<pre><code class="language-batch">bun -e "console.log('bun 2 bun   日本語')" | bun -e "process.stdin.pipe(process.stdout)"
+bun -e "console.log('bun 2 bun   日本語')" | bun -e "process.stdin.pipe(process.stdout)" &gt; log.bytes
+</code></pre>
+<p>Runs 1 and 2 wrote the <code>chcp</code> value to the log only. Run 3 wrote it to both the screen and the log, with ASCII labels.</p>
+<p>After these three runs, the text in the script was changed to <code>abc 東京大阪 xyz</code> (so that no broken byte is left and the newline survives when garbled; see T5 in the plan). The results in this document were taken with the earlier <code>bun 2 bun   日本語</code>.</p>
+</section>
+
+<section class="ch02" id="ch02">
+<h1>Results</h1>
+<p>Results are listed in run order (run 1, 2, 3). ✅ as expected / ❌ not as expected / ⚠️ only the input side was back at 932 (<code>chcp</code> shows 932 but the message is in English) / ⬜ not checked (the screen of run 2 was not looked at).</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Check</th><th>1.4.2</th><th>1.4.3-canary.1</th></tr></thead>
+<tbody>
+<tr><td>Text on screen</td><td class="nowrap">❌⬜❌</td><td class="nowrap">❌⬜✅</td></tr>
+<tr><td>Code page after the console run</td><td class="nowrap">❌❌✅</td><td class="nowrap">⚠️❌✅</td></tr>
+<tr><td>Code page after the file run</td><td class="nowrap">❌❌✅</td><td class="nowrap">❌❌❌</td></tr>
+<tr><td>Bytes written to the file</td><td class="nowrap">❌❌✅</td><td class="nowrap">❌❌✅</td></tr>
+</tbody></table></div>
+<h2>Screen of run 3 (1.4.2)</h2>
+<pre><code class="language-text">1.4.2+744846f84
+[1] before
+現在のコード ページ: 932
+--- bun to bun, output to console ---
+bun 2 bun   譌･譛ｬ隱・[2] after console run
+現在のコード ページ: 932
+--- bun to bun, output to file ---
+[3] after file run
+現在のコード ページ: 932
+--- end ---
+続行するには何かキーを押してください . . .
+</code></pre>
+<h2>Screen of run 3 (1.4.3-canary.1)</h2>
+<pre><code class="language-text">1.4.3-canary.1+bb35d1b81
+[1] before
+現在のコード ページ: 932
+--- bun to bun, output to console ---
+bun 2 bun   日本語
+[2] after console run
+現在のコード ページ: 932
+--- bun to bun, output to file ---
+[3] after file run
+Active code page: 65001
+--- end ---
+Press any key to continue . . .
+</code></pre>
+<p><code>現在のコード ページ</code> is the Japanese form of <code>Active code page</code>, and <code>続行するには何かキーを押してください</code> is the Japanese form of <code>Press any key to continue</code>. Windows prints the English form when the output code page is 65001.</p>
+<h2>Bytes written to the file</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Run</th><th>The Japanese part</th></tr></thead>
+<tbody>
+<tr><td>Runs 1 and 2 (both builds)</td><td><code>ef bf bd ef bf bd ef bf bd 7b ef bf bd ef bf bd</code> (U+FFFD and <code>{</code>)</td></tr>
+<tr><td>Run 3 (both builds)</td><td><code>e6 97 a5 e6 9c ac e8 aa 9e</code> (correct UTF-8)</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="ch03" id="ch03">
+<h1>What we first misread</h1>
+<p>We first read the broken bytes of runs 1 and 2 as "the data flowing through the Bun pipe is corrupted". That was wrong.</p>
+<ol>
+<li>After the first pipeline, 65001 was left on the console</li>
+<li>cmd re-reads a batch file line by line, so it read the second line as 65001. The Shift_JIS <code>日本語</code> is not valid UTF-8, so Bun received U+FFFD</li>
+<li>In run 3 the console was back at 932 before the second line, so the correct bytes arrived</li>
+</ol>
+<p>The broken bytes are evidence that <strong>cmd in the same console misread its own script</strong> because of the code page Bun left behind. The garbled Japanese labels in runs 1 and 2 have the same cause.</p>
+</section>
+
+<section class="ch04" id="ch04">
+<h1>Hypothesis</h1>
+<p>Not yet verified. If each Bun process "saves the current value and sets 65001 at start, and restores the saved value at exit", every observation is explained.</p>
+<ol>
+<li>Writer A starts, saves 932 and sets 65001</li>
+<li>Reader B starts and saves 65001 as the "original" value</li>
+<li>A exits first and restores 932; UTF-8 written by B after that is garbled (1.4.2 run 3: garbled although the code page stayed 932)</li>
+<li>B exits and restores the saved 65001, which is left on the console (canary run 3, file run)</li>
+</ol>
+<p><code>譌･譛ｬ隱・</code> in 1.4.2 run 3 is the UTF-8 <code>e6 97 a5 e6 9c ac e8 aa 9e</code> read as CP932. The final <code>9e</code> is taken as the lead byte of a double-byte character and swallows the following newline as <code>・</code>, so the newline also disappears. This suggests the reader writes raw UTF-8 bytes to the console instead of using <code>WriteConsoleW</code>.</p>
+</section>
+
+<section class="ch05" id="ch05">
+<h1>Findings and next check</h1>
+<ul>
+<li>It happens with both the stable and the canary build, and the result changes from run to run</li>
+<li>The screen can be garbled even while the code page still shows 932</li>
+<li>65001 is left on the console and affects cmd in the same console (reading its own script, the <code>pause</code> message)</li>
+<li>A single run is not enough to conclude anything. The hypothesis is checked by the fixed-order reproduction (T5 in the plan): <a href="../plan/solve-bun-codepage-problem.html">Solving the Bun code page problem</a></li>
+<li>The later tests confirmed the hypothesis: <a href="codepage-test-results.html">Code page test results</a></li>
+</ul>
+</section>
+</div>
+
+<footer><div class="navbar"><a href="../README.html" title="README">⌂</a><a href="reproduce-issue-43660-JP.html" title="日本語">日本語</a></div></footer>
+</body>
+</html>

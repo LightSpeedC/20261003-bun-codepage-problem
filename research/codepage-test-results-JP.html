@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コードページ試験の結果</title>
+<style>
+:root {
+	--navy1: #12224d; --navy2: #2f5fbf; --ink: #1c2330; --ink-soft: #4a5568;
+	--line: #d9dfe8; --code-bg: #f4f6fa; --link: #1a4fa0;
+	--accent: var(--navy1); --accent2: var(--navy2); --soft: #f2f5fb;
+}
+body { margin: 0; background: #fff; color: var(--ink); font-size: 15.5px; line-height: 1.85; font-family: "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif; }
+a { color: var(--link, #1a4fa0); background: transparent; }
+.titlebar { background: linear-gradient(135deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; padding: 34px 30px 30px; }
+.titlebar .inner { max-width: 1600px; margin: 0 auto; }
+.titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
+.titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
+.navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+.navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
+.ch02 { --accent: hsl(233.3,78%,25%); --accent2: hsl(233.3,58%,55%); --soft: hsl(233.3,28%,95%); }
+.ch03 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
+.ch04 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch05 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
+.ch06 { --accent: hsl(46.7,78%,25%); --accent2: hsl(46.7,58%,55%); --soft: hsl(46.7,28%,95%); }
+.ch07 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
+.toc ol li { counter-increment: tocnum; }
+.toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.toc ol a::before { content: counter(tocnum) ". "; }
+section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
+section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+section h2 { margin: 30px 0 12px; padding: 6px 12px; font-size: 1.2em; border-left: 6px solid var(--accent, #12224d); background: linear-gradient(90deg, var(--soft, #f2f5fb), #fff); color: var(--accent, #12224d); }
+code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); }
+pre code { border: none; background: transparent; padding: 0; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 10px 0; }
+th { background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; padding: 9px 12px; text-align: left; }
+td { padding: 9px 12px; vertical-align: top; border-top: 1px solid var(--line, #d9dfe8); background: #fff; color: var(--ink); }
+tr:nth-child(even) td { background: #fafbfe; color: var(--ink); }
+.nowrap { white-space: nowrap; }
+.callout { border-left: 6px solid var(--accent, #12224d); background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 14px 0; }
+.callout strong { color: var(--accent, #12224d); background: transparent; }
+footer { max-width: 1600px; margin: 0 auto; padding: 18px 30px 30px; }
+footer .navbar { margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="titlebar"><div class="inner">
+<h1>コードページ試験の結果</h1>
+<p class="lead">計画の T1〜T6 を、bun 1.4.2 ・ bun canary ・ node ・ deno で流した結果。bun がコンソールのコードページを変えることで起きる害を、1 つずつ実測で示す</p>
+<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-06</p>
+</div></div>
+
+<div class="wrap">
+<div class="navbar"><a href="../README-JP.html" title="README">⌂</a><a href="codepage-test-results.html" title="English">English</a></div>
+
+<p><strong>要約:</strong> bun は起動時にコンソールの入力・出力コードページを控えて両方 65001 にし、終了時に控えた値へ戻す。コードページはコンソールに属し、つながる全プロセスで共有されるため、同時に動く bun 同士が互いの控えを上書きする。その結果、出力が化け、窓に 65001 が残り、同じ窓のほかのプログラムが壊れる。node と deno はコードページを一度も変えず、すべてのケースで正しかった。英語版 Windows のコードページ 437 でも再現する。詳しくは <a href="#ch02">結論</a>。</p>
+
+<nav class="toc"><ol>
+<li class="ch01"><a href="#ch01">条件</a></li>
+<li class="ch02"><a href="#ch02">結論</a></li>
+<li class="ch03"><a href="#ch03">T1. コードページの推移</a></li>
+<li class="ch04"><a href="#ch04">T2. パイプの組み合わせ</a></li>
+<li class="ch05"><a href="#ch05">T3・T4. 強制終了と隣のプロセス</a></li>
+<li class="ch06"><a href="#ch06">T5. 順番を固定した再現</a></li>
+<li class="ch07"><a href="#ch07">T5. bun#43660 と同じ形</a></li>
+</ol></nav>
+
+<section class="ch01" id="ch01">
+<h1>条件</h1>
+<div class="tablewrap"><table>
+<thead><tr><th>項目</th><th>値</th></tr></thead>
+<tbody>
+<tr><td class="nowrap">OS</td><td>Windows 11 Home 10.0.26300（日本語版）</td></tr>
+<tr><td class="nowrap">窓</td><td>ケースごとに <code>conhost.exe</code> で新しい窓を起こす。開始時は 932。テストはコードページに触らない</td></tr>
+<tr><td class="nowrap">bun</td><td>1.4.2+744846f84</td></tr>
+<tr><td class="nowrap">bun canary</td><td>1.4.3-canary.1+bb35d1b81</td></tr>
+<tr><td class="nowrap">node</td><td>v26.10.0</td></tr>
+<tr><td class="nowrap">deno</td><td>2.9.7</td></tr>
+<tr><td class="nowrap">送る文字列</td><td><code>abc 東京大阪 xyz</code>（化けると <code>abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz</code>）</td></tr>
+<tr><td class="nowrap">テスト</td><td><code>tests/codepage.test.ts</code>。<code>tools/40_test/run-tests.cmd</code> で node --test と bun test の両方で流す</td></tr>
+</tbody></table></div>
+<h2>判定の方法</h2>
+<ul>
+<li><strong>コードページ:</strong> 各プロセスが起動直後・書く直前・終了直前に <code>GetConsoleCP</code> ／ <code>GetConsoleOutputCP</code> を読み、時刻と一緒に記録する。窓の前後は観測役の node が読む（T1 で node がコードページを変えないことを確かめている）</li>
+<li><strong>画面:</strong> 観測役が <code>ReadConsoleOutputCharacterW</code> で窓の文字を読み取る。人の目には頼らない</li>
+<li><strong>隣のプロセス:</strong> 各ケースの最後に、同じ窓で <code>chcp</code> と、SJIS で書いた cmd（<code>echo sjis: 東京大阪</code>）を流し、画面に残った表示を見る</li>
+<li><strong>バイト列:</strong> 受け手が受け取ったバイト列をそのままファイルに書き、正しい UTF-8 かを見る</li>
+</ul>
+<p>✅ 期待どおり（あるべき姿と同じ） ／ ❌ 期待と違う。同じ組を何回か流したものは、回の順に並べる。</p>
+</section>
+
+<section class="ch02" id="ch02">
+<h1>結論</h1>
+<p>bun は、起動した瞬間（スクリプトが動く前）に窓の入力・出力コードページを 65001 に変え、終了時に「起動時に控えた値」へ戻す。この動きから、計画の害 H1〜H7 がすべて起きることを確かめた。node と deno はコードページを一度も変えず、すべてのケースで正しく動いた。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>害</th><th>内容</th><th>bun ・ canary</th><th>node ・ deno</th><th>証拠</th></tr></thead>
+<tbody>
+<tr><td class="nowrap">H1</td><td>パイプでつないだ相手の表示が化ける</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T5 の ww ・ relay、T4</td></tr>
+<tr><td class="nowrap">H2</td><td>結果が起動・終了の順で決まり、実行のたびに変わる</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T5 の 4 通りで結果が分かれる。bun#43660 と同じ形</td></tr>
+<tr><td class="nowrap">H3</td><td>終了後に 65001 が窓に残る</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T2（cmd）、T5 の ww ・ rr ・ relay</td></tr>
+<tr><td class="nowrap">H4</td><td>同じ窓の別のプロセスが巻き込まれる</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T3 ・ T4、T5（SJIS の cmd が化け、chcp のメッセージが英語になる）</td></tr>
+<tr><td class="nowrap">H5</td><td>コードページが 932 に戻った状態で、bun が UTF-8 のバイト列を書いて化ける</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T5 の ww: 受け手が書く直前のコードページが 932</td></tr>
+<tr><td class="nowrap">H6</td><td>強制終了すると元に戻らない</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T3</td></tr>
+<tr><td class="nowrap">H7</td><td>bun 同士が直接つながっていなくても起きる</td><td class="nowrap">❌ 起きた</td><td class="nowrap">✅ 起きない</td><td>T5 の relay（<code>bun | node | bun</code>）</td></tr>
+</tbody></table></div>
+<p>パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。安定版と canary 版の結果は、すべてのケースで同じだった（T6）。</p>
+<h2>bun のソースの該当箇所</h2>
+<ul>
+<li><code>init()</code>（<a href="https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567">output.rs の 561〜567 行</a>）が <code>GetConsoleOutputCP</code> ／ <code>GetConsoleCP</code> の値を控え、<code>SetConsoleOutputCP(65001)</code> ／ <code>SetConsoleCP(65001)</code> を呼ぶ</li>
+<li><code>restore()</code>（<a href="https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524">output.rs の 517〜524 行</a>）が終了時に控えた値へ戻す</li>
+<li><a href="https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L482-L484">ソースのコメント</a> にも「強制終了されると戻らないことがある」とある（H6）</li>
+</ul>
+<p>リンクはいまの <code>main</code> を指す。T5 の時系列は、このコードとそのまま一致する。各プロセスは起動時に見えた値を控えるので、2 本目は 65001 を控える。</p>
+<h2>コードページ 437 でも再現する</h2>
+<p>Issue に載せる順番を決めた再現を、コードページ 437（英語版 Windows の既定）で始めた窓でも、各版 3 回ずつ流した。bun 1.4.2 と canary は毎回 <code>abc µ¥▒Σ║¼σñºΘÿ¬ xyz</code> と出し、<code>Active code page: 65001</code> を残した。node は <code>abc 東京大阪 xyz</code> と出し、437 のままだった。上の試験は日本語版の既定の 932 で流している。</p>
+</section>
+
+<section class="ch03" id="ch03">
+<h1>T1. コードページの推移</h1>
+<p>1 本だけを窓で動かし、画面に <code>abc 東京大阪 xyz</code> を出す。値は 入力/出力。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>ランタイム</th><th>起動直後</th><th>書く直前</th><th>終了直前</th><th>終了後</th><th>画面</th></tr></thead>
+<tbody>
+<tr><td>bun 1.4.2</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅</td></tr>
+<tr><td>bun canary</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅</td></tr>
+<tr><td>node</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅</td></tr>
+<tr><td>deno</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅</td></tr>
+</tbody></table></div>
+<ul>
+<li>bun は、スクリプトの最初の行が動く時点で、すでに 65001 にしている。画面に何も書かなくても変える</li>
+<li>node と deno は 932 のまま、日本語を画面に正しく出した。コードページを変えなくても正しく表示できることの裏付けになる</li>
+<li>1 本だけなら、bun も終了時に 932 へ戻すので、問題は表に出ない</li>
+</ul>
+</section>
+
+<section class="ch04" id="ch04">
+<h1>T2. パイプの組み合わせ</h1>
+<p>送り手と受け手を同時に起動し、受け手は受け取ったバイト列をファイルに書く。各セルは「バイト列 ／ 終了後のコードページ」。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>送り手 → 受け手</th><th>cmd から</th><th>pwsh 7 から</th><th>Windows PowerShell 5.1 から</th></tr></thead>
+<tbody>
+<tr><td>bun → bun</td><td class="nowrap">✅ ／ ❌ 65001</td><td class="nowrap">✅ ／ ❌ 65001</td><td class="nowrap">✅ ／ ✅ 932</td></tr>
+<tr><td>bun → canary、canary → bun、canary → canary</td><td class="nowrap">✅ ／ ❌ 65001</td><td class="nowrap">✅ ／ ❌ 65001</td><td class="nowrap">✅ ／ ✅ 932</td></tr>
+<tr><td>bun ・ canary → node ・ deno</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td></tr>
+<tr><td>node ・ deno → bun ・ canary</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td></tr>
+<tr><td>node ・ deno → node ・ deno</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td><td class="nowrap">✅ ／ ✅ 932</td></tr>
+</tbody></table></div>
+<ul>
+<li>パイプを流れるバイト列は、どの組み合わせでも壊れなかった</li>
+<li>bun 同士を cmd ・ pwsh 7 から直接つなぐと、終了後に 65001 が残った（H3）。片方が node か deno なら残らない。bun#43660 の「片方が node なら起きない」と合う</li>
+<li>Windows PowerShell 5.1 は、どの組み合わせでも日本語を <code>?</code> に置き換える（node | node でも同じ。5.1 自身の事象）。5.1 の列は node | node と同じバイト列なら ✅ とした。5.1 が間に入ると 2 本の bun の寿命がずれるためか、65001 は残らなかった（原因は未確認）</li>
+</ul>
+</section>
+
+<section class="ch05" id="ch05">
+<h1>T3・T4. 強制終了と隣のプロセス</h1>
+<h2>T3. 強制終了</h2>
+<p>画面に書いたあと待機している 1 本を <code>taskkill /F</code> で止める。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>ランタイム</th><th>終了後のコードページ</th><th>chcp の表示</th><th>SJIS の cmd</th></tr></thead>
+<tbody>
+<tr><td>bun ・ canary</td><td class="nowrap">❌ 65001/65001</td><td class="nowrap">❌ <code>Active code page: 65001</code></td><td class="nowrap">❌ <code>sjis: �������</code></td></tr>
+<tr><td>node ・ deno</td><td class="nowrap">✅ 932/932</td><td class="nowrap">✅ <code>現在のコード ページ: 932</code></td><td class="nowrap">✅ <code>sjis: 東京大阪</code></td></tr>
+</tbody></table></div>
+<p>bun は終了時に戻す作りのため、強制終了されると 65001 のまま残る（H6）。そのあと同じ窓で動く cmd は、SJIS で書いた自分のスクリプトを 65001 で読み違えて化ける（H4）。</p>
+<h2>T4. 通常終了の後</h2>
+<p><code>bun | bun</code> が普通に終わった後（2 本の寿命が重なり、送り手が先に終わる順）の窓の画面。</p>
+<pre><code class="language-text">abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
+--- tail ---
+Active code page: 65001
+sjis: �������
+</code></pre>
+<p>node ・ deno で同じことをした窓の画面:</p>
+<pre><code class="language-text">abc 東京大阪 xyz
+--- tail ---
+現在のコード ページ: 932
+sjis: 東京大阪
+</code></pre>
+<p>bun ・ canary とも、強制終了しなくても同じ窓の cmd と <code>chcp</code> のメッセージまで巻き込んだ（H4）。</p>
+</section>
+
+<section class="ch06" id="ch06">
+<h1>T5. 順番を固定した再現</h1>
+<p>2 本目の起動を約 1 秒遅らせ、終了の順は待ち時間で決める。2 本の寿命は必ず重なるようにした。各組 3 回。セルは「画面またはバイト列 ／ 終了後に 932」。</p>
+<div class="tablewrap"><table>
+<thead><tr><th>形と順番</th><th>受け手の書き先</th><th>仮説の予想</th><th>bun 1.4.2</th><th>bun canary</th><th>node ・ deno</th></tr></thead>
+<tbody>
+<tr><td>送り手が先に起動し、先に終わる（ww）</td><td>画面</td><td>化ける ／ 65001 が残る</td><td class="nowrap">❌❌❌ ／ ❌❌❌</td><td class="nowrap">❌❌❌ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+<tr><td>同上</td><td>ファイル</td><td>65001 が残る</td><td class="nowrap">✅✅✅ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+<tr><td>送り手が先に起動し、受け手が先に終わる（wr）</td><td>画面 ・ ファイル</td><td>正しい ／ 932 に戻る</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+<tr><td>受け手が先に起動し、送り手が先に終わる（rw）</td><td>画面 ・ ファイル</td><td>正しい ／ 932 に戻る</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+<tr><td>受け手が先に起動し、受け手が先に終わる（rr）</td><td>画面 ・ ファイル</td><td>正しい ／ 65001 が残る</td><td class="nowrap">✅✅✅ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+<tr><td>間に node を挟み、送り手が先に起動して先に終わる（relay）</td><td>画面</td><td>化ける ／ 65001 が残る</td><td class="nowrap">❌❌❌ ／ ❌❌❌</td><td class="nowrap">❌❌❌ ／ ❌❌❌</td><td class="nowrap">✅✅✅ ／ ✅✅✅</td></tr>
+</tbody></table></div>
+<p>bun ・ canary の結果は、すべての組で仮説の予想と一致し、3 回とも同じだった。順番さえ決まれば結果は決まる。</p>
+<h2>化ける順番での時系列（bun 1.4.2、ww ・ 画面）</h2>
+<p>値は 入力/出力。w は送り手、r は受け手、probe は観測役の node。</p>
+<pre><code class="language-text">   0ms probe  窓の前          932/932
+  54ms w      起動直後        65001/65001   ← 送り手が 932 を控えて 65001 にする
+  59ms w      書く直前        65001/65001
+1115ms r      起動直後        65001/65001   ← 受け手は 65001 を「元の値」として控える
+2061ms w      終了直前        65001/65001   → 送り手が終了し、控えた 932 に戻す
+2867ms r      書く直前        932/932       ← 受け手は 932 の窓に UTF-8 のバイト列を書く（化ける）
+2896ms r      終了直前        932/932       → 受け手が終了し、控えた 65001 に戻す
+3076ms probe  窓の後          65001/65001   ← 65001 が残る
+</code></pre>
+<ul>
+<li>受け手の bun は、窓が 932 のときに UTF-8 のバイト列をそのまま書いた。画面に出す文字を <code>WriteConsoleW</code> で渡していれば、コードページに関係なく正しく出たはずである（node ・ deno は 932 のまま正しく出している）</li>
+<li>relay では、間の node は何も変えていない。それでも 2 本の bun の寿命が重なるだけで同じことが起きた（H7）</li>
+</ul>
+</section>
+
+<section class="ch07" id="ch07">
+<h1>T5. bun#43660 と同じ形</h1>
+<p>bun#43660 と同じ形で、2 本を同時に起動し、順番を決めずに 10 回流した。文字列は <code>\u</code> エスケープで渡した <code>abc 東京大阪 xyz</code>。</p>
+<pre><code class="language-batch">bun -e "console.log('abc 東京大阪 xyz')" | bun -e "process.stdin.pipe(process.stdout)"
+</code></pre>
+<div class="tablewrap"><table>
+<thead><tr><th>ランタイム</th><th>画面（回の順）</th><th>終了後に 932（回の順）</th></tr></thead>
+<tbody>
+<tr><td>bun 1.4.2</td><td class="nowrap">❌✅✅❌❌❌❌❌❌❌</td><td class="nowrap">❌✅✅❌❌❌❌❌❌❌</td></tr>
+<tr><td>bun canary</td><td class="nowrap">✅✅✅❌✅✅❌✅❌❌</td><td class="nowrap">✅✅✅❌✅✅❌❌❌❌</td></tr>
+<tr><td>node</td><td class="nowrap">✅✅✅✅✅✅✅✅✅✅</td><td class="nowrap">✅✅✅✅✅✅✅✅✅✅</td></tr>
+<tr><td>deno</td><td class="nowrap">✅✅✅✅✅✅✅✅✅✅</td><td class="nowrap">✅✅✅✅✅✅✅✅✅✅</td></tr>
+</tbody></table></div>
+<ul>
+<li>同じコマンドでも、bun は回ごとに結果が変わった（H2）。2 本のどちらが先に起動・終了するかで決まり、その順は OS の都合で毎回揺れる</li>
+<li>canary 版の 8 回目は、画面は正しいのに 65001 が残った。T5 の rr と同じ順になった回とみられる</li>
+<li>bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった</li>
+</ul>
+</section>
+</div>
+
+<footer><div class="navbar"><a href="../README-JP.html" title="README">⌂</a><a href="codepage-test-results.html" title="English">English</a></div></footer>
+</body>
+</html>

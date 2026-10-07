@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新しい Issue の下書き</title>
+<style>
+:root {
+	--navy1: #12224d; --navy2: #2f5fbf; --ink: #1c2330; --ink-soft: #4a5568;
+	--line: #d9dfe8; --code-bg: #f4f6fa; --link: #1a4fa0;
+	--accent: var(--navy1); --accent2: var(--navy2); --soft: #f2f5fb;
+}
+body { margin: 0; background: #fff; color: var(--ink); font-size: 15.5px; line-height: 1.85; font-family: "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif; }
+a { color: var(--link, #1a4fa0); background: transparent; }
+.titlebar { background: linear-gradient(135deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; padding: 34px 30px 30px; }
+.titlebar .inner { max-width: 1600px; margin: 0 auto; }
+.titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
+.titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
+.navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+.navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
+.ch02 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch03 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
+.toc ol li { counter-increment: tocnum; }
+.toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.toc ol a::before { content: counter(tocnum) ". "; }
+section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
+section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); white-space: pre-wrap; }
+pre code { border: none; background: transparent; padding: 0; }
+footer { max-width: 1600px; margin: 0 auto; padding: 18px 30px 30px; }
+footer .navbar { margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="titlebar"><div class="inner">
+<h1>新しい Issue の下書き</h1>
+<p class="lead">oven-sh/bun に Bug Report のテンプレートで出す本文と、bun#43660 に書き足すコメントの日本語訳。投稿するのは英語版。まだ投稿していない</p>
+<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-06</p>
+</div></div>
+
+<div class="wrap">
+<div class="navbar"><a href="../README-JP.html" title="README">⌂</a><a href="new-issue-draft.html" title="English">English</a></div>
+
+<p>下の各ブロックは、Bug Report のテンプレートの同じ名前の欄に入れる。<code>{PAGES_URL}</code> と <code>{REPO_URL}</code> は、リポジトリと GitHub Pages を公開したあとに実測した URL に置き換える。<code>{NEW}</code> は新しい Issue の番号。</p>
+
+<nav class="toc"><ol>
+<li class="ch01"><a href="#ch01">タイトルとテンプレートの欄</a></li>
+<li class="ch02"><a href="#ch02">補足（Additional information）</a></li>
+<li class="ch03"><a href="#ch03">bun#43660 へのコメント</a></li>
+</ol></nav>
+
+<section class="ch01" id="ch01">
+<h1>タイトルとテンプレートの欄</h1>
+<p><strong>タイトル</strong></p>
+<pre><code class="language-text">Windows: bun が起動時にコンソールのコードページを 65001 に切り替え、出力を化けさせ、同じ窓のほかのプロセスを壊す（#43660 の根本原因）</code></pre>
+
+<p><strong>bun の版（What version of Bun is running?）</strong></p>
+<pre><code class="language-text">1.4.2+744846f84（1.4.3-canary.1+bb35d1b81 でも再現）</code></pre>
+
+<p><strong>環境（What platform is your computer?）</strong></p>
+<pre><code class="language-text">Microsoft Windows NT 10.0.26300.0 x64</code></pre>
+
+<p><strong>再現手順（What steps can reproduce the bug?）</strong></p>
+<pre><code class="language-markdown">bun は起動時にコンソールの入力・出力コードページを控えて両方 65001 にし、終了時に控えた値へ戻す（ソースの `init()` と `restore()` へのリンク）。コードページはコンソールに属し、つながる全プロセスで共有されるため、1 つの窓で 2 本の bun が動くと、互いの控えを上書きしてしまう。これが #43660 の根本原因。
+
+**新しい `cmd.exe` の窓**（65001 以外ならどのコードページでもよい。英語版 Windows は 437、日本語版は 932）を開き、次を流す:
+
+（英語版と同じコマンド）
+
+`ping` とタイマーは順番を決めるためだけのもの。送り手が先に起動し、受け手が約 1 秒後に起動し、受け手が動いているあいだに送り手が終わる。毎回再現した（437 で 3 回中 3 回、932 で 3 回中 3 回。両方の版）。
+</code></pre>
+
+<p><strong>期待する動き（What is the expected behavior?）</strong></p>
+<pre><code class="language-markdown">文字列が正しく出て、窓のコードページは変わらない。両方の `bun` を `node` にしたときの出力:
+
+abc 東京大阪 xyz
+Active code page: 437
+</code></pre>
+
+<p><strong>実際（What do you see instead?）</strong></p>
+<pre><code class="language-markdown">437 の窓:
+
+abc µ¥▒Σ║¼σñºΘÿ¬ xyz
+Active code page: 65001
+
+932 の窓（日本語版 Windows）:
+
+abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
+Active code page: 65001
+
+起きていること:
+
+1. 送り手が起動し、437 を控えて 65001 にする
+2. 受け手が起動し、65001 を「元の値」として控える
+3. 送り手が終わり、437 に戻す
+4. 受け手が、437 になった窓へ UTF-8 のバイト列をそのまま書くので化ける
+5. 受け手が終わり、65001 に戻す。2 本とも終わったあとも 65001 が窓に残る
+</code></pre>
+</section>
+
+<section class="ch02" id="ch02">
+<h1>補足（Additional information）</h1>
+<pre><code class="language-markdown">**依頼: コンソールのコードページを一切変えないでほしい。** 画面への出力は `WriteConsoleW`（UTF-8 → UTF-16）、パイプ・ファイルへはバイト列をそのまま、コンソールからの入力は `ReadConsoleW` で読む。どれもコードページに依存しない。node と deno は一度も変えず、下のすべてのケースで正しく出す。GitHub のコード検索では、リポジトリに `WriteConsoleW` の使用は見つからない。
+
+控えて戻すやり方は安全にできない。1 つの窓で複数のプロセスが同じ共有の値を控えては戻すので、終わる順で何が残るかが決まる。強制終了では戻す処理そのものが走らない（ソースのコメントにも「強制終了されると戻らないことがある」と書かれている）。ソースへのリンクはいまの `main` を指す。
+
+**測った害**（日本語版 Windows 11 10.0.26300、conhost、bun 1.4.2 と canary。比べる相手は node v26.10.0 と deno 2.9.7。各プロセスが自分で `GetConsoleCP` / `GetConsoleOutputCP` を読み、画面は `ReadConsoleOutputCharacterW` で読み取った）。node と deno ではどれも起きなかった。
+
+1. **パイプでつないだ相手の出力が化ける**（#43660 の症状）。bun 同士が直接つながっていなくても起きる（`bun | node | bun`）
+2. **回ごとに結果が変わる。** #43660 のコマンドを毎回新しい窓で 10 回流すと、1.4.2 では 8 回、canary では 4 回化けた。起動・終了の順を決めると、どの順も 3 回中 3 回同じ結果になった
+3. **窓に 65001 が残る。** 通常終了でも順番によって残り、強制終了（`taskkill /F`）でも残る
+4. **65001 が残ると、同じ窓のほかのプログラムが壊れる。** `cmd.exe` が SJIS のバッチファイルの残りを読み違え（日本語の行が `�������` になる）、`chcp` や `pause` のメッセージが英語になる
+5. **パイプのデータそのものは壊れない。** 害はすべて、共有されたコンソールの状態を変えることから起きている
+
+**証拠**
+
+- 全結果（表 ・ 時系列 ・ 画面）: {PAGES_URL}/research/codepage-test-results.html
+- 上のすべてを新しい窓で再現するテストコード: {REPO_URL}（`tests/codepage.test.ts`）
+- 関連: #43660
+</code></pre>
+</section>
+
+<section class="ch03" id="ch03">
+<h1>bun#43660 へのコメント</h1>
+<pre><code class="language-markdown">続報: ここで報告した文字化けは、もっと広い問題の症状の 1 つだった。bun は起動時にコンソールのコードページを控えて変え、終了時に戻すが、コードページは窓の全プロセスで共有されるため、同時に動く bun 同士が互いの控えを上書きする。
+
+順番を決めた再現（英語版 Windows の 437 でも再現する）と、node ・ deno と比べた実測を #{NEW} に出した。bun がコードページを変えなくなれば、この Issue も解消する。
+</code></pre>
+</section>
+</div>
+
+<footer><div class="navbar"><a href="../README-JP.html" title="README">⌂</a><a href="new-issue-draft.html" title="English">English</a></div></footer>
+</body>
+</html>

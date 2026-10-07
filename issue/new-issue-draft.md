@@ -1,0 +1,121 @@
+# Draft of the new issue
+
+The text to post to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Not posted yet
+
+> 📅 Created: 2026-10-04 / Updated: 2026-10-06
+
+[⌂](../README.md)
+
+[日本語](new-issue-draft-JP.md)
+
+Each block below goes into the field of the same name in the Bug Report template. `{PAGES_URL}` and `{REPO_URL}` are replaced with the URLs measured after the repository and GitHub Pages are published. `{NEW}` is the number of the new issue.
+
+1. [Title and template fields](#1-title-and-template-fields)
+2. [Additional information](#2-additional-information)
+3. [Comment on bun#43660](#3-comment-on-bun43660)
+
+## 1. Title and template fields
+
+**Title**
+
+```text
+Windows: Bun switches the console code page to 65001 at startup, which garbles output and breaks other processes in the same console (root cause of #43660)
+```
+
+**What version of Bun is running?**
+
+```text
+1.4.2+744846f84 (also reproduced on 1.4.3-canary.1+bb35d1b81)
+```
+
+**What platform is your computer?**
+
+```text
+Microsoft Windows NT 10.0.26300.0 x64
+```
+
+**What steps can reproduce the bug?**
+
+```markdown
+At startup Bun saves the console's input/output code pages and sets both to 65001; at exit it restores the saved values ([`init()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567), [`restore()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). The code page belongs to the console and is shared by every process attached to it, so two Bun processes in one console overwrite each other's saved value. This is the root cause of #43660.
+
+Open a **new `cmd.exe` window** (any code page other than 65001; 437 on English Windows, 932 on Japanese Windows) and run:
+
+```bat
+bun -e "console.log('abc 東京大阪 xyz'); setTimeout(() => {}, 2000)" | (ping -n 2 127.0.0.1 >nul & bun -e "let d = ''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => setTimeout(() => process.stdout.write(d), 800))")
+chcp
+```
+
+The `ping` and the timers only fix the order: the writer starts first, the reader starts about 1 s later, and the writer exits while the reader is still running. This reproduced every time (3 out of 3 at code page 437, 3 out of 3 at 932, on both builds).
+```
+
+**What is the expected behavior?**
+
+```markdown
+The text is printed correctly and the console keeps its code page. This is what Node.js prints when both `bun` are replaced with `node`:
+
+```
+abc 東京大阪 xyz
+Active code page: 437
+```
+```
+
+**What do you see instead?**
+
+```markdown
+At code page 437:
+
+```
+abc µ¥▒Σ║¼σñºΘÿ¬ xyz
+Active code page: 65001
+```
+
+At code page 932 (Japanese Windows):
+
+```
+abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
+Active code page: 65001
+```
+
+What happens:
+
+1. The writer starts, saves 437 and sets 65001
+2. The reader starts and saves 65001 as its "original" value
+3. The writer exits and restores 437
+4. The reader writes raw UTF-8 bytes to a console that is now at 437, so they are garbled
+5. The reader exits and restores 65001, which stays on the console after both are gone
+```
+
+## 2. Additional information
+
+```markdown
+**Request: please don't change the console code page at all.** Write console output with `WriteConsoleW` (UTF-8 → UTF-16), write bytes unchanged to pipes and files, and read console input with `ReadConsoleW`. None of these depend on the code page. Node.js and Deno never change it and print correctly in every case below. GitHub code search finds no use of `WriteConsoleW` in the repository.
+
+Saving and restoring cannot be made safe: several processes in one console save and restore the same shared value, so the exit order decides what remains, and a forced kill skips the restore entirely (the [source comment](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L482-L484) already says restoration "may not be applied if the process is killed abruptly"). Source links point to the current `main`.
+
+**Harms measured** on Japanese Windows 11 (10.0.26300), conhost, Bun 1.4.2 and canary, compared with Node.js v26.10.0 and Deno 2.9.7. Each process read `GetConsoleCP` / `GetConsoleOutputCP` itself, and the screen was read back with `ReadConsoleOutputCharacterW`. Node.js and Deno showed none of these.
+
+1. **Garbled output** in a piped peer (the #43660 symptom), also when the two Bun processes are not directly connected (`bun | node | bun`).
+2. **Results change from run to run.** The #43660 command, run 10 times in fresh consoles, was garbled 8 times on 1.4.2 and 4 times on canary. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
+3. **65001 is left on the console** after a normal exit in some orders, and after a forced kill (`taskkill /F`).
+4. **Other programs in the same console break** once 65001 is left: `cmd.exe` misreads the rest of a Shift_JIS batch file (Japanese lines become `�������`), and `chcp` and `pause` switch their messages to English.
+5. **The data in the pipe is never corrupted.** Every harm comes from changing shared console state.
+
+**Evidence**
+
+- Full results (tables, timelines, screens): {PAGES_URL}/research/codepage-test-results.html
+- Test code that reproduces all of the above in fresh consoles: {REPO_URL} (`tests/codepage.test.ts`)
+- Related: #43660
+```
+
+## 3. Comment on bun#43660
+
+```markdown
+Follow-up: the garbling reported here is one symptom of a broader problem. Bun saves and changes the console code page at startup and restores it at exit, but the code page is shared by every process in the console, so concurrent Bun processes overwrite each other's saved value.
+
+I filed #{NEW} with a deterministic reproduction (it also reproduces at code page 437 on English Windows) and measurements against Node.js and Deno. If Bun stops changing the code page, this issue goes away too.
+```
+
+[⌂](../README.md)
+
+[日本語](new-issue-draft-JP.md)

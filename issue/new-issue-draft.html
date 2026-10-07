@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft of the new issue</title>
+<style>
+:root {
+	--navy1: #12224d; --navy2: #2f5fbf; --ink: #1c2330; --ink-soft: #4a5568;
+	--line: #d9dfe8; --code-bg: #f4f6fa; --link: #1a4fa0;
+	--accent: var(--navy1); --accent2: var(--navy2); --soft: #f2f5fb;
+}
+body { margin: 0; background: #fff; color: var(--ink); font-size: 15.5px; line-height: 1.85; font-family: "Segoe UI", "Yu Gothic UI", Meiryo, sans-serif; }
+a { color: var(--link, #1a4fa0); background: transparent; }
+.titlebar { background: linear-gradient(135deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; padding: 34px 30px 30px; }
+.titlebar .inner { max-width: 1600px; margin: 0 auto; }
+.titlebar h1 { font-size: 1.8em; margin: 0 0 6px; color: #fff; }
+.titlebar .lead, .titlebar .date { color: #e6ecf8; background: transparent; font-size: 0.92em; margin: 2px 0; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 0 30px; }
+.navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+.navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
+.ch02 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch03 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
+.toc ol li { counter-increment: tocnum; }
+.toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
+.toc ol a::before { content: counter(tocnum) ". "; }
+section { margin: 34px 0; padding: 4px 26px 26px; border-radius: 10px; background: linear-gradient(180deg, var(--soft, #f2f5fb), #fff); color: var(--ink); }
+section h1 { margin: 26px 0 20px; padding: 14px 20px; border-radius: 8px; font-size: 1.45em; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+code { background: var(--code-bg, #f4f6fa); border: 1px solid var(--line, #d9dfe8); color: #17335f; padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+pre { padding: 13px 16px; overflow-x: auto; border-left: 5px solid var(--accent2, #2f5fbf); background: linear-gradient(180deg, var(--code-bg, #f4f6fa), #fff); color: var(--ink); white-space: pre-wrap; }
+pre code { border: none; background: transparent; padding: 0; }
+footer { max-width: 1600px; margin: 0 auto; padding: 18px 30px 30px; }
+footer .navbar { margin-top: 0; }
+</style>
+</head>
+<body>
+<div class="titlebar"><div class="inner">
+<h1>Draft of the new issue</h1>
+<p class="lead">The text to post to oven-sh/bun with the Bug Report template, and the follow-up comment for bun#43660. Not posted yet</p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-06</p>
+</div></div>
+
+<div class="wrap">
+<div class="navbar"><a href="../README.html" title="README">⌂</a><a href="new-issue-draft-JP.html" title="日本語">日本語</a></div>
+
+<p>Each block below goes into the field of the same name in the Bug Report template. <code>{PAGES_URL}</code> and <code>{REPO_URL}</code> are replaced with the URLs measured after the repository and GitHub Pages are published. <code>{NEW}</code> is the number of the new issue.</p>
+
+<nav class="toc"><ol>
+<li class="ch01"><a href="#ch01">Title and template fields</a></li>
+<li class="ch02"><a href="#ch02">Additional information</a></li>
+<li class="ch03"><a href="#ch03">Comment on bun#43660</a></li>
+</ol></nav>
+
+<section class="ch01" id="ch01">
+<h1>Title and template fields</h1>
+<p><strong>Title</strong></p>
+<pre><code class="language-text">Windows: Bun switches the console code page to 65001 at startup, which garbles output and breaks other processes in the same console (root cause of #43660)</code></pre>
+
+<p><strong>What version of Bun is running?</strong></p>
+<pre><code class="language-text">1.4.2+744846f84 (also reproduced on 1.4.3-canary.1+bb35d1b81)</code></pre>
+
+<p><strong>What platform is your computer?</strong></p>
+<pre><code class="language-text">Microsoft Windows NT 10.0.26300.0 x64</code></pre>
+
+<p><strong>What steps can reproduce the bug?</strong></p>
+<pre><code class="language-markdown">At startup Bun saves the console's input/output code pages and sets both to 65001; at exit it restores the saved values ([`init()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567), [`restore()`](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). The code page belongs to the console and is shared by every process attached to it, so two Bun processes in one console overwrite each other's saved value. This is the root cause of #43660.
+
+Open a **new `cmd.exe` window** (any code page other than 65001; 437 on English Windows, 932 on Japanese Windows) and run:
+
+```bat
+bun -e "console.log('abc 東京大阪 xyz'); setTimeout(() => {}, 2000)" | (ping -n 2 127.0.0.1 >nul & bun -e "let d = ''; process.stdin.on('data', c => d += c); process.stdin.on('end', () => setTimeout(() => process.stdout.write(d), 800))")
+chcp
+```
+
+The `ping` and the timers only fix the order: the writer starts first, the reader starts about 1 s later, and the writer exits while the reader is still running. This reproduced every time (3 out of 3 at code page 437, 3 out of 3 at 932, on both builds).
+</code></pre>
+
+<p><strong>What is the expected behavior?</strong></p>
+<pre><code class="language-markdown">The text is printed correctly and the console keeps its code page. This is what Node.js prints when both `bun` are replaced with `node`:
+
+```
+abc 東京大阪 xyz
+Active code page: 437
+```
+</code></pre>
+
+<p><strong>What do you see instead?</strong></p>
+<pre><code class="language-markdown">At code page 437:
+
+```
+abc µ¥▒Σ║¼σñºΘÿ¬ xyz
+Active code page: 65001
+```
+
+At code page 932 (Japanese Windows):
+
+```
+abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz
+Active code page: 65001
+```
+
+What happens:
+
+1. The writer starts, saves 437 and sets 65001
+2. The reader starts and saves 65001 as its "original" value
+3. The writer exits and restores 437
+4. The reader writes raw UTF-8 bytes to a console that is now at 437, so they are garbled
+5. The reader exits and restores 65001, which stays on the console after both are gone
+</code></pre>
+</section>
+
+<section class="ch02" id="ch02">
+<h1>Additional information</h1>
+<pre><code class="language-markdown">**Request: please don't change the console code page at all.** Write console output with `WriteConsoleW` (UTF-8 → UTF-16), write bytes unchanged to pipes and files, and read console input with `ReadConsoleW`. None of these depend on the code page. Node.js and Deno never change it and print correctly in every case below. GitHub code search finds no use of `WriteConsoleW` in the repository.
+
+Saving and restoring cannot be made safe: several processes in one console save and restore the same shared value, so the exit order decides what remains, and a forced kill skips the restore entirely (the [source comment](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L482-L484) already says restoration "may not be applied if the process is killed abruptly"). Source links point to the current `main`.
+
+**Harms measured** on Japanese Windows 11 (10.0.26300), conhost, Bun 1.4.2 and canary, compared with Node.js v26.10.0 and Deno 2.9.7. Each process read `GetConsoleCP` / `GetConsoleOutputCP` itself, and the screen was read back with `ReadConsoleOutputCharacterW`. Node.js and Deno showed none of these.
+
+1. **Garbled output** in a piped peer (the #43660 symptom), also when the two Bun processes are not directly connected (`bun | node | bun`).
+2. **Results change from run to run.** The #43660 command, run 10 times in fresh consoles, was garbled 8 times on 1.4.2 and 4 times on canary. With the start/exit order fixed, every order gave the same result 3 out of 3 times.
+3. **65001 is left on the console** after a normal exit in some orders, and after a forced kill (`taskkill /F`).
+4. **Other programs in the same console break** once 65001 is left: `cmd.exe` misreads the rest of a Shift_JIS batch file (Japanese lines become `�������`), and `chcp` and `pause` switch their messages to English.
+5. **The data in the pipe is never corrupted.** Every harm comes from changing shared console state.
+
+**Evidence**
+
+- Full results (tables, timelines, screens): {PAGES_URL}/research/codepage-test-results.html
+- Test code that reproduces all of the above in fresh consoles: {REPO_URL} (`tests/codepage.test.ts`)
+- Related: #43660
+</code></pre>
+</section>
+
+<section class="ch03" id="ch03">
+<h1>Comment on bun#43660</h1>
+<pre><code class="language-markdown">Follow-up: the garbling reported here is one symptom of a broader problem. Bun saves and changes the console code page at startup and restores it at exit, but the code page is shared by every process in the console, so concurrent Bun processes overwrite each other's saved value.
+
+I filed #{NEW} with a deterministic reproduction (it also reproduces at code page 437 on English Windows) and measurements against Node.js and Deno. If Bun stops changing the code page, this issue goes away too.
+</code></pre>
+</section>
+</div>
+
+<footer><div class="navbar"><a href="../README.html" title="README">⌂</a><a href="new-issue-draft-JP.html" title="日本語">日本語</a></div></footer>
+</body>
+</html>

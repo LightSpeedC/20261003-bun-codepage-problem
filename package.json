@@ -1,0 +1,15 @@
+{
+	"name": "20261003-bun-codepage-problem",
+	"private": true,
+	"type": "module",
+	"description": "bun がコンソールのコードページを変える害を、node ・ deno と比べて実測する",
+	"scripts": {
+		"test": "node --test tests/codepage.test.ts",
+		"typecheck": "tsc --noEmit -p ."
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.4",
+		"koffi": "^3.3.2",
+		"typescript": "^7.0.2"
+	}
+}
