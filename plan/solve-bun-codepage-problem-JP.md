@@ -274,7 +274,7 @@ tools/50_run/
 ### 返事を見張る
 
 - **対象は oven-sh/bun の #44693 ・ #43660 ・ PR #43662**。コメント ・ レビュー ・ 行へのコメント ・ コミット ・ ラベル ・ close ・ ほかからの参照 ・ 本文とコメントへのリアクション（こちらのコメントへのものも含む）
-- **ローカルルールの「[返事を見張る cron](../rules/local-rules-JP.md#3-issue-と公開)」で確かめる**。式と、作り直す決めごとはそちらに置く。繰り返しの cron は、予定より 30 分遅れて発火する（10/08 の 4 回の実測）
+- **ローカルルールの「[返事を見張る cron](../rules/local-rules-JP.md#3-issue-と公開)」で確かめる**。式と、作り直す決めごとはそちらに置く。繰り返しの cron は、予定より最大 30 分遅れて発火する。遅れの長さはタスクの ID で決まり、毎回同じ（[公式の資料](https://code.claude.com/docs/en/scheduled-tasks#jitter)）。10/08 は ID の違う 2 つの cron が、5 回ともちょうど 30 分遅れた
 - **`node tools/80_ops/check-replies.ts` を流す**。前回の確認から増えたものだけを出し、投稿した本人の分は除く。前回の確認の時刻は `etc/check-replies.json` に残る（Git 管理外）
 - **新着があれば、リンク先の全文を読み、要旨と、こちらがすべきことの案を報告する**。返信を投稿するのは、本文の案を利用者が確認し「送って」と言ってから（ローカルルール「Issue と公開」）
 - **新着があれば、PushNotification でスマホにも知らせる**。どの Issue に誰が何をしたかを 1 行で。届かないことがある（Claude Code 側の未解決の不具合。[anthropics/claude-code#87003](https://github.com/anthropics/claude-code/issues/87003) ほか）

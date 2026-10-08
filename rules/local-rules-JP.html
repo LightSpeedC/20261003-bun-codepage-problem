@@ -117,7 +117,7 @@ AGENTS.md
 <p>理由: 資料を GitHub Pages で公開し、bun の開発者に読んでもらうプロジェクトで、push するまで公開ページに反映されないため。</p>
 <h2>返事を見張る cron</h2>
 <ul>
-<li><strong>式は <code>50 8-23/3 * * *</code></strong>（8:50 ・ 11:50 ・ 14:50 ・ 17:50 ・ 20:50 ・ 23:50 JST）。指示文は「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」</li>
+<li><strong>式は <code>0 8-23/3 * * *</code></strong>（8:00 ・ 11:00 ・ 14:00 ・ 17:00 ・ 20:00 ・ 23:00 JST）。指示文は「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」</li>
 <li><strong>セッションを開き直したとき・7 日で切れたときは、指示を待たずに作り直す</strong>。手順は計画の「<a href="../plan/solve-bun-codepage-problem-JP.html#ch07">返事を見張る</a>」の節に置き、ここには書かない</li>
 </ul>
 <p>理由: cron はセッションの中だけで生き、7 日で切れる。共通ルールでは、作り直すのはローカルルールに定義があるものだけ。</p>
