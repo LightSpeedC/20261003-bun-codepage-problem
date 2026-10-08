@@ -1,5 +1,5 @@
-// Check oven-sh/bun #44693, #43660 and PR #43662 for activity since the last check, and print only what is new.
-// oven-sh/bun の #44693 ・ #43660 ・ PR #43662 で、前回の確認から増えたものだけを表示する。
+// Check oven-sh/bun #44693, #43660 and PR #43662 for activity (comments, reviews, commits, events, reactions) since the last check, and print only what is new.
+// oven-sh/bun の #44693 ・ #43660 ・ PR #43662 で、前回の確認から増えたもの（コメント ・ レビュー ・ コミット ・ 出来事 ・ リアクション）だけを表示する。
 // Activity by the account running gh (the one that posted) is left out. The time of the last check is kept in etc/check-replies.json (not in Git).
 // gh を動かすアカウント（投稿した本人）の分は除く。前回の確認の時刻は etc/check-replies.json に残す（Git 管理外）。
 // Usage: node tools/80_ops/check-replies.ts [--since <ISO 8601 time>]
@@ -65,6 +65,10 @@ const KIND: Record<string, string> = {
 	head_ref_force_pushed: 'force push', ready_for_review: 'レビュー待ちへ', convert_to_draft: '下書きへ',
 };
 
+const EMOJI: Record<string, string> = {
+	'+1': '👍', '-1': '👎', laugh: '😄', hooray: '🎉', confused: '😕', heart: '❤️', rocket: '🚀', eyes: '👀',
+};
+
 type Item = { n: number; at: string; who: string; kind: string; text: string; url: string };
 const items: Item[] = [];
 const titles: string[] = [];
@@ -86,6 +90,25 @@ for (const n of TARGETS) {
 		else if (e.event === 'renamed') text = `${e.rename?.from} → ${e.rename?.to}`;
 		const url: string = e.html_url ?? e.source?.issue?.html_url ?? page;
 		items.push({ n, at, who, kind: KIND[e.event] ?? e.event, text, url });
+	}
+	// Reactions on the issue body and on its comments, including our own comments (a reaction to them is a reply too).
+	// Reactions are not in the timeline. The reactions API is called only where the rollup count says there are some.
+	// Reactions on PR line comments are left out: many calls for little to learn.
+	// 本文とコメントに付いたリアクション。こちらのコメントも含む（そこへの反応も返事の 1 つ）。
+	// リアクションはタイムラインに出ない。リアクションの API は、件数の集計が 0 でないところだけ呼ぶ。
+	// PR の行へのコメントに付いたものは除く。呼び出しが増えるわりに得るものが少ない。
+	const reacted: { api: string; where: string; url: string }[] = [];
+	if (issue.reactions?.total_count) reacted.push({ api: `repos/${REPO}/issues/${n}/reactions?per_page=100`, where: '本文', url: page });
+	for (const c of pages(`repos/${REPO}/issues/${n}/comments?per_page=100`)) {
+		if (c.reactions?.total_count) {
+			reacted.push({ api: `repos/${REPO}/issues/comments/${c.id}/reactions?per_page=100`, where: `${c.user?.login} のコメント「${oneLine(c.body, 60)}」`, url: c.html_url });
+		}
+	}
+	for (const t of reacted) {
+		for (const r of pages(t.api)) {
+			if (Date.parse(r.created_at) <= Date.parse(since) || r.user?.login === me) continue;
+			items.push({ n, at: r.created_at, who: r.user?.login ?? '?', kind: `リアクション ${EMOJI[r.content] ?? r.content}`, text: `${t.where}に`, url: t.url });
+		}
 	}
 	// Reviews and line comments on a PR are read here.
 	// A review with an empty body only holds line comments, which are listed one by one below, so it is left out.
