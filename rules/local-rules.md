@@ -2,7 +2,7 @@
 
 Rules that apply only to this project. Where they differ from the common rules, these take precedence
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-08
+> 📅 Created: 2026-10-03 / Updated: 2026-10-09
 
 [⌂](../README.md)
 
@@ -76,7 +76,7 @@ Reason: this project publishes documents with GitHub Pages for the Bun developer
 
 ### Cron job that watches for replies
 
-- **The expression is `0 8-23/3 * * *`** (8:00, 11:00, 14:00, 17:00, 20:00 and 23:00 JST). The prompt is in Japanese, the language agents read their instructions in: 「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」
+- **The expression is `0 5-23/3 * * *`** (5:00, 8:00, 11:00, 14:00, 17:00, 20:00 and 23:00 JST). The prompt is in Japanese, the language agents read their instructions in: 「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」
 - **When the session is reopened, or the job expires after 7 days, recreate it without waiting to be told**. The procedure lives in the "[Watching for replies](../plan/solve-bun-codepage-problem.md#7-steps)" section of the plan, not here
 
 Reason: cron jobs live only inside the session and expire after 7 days, and the common rules recreate only the jobs defined in the local rules.
