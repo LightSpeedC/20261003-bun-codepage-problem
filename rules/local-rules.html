@@ -115,6 +115,12 @@ AGENTS.md
 <li>Do not commit <code>research/evidence_last/</code></li>
 </ul>
 <p>Reason: this project publishes documents with GitHub Pages for the Bun developers to read, and nothing reaches the published pages until it is pushed.</p>
+<h2>Cron job that watches for replies</h2>
+<ul>
+<li><strong>The expression is <code>50 8-23/3 * * *</code></strong> (8:50, 11:50, 14:50, 17:50, 20:50 and 23:50 JST). The prompt is in Japanese, the language agents read their instructions in: 「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」</li>
+<li><strong>When the session is reopened, or the job expires after 7 days, recreate it without waiting to be told</strong>. The procedure lives in the "<a href="../plan/solve-bun-codepage-problem.html#ch07">Watching for replies</a>" section of the plan, not here</li>
+</ul>
+<p>Reason: cron jobs live only inside the session and expire after 7 days, and the common rules recreate only the jobs defined in the local rules.</p>
 </section>
 </div>
 

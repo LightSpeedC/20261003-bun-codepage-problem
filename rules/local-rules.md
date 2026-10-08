@@ -74,6 +74,13 @@ Reason: this project only publishes documents with GitHub Pages, so there are no
 
 Reason: this project publishes documents with GitHub Pages for the Bun developers to read, and nothing reaches the published pages until it is pushed.
 
+### Cron job that watches for replies
+
+- **The expression is `50 8-23/3 * * *`** (8:50, 11:50, 14:50, 17:50, 20:50 and 23:50 JST). The prompt is in Japanese, the language agents read their instructions in: 「定期確認: plan/solve-bun-codepage-problem-JP.html の「返事を見張る」の節を読み、その手順で oven-sh/bun の返事を確かめる。」
+- **When the session is reopened, or the job expires after 7 days, recreate it without waiting to be told**. The procedure lives in the "[Watching for replies](../plan/solve-bun-codepage-problem.md#7-steps)" section of the plan, not here
+
+Reason: cron jobs live only inside the session and expire after 7 days, and the common rules recreate only the jobs defined in the local rules.
+
 [⌂](../README.md)
 
 [日本語](local-rules-JP.md)

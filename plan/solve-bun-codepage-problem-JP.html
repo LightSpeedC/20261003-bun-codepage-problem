@@ -309,7 +309,7 @@ tools/50_run/
 <h2>返事を見張る</h2>
 <ul>
 <li><strong>対象は oven-sh/bun の #44693 ・ #43660 ・ PR #43662</strong>。コメント ・ レビュー ・ 行へのコメント ・ コミット ・ ラベル ・ close ・ ほかからの参照</li>
-<li><strong>8:30 ・ 11:30 ・ 14:30 ・ 17:30 ・ 20:30（JST）に cron で確かめる</strong>。cron はエージェントのセッションの中だけで生き、7 日で切れる</li>
+<li><strong>ローカルルールの「<a href="../rules/local-rules-JP.html#ch03">返事を見張る cron</a>」で確かめる</strong>。式と、作り直す決めごとはそちらに置く。繰り返しの cron は、予定より 30 分遅れて発火する（10/08 の 4 回の実測）</li>
 <li><strong><code>node tools/80_ops/check-replies.ts</code> を流す</strong>。前回の確認から増えたものだけを出し、投稿した本人の分は除く。前回の確認の時刻は <code>etc/check-replies.json</code> に残る（Git 管理外）</li>
 <li><strong>新着があれば、リンク先の全文を読み、要旨と、こちらがすべきことの案を報告する</strong>。返信を投稿するのは、本文の案を利用者が確認し「送って」と言ってから（ローカルルール「Issue と公開」）</li>
 <li><strong>新着があれば、PushNotification でスマホにも知らせる</strong>。どの Issue に誰が何をしたかを 1 行で。届かないことがある（Claude Code 側の未解決の不具合。<a href="https://github.com/anthropics/claude-code/issues/87003">anthropics/claude-code#87003</a> ほか）</li>
