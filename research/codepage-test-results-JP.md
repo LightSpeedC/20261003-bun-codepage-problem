@@ -2,7 +2,7 @@
 
 計画の T1〜T6 を、コードページ 932 と 437 で、bun 1.4.2 ・ bun canary ・ node ・ deno に流した結果。bun がコンソールのコードページを変えることで起きる害を 1 つずつ実測で示し、結果の 1 つ 1 つから証拠ファイルへリンクする
 
-> 📅 作成: 2026-10-04 / 更新: 2026-10-07
+> 📅 作成: 2026-10-04 / 更新: 2026-10-10
 
 [⌂](../README-JP.md)
 
@@ -241,7 +241,38 @@ bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin
 
 - 同じコマンドでも、bun は回ごとに結果が変わり、化ける回数も流すたびに変わった（H2）。2 本のどちらが先に起動・終了するかで決まり、その順は OS の都合で毎回揺れる
 - bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった
-- PR #43662 の版は 20 回とも正しく出したが、932 の 1 回で出力側のコードページを 65001 のまま残した（[結論](#2-結論) を参照）
+- PR #43662 の版は 20 回とも正しく出したが、932 の 1 回で出力側のコードページを 65001 のまま残した（[結論](#2-結論) と [下の時系列](#窓の全プロセスの時系列pr-4366293260-回) を参照）
+
+### 窓の全プロセスの時系列（PR #43662、932、60 回）
+
+コードページが変わったまま残ったとき、窓にどのプロセスがいたかを見るため、同じコマンドを PR #43662 の版で、932 から 60 回流し直した。その間、同じ窓に node の見張り役をつないだ。見張り役は `GetConsoleProcessList` ・ `GetConsoleCP` ・ `GetConsoleOutputCP` を読み続け、プロセスの出入りとコードページの変化を、すべて UTC の時刻で記録した（`watch.ndjson`）。node はコードページを変えない（T1）。
+
+| 回 | 終了後（入力 / 出力） | 窓にいたプロセス | 時系列 |
+|---|---|---|---|
+| 19 | ❌ 932 / 65001 | バッチを動かす cmd.exe、前後の node の計測、`chcp`、bun 2 本。ほかにはいない | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/watch.ndjson) |
+| 45 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-45/watch.ndjson) |
+| 51 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-51/watch.ndjson) |
+
+ほかの 57 回は 932 / 932 に戻った（[results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl)、[environment.json](evidence/cp932/bun-pr-43662/asis-timeline/environment.json)）。45 回目の bun の行だけを抜くと（UTC）:
+
+```text
+13:39:50.176  attach  bun -e "console.log(...)"
+13:39:50.179  codepage in 932   / out 65001
+13:39:50.181  codepage in 65001 / out 65001
+13:39:50.189  attach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.192  codepage in 65001 / out 932
+13:39:50.194  detach  bun -e "console.log(...)"
+13:39:50.227  detach  bun -e "process.stdin.pipe(process.stdout)"
+              (left at in 65001 / out 932)
+```
+
+- 65001 の間に起動した 3 本目のプロセスはいない。bun 2 本だけで、コードページが変わったまま残った
+- 3 回とも、2 本目の bun は、1 本目が 65001 にした 8〜11 ms 後に起動しており、2 本の寿命は重なっていた
+- 残るのは出力側（19 回目）のことも、入力側（45・51 回目）のこともある
+- 入力と出力は別々の呼び出しで変わるため、932 / 65001 のような途中の状態が短い間ある。未確認だが、2 本目が 65001 か、この途中の状態を「元の値」として控えた可能性がある
+- 見張り役は数 ms ごとに読むため、ごく短い変化は記録から抜けているかもしれない
+
+コード: [見張り役](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts)（watch.ts）、[流す側](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts)（asis-timeline.ts）
 
 ## 8. 条件
 

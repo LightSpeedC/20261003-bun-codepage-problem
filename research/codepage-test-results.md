@@ -2,7 +2,7 @@
 
 Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.2, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-07
+> 📅 Created: 2026-10-04 / Updated: 2026-10-10
 
 [⌂](../README.md)
 
@@ -241,7 +241,38 @@ Test code: [same shape as bun#43660 (codepage.test.ts lines 140 to 161)](https:/
 
 - With the same command, Bun's result changed from run to run (H2), and the number of garbled runs also changed from run to run. It is decided by which of the two processes starts and exits first, and that order varies with OS scheduling
 - The garbling reported in bun#43660 was the garbled side of this variation
-- The build of PR #43662 printed correctly in all 20 runs, but in one run at 932 it left the output code page at 65001 (see [Conclusion](#2-conclusion))
+- The build of PR #43662 printed correctly in all 20 runs, but in one run at 932 it left the output code page at 65001 (see [Conclusion](#2-conclusion) and [the timeline below](#timeline-of-every-process-on-the-console-pr-43662-932-60-runs))
+
+### Timeline of every process on the console (PR #43662, 932, 60 runs)
+
+To see which processes were on the console when the code page was left changed, the same command was run 60 more times with the build of PR #43662, starting at 932. A Node.js watcher was attached to the same console the whole time. It polled `GetConsoleProcessList`, `GetConsoleCP` and `GetConsoleOutputCP` continuously and logged every attach, every detach and every code page change with a UTC time (`watch.ndjson`). Node.js does not change the code page (T1).
+
+| Run | After exit (in / out) | Processes on the console | Timeline |
+|---|---|---|---|
+| 19 | ❌ 932 / 65001 | cmd.exe running the batch file, the Node.js probes before and after, `chcp` and the two bun processes. No other process | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/watch.ndjson) |
+| 45 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-45/watch.ndjson) |
+| 51 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-51/watch.ndjson) |
+
+The other 57 runs returned to 932 / 932 ([results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl), [environment.json](evidence/cp932/bun-pr-43662/asis-timeline/environment.json)). Run 45, the bun lines only (UTC):
+
+```text
+13:39:50.176  attach  bun -e "console.log(...)"
+13:39:50.179  codepage in 932   / out 65001
+13:39:50.181  codepage in 65001 / out 65001
+13:39:50.189  attach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.192  codepage in 65001 / out 932
+13:39:50.194  detach  bun -e "console.log(...)"
+13:39:50.227  detach  bun -e "process.stdin.pipe(process.stdout)"
+              (left at in 65001 / out 932)
+```
+
+- No third process started while the console was at 65001. The code page was left changed with only the two bun processes
+- In all three runs, the second bun started 8 to 11 ms after the first one had set 65001, so their lifetimes overlapped
+- Both directions can be left behind: the output code page (run 19) or the input code page (runs 45 and 51)
+- Input and output are changed by separate calls, so the console is briefly in a mixed state such as 932 / 65001. Not verified: the second process may save 65001, or this mixed state, as the "original" value
+- The watcher samples every few ms, so very short changes may be missing from the log
+
+Code: [the watcher](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts) (watch.ts) and [the runner](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts) (asis-timeline.ts)
 
 ## 8. Conditions
 

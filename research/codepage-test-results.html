@@ -54,7 +54,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Code page test results</h1>
 <p class="lead">Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.2, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file</p>
-<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-07</p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-10</p>
 </div></div>
 
 <div class="wrap">
@@ -295,8 +295,35 @@ neighbor: 東京大阪            neighbor: café
 <ul>
 <li>With the same command, Bun's result changed from run to run (H2), and the number of garbled runs also changed from run to run. It is decided by which of the two processes starts and exits first, and that order varies with OS scheduling</li>
 <li>The garbling reported in bun#43660 was the garbled side of this variation</li>
-<li>The build of PR #43662 printed correctly in all 20 runs, but in one run at 932 it left the output code page at 65001 (see <a href="#ch02">Conclusion</a>)</li>
+<li>The build of PR #43662 printed correctly in all 20 runs, but in one run at 932 it left the output code page at 65001 (see <a href="#ch02">Conclusion</a> and <a href="#asis-timeline">the timeline below</a>)</li>
 </ul>
+<h2 id="asis-timeline">Timeline of every process on the console (PR #43662, 932, 60 runs)</h2>
+<p>To see which processes were on the console when the code page was left changed, the same command was run 60 more times with the build of PR #43662, starting at 932. A Node.js watcher was attached to the same console the whole time. It polled <code>GetConsoleProcessList</code>, <code>GetConsoleCP</code> and <code>GetConsoleOutputCP</code> continuously and logged every attach, every detach and every code page change with a UTC time (<code>watch.ndjson</code>). Node.js does not change the code page (T1).</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Run</th><th>After exit (in / out)</th><th>Processes on the console</th><th>Timeline</th></tr></thead>
+<tbody>
+<tr><td class="nowrap">19</td><td class="nowrap">❌ 932 / 65001</td><td rowspan="3">cmd.exe running the batch file, the Node.js probes before and after, <code>chcp</code> and the two bun processes. No other process</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline/asis-19/watch.ndjson">watch.ndjson</a></td></tr>
+<tr><td class="nowrap">45</td><td class="nowrap">❌ 65001 / 932</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline/asis-45/watch.ndjson">watch.ndjson</a></td></tr>
+<tr><td class="nowrap">51</td><td class="nowrap">❌ 65001 / 932</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline/asis-51/watch.ndjson">watch.ndjson</a></td></tr>
+</tbody></table></div>
+<p>The other 57 runs returned to 932 / 932 (<a href="evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl">results.jsonl</a>, <a href="evidence/cp932/bun-pr-43662/asis-timeline/environment.json">environment.json</a>). Run 45, the bun lines only (UTC):</p>
+<pre><code class="language-text">13:39:50.176  attach  bun -e "console.log(...)"
+13:39:50.179  codepage in 932   / out 65001
+13:39:50.181  codepage in 65001 / out 65001
+13:39:50.189  attach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.192  codepage in 65001 / out 932
+13:39:50.194  detach  bun -e "console.log(...)"
+13:39:50.227  detach  bun -e "process.stdin.pipe(process.stdout)"
+              (left at in 65001 / out 932)
+</code></pre>
+<ul>
+<li>No third process started while the console was at 65001. The code page was left changed with only the two bun processes</li>
+<li>In all three runs, the second bun started 8 to 11 ms after the first one had set 65001, so their lifetimes overlapped</li>
+<li>Both directions can be left behind: the output code page (run 19) or the input code page (runs 45 and 51)</li>
+<li>Input and output are changed by separate calls, so the console is briefly in a mixed state such as 932 / 65001. Not verified: the second process may save 65001, or this mixed state, as the "original" value</li>
+<li>The watcher samples every few ms, so very short changes may be missing from the log</li>
+</ul>
+<p>Code: <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts">the watcher</a> (watch.ts) and <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts">the runner</a> (asis-timeline.ts)</p>
 </section>
 
 <section class="ch08" id="ch08">
