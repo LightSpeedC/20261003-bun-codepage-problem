@@ -52,7 +52,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Solving the Bun code page problem</h1>
 <p class="lead">bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-09</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-10</p>
 </div></div>
 
 <div class="wrap">
@@ -304,6 +304,7 @@ tools/50_run/
 <li>Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as <a href="https://github.com/oven-sh/bun/issues/44693">bun#44693</a>; text in <a href="../issue/bun-44693.html">Issue bun#44693</a>)</li>
 <li>Add a cross-reference to the new issue on bun#43660 (done: <a href="https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127">comment</a>)</li>
 <li>Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (done: the Conclusion of the results has a column for the PR; posted as <a href="https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500">a comment on #44693</a> and <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802">a comment on PR #43662</a>, text in <a href="../issue/bun-44693.html#ch04">Issue bun#44693</a>; #44693 was filed without noticing the PR)</li>
+<li>Answer robobun's question on PR #43662 (the start and exit order of every process in the run that left 65001) by measuring the timeline again (done: ran it 60 times, added it to <a href="../research/codepage-test-results.html#asis-timeline">the results</a>, and posted <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890">a reply on PR #43662</a>; the text is in <a href="../issue/bun-44693.html#ch06">Issue bun#44693</a>)</li>
 <li>Make the same tests runnable on any PC, and keep the evidence in <code>research/evidence/</code> (done: every test ran at 932 and 437, the results were copied to <code>research/evidence/</code>, and every ✅ / ❌ in the result tables links to its evidence file)</li>
 </ol>
 <h2>Watching for replies</h2>

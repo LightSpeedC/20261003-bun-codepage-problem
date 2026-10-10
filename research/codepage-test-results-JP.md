@@ -53,6 +53,13 @@ bun は、起動した瞬間（スクリプトが動く前）に窓の入力・�
 
 パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。順番を決めたケースは、安定版と canary 版ですべて同じ判定になり（T6）、932 と 437 でもすべて同じだった。
 
+### 関連する PR
+
+[PR #43662 での robobun の返信](https://github.com/oven-sh/bun/pull/43662#issuecomment-6096243719)に出てきたもの。2026-10-10 の時点で、どちらも open で、マージされていない。
+
+- [PR #38140](https://github.com/oven-sh/bun/pull/38140)（robobun、「メンテナーの確認待ち」）: コンソールの標準入力を、`ReadFile` ではなく `ReadConsoleW` で読む。いまは REPL ・ `prompt()` ・ `alert()` ・ `confirm()` ・ `bun init` ・ `bun update -i` ・ `bun -` が `ReadFile` で読み、入力側のコードページで変換される。Windows 10 / Server 2019 の conhost では、65001 での変換が ASCII 以外の入力を壊す。`process.stdin` ・ `Bun.stdin` ・ `fs.readSync(0)` は libuv を通るため影響を受けない。robobun によれば、起動時に 65001 にするのをやめるには、入力側がいまそれに頼っているため、この PR が先に要る。PR 自身は「壊れているのは ANSI 版の変換で、コードページではない」と書いている
+- [PR #42819](https://github.com/oven-sh/bun/pull/42819)（dylan-conway）: Windows で libuv を外し、I/O 完了ポートの独自のイベントループにする。パイプ ・ コンソール ・ ファイルは `src/io/windows/` に移る。robobun によれば、これのあと `fs.writeSync` ・ `fs.write` ・ `Bun.write` の書き込みの手当ては `src/sys/windows/fs.rs::write_at` 1 か所で済む。直る不具合の一覧に「別のプロセスがコードページを戻した後、`process.stdout.write` が化けていた（`console.log` はまだ化ける）」があり、ここで測った害と合う
+
 ### bun のソースの該当箇所
 
 - `init()`（[output.rs の 561〜567 行](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)）が `GetConsoleOutputCP` ／ `GetConsoleCP` の値を控え、`SetConsoleOutputCP(65001)` ／ `SetConsoleCP(65001)` を呼ぶ

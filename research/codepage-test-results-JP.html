@@ -106,6 +106,12 @@ footer .navbar { margin-top: 0; }
 <li>「自分が変えたコードページだけを戻す」でも、競合に負けることがある。順番を決めない 20 回のうち 1 回（<a href="evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl">ログ</a>）、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。考えられる順（未検証）: 送り手が 65001 にしたあとで受け手が出力側の値を控え、送り手が終わって 932 に戻し、そのあと受け手が 65001 にする。受け手は 65001 を控えているので、戻さない</li>
 </ul>
 <p>パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。順番を決めたケースは、安定版と canary 版ですべて同じ判定になり（T6）、932 と 437 でもすべて同じだった。</p>
+<h2>関連する PR</h2>
+<p><a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6096243719">PR #43662 での robobun の返信</a>に出てきたもの。2026-10-10 の時点で、どちらも open で、マージされていない。</p>
+<ul>
+<li><a href="https://github.com/oven-sh/bun/pull/38140">PR #38140</a>（robobun、「メンテナーの確認待ち」）: コンソールの標準入力を、<code>ReadFile</code> ではなく <code>ReadConsoleW</code> で読む。いまは REPL ・ <code>prompt()</code> ・ <code>alert()</code> ・ <code>confirm()</code> ・ <code>bun init</code> ・ <code>bun update -i</code> ・ <code>bun -</code> が <code>ReadFile</code> で読み、入力側のコードページで変換される。Windows 10 / Server 2019 の conhost では、65001 での変換が ASCII 以外の入力を壊す。<code>process.stdin</code> ・ <code>Bun.stdin</code> ・ <code>fs.readSync(0)</code> は libuv を通るため影響を受けない。robobun によれば、起動時に 65001 にするのをやめるには、入力側がいまそれに頼っているため、この PR が先に要る。PR 自身は「壊れているのは ANSI 版の変換で、コードページではない」と書いている</li>
+<li><a href="https://github.com/oven-sh/bun/pull/42819">PR #42819</a>（dylan-conway）: Windows で libuv を外し、I/O 完了ポートの独自のイベントループにする。パイプ ・ コンソール ・ ファイルは <code>src/io/windows/</code> に移る。robobun によれば、これのあと <code>fs.writeSync</code> ・ <code>fs.write</code> ・ <code>Bun.write</code> の書き込みの手当ては <code>src/sys/windows/fs.rs::write_at</code> 1 か所で済む。直る不具合の一覧に「別のプロセスがコードページを戻した後、<code>process.stdout.write</code> が化けていた（<code>console.log</code> はまだ化ける）」があり、ここで測った害と合う</li>
+</ul>
 <h2>bun のソースの該当箇所</h2>
 <ul>
 <li><code>init()</code>（<a href="https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567">output.rs の 561〜567 行</a>）が <code>GetConsoleOutputCP</code> ／ <code>GetConsoleCP</code> の値を控え、<code>SetConsoleOutputCP(65001)</code> ／ <code>SetConsoleCP(65001)</code> を呼ぶ</li>

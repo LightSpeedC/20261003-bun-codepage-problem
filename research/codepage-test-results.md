@@ -53,6 +53,13 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 
 The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.
 
+### Related PRs
+
+Named in [robobun's reply on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6096243719). Both were open and not merged on 2026-10-10.
+
+- [PR #38140](https://github.com/oven-sh/bun/pull/38140) (robobun, "ready for a maintainer"): reads console stdin with `ReadConsoleW` instead of `ReadFile`. Today the REPL, `prompt()`, `alert()`, `confirm()`, `bun init`, `bun update -i` and `bun -` read the console through `ReadFile`, which converts input with the console input code page, and on the Windows 10 / Server 2019 conhost the 65001 conversion breaks non-ASCII input. `process.stdin`, `Bun.stdin` and `fs.readSync(0)` go through libuv and are not affected. robobun says this PR must come before Bun can stop setting 65001 at startup, because the input side currently depends on it. The PR itself says "the ANSI conversion is the broken piece, not the code page"
+- [PR #42819](https://github.com/oven-sh/bun/pull/42819) (dylan-conway): removes libuv on Windows and gives Bun its own event loop on an I/O completion port; pipes, the console and files move to `src/io/windows/`. robobun says that after it, the write hooks for `fs.writeSync`, `fs.write` and `Bun.write` can go into `src/sys/windows/fs.rs::write_at` and cover them all. Its list of fixed bugs includes "`process.stdout.write` was garbled once another process restored the code page (`console.log` still is)", which matches the harm measured here
+
 ### Where in Bun's source
 
 - `init()` ([output.rs lines 561 to 567](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)) saves `GetConsoleOutputCP` / `GetConsoleCP` and calls `SetConsoleOutputCP(65001)` / `SetConsoleCP(65001)`
