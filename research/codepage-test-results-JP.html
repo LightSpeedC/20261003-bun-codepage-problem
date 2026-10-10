@@ -103,7 +103,7 @@ footer .navbar { margin-top: 0; }
 <li>bun が動いているあいだ、窓につながる全プロセスにとってコードページは 65001（T1）</li>
 <li>強制終了すると 65001 が残り、そのあと同じ窓で動くスクリプトは読み違える（T3）</li>
 <li><code>fs.writeSync(1)</code> ・ <code>fs.write(1)</code> ・ <code>Bun.write(Bun.stdout)</code> は <code>WriteFile</code> のままなので、ww の順では化ける（T5）。PR の説明文とレビューにも、そう書かれている</li>
-<li>「自分が変えたコードページだけを戻す」でも、競合に負けることがある。順番を決めない 20 回のうち 1 回（<a href="evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl">ログ</a>）、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。考えられる順（未検証）: 送り手が 65001 にしたあとで受け手が出力側の値を控え、送り手が終わって 932 に戻し、そのあと受け手が 65001 にする。受け手は 65001 を控えているので、戻さない</li>
+<li>「自分が変えたコードページだけを戻す」でも、競合に負けることがある。順番を決めない 20 回のうち 1 回（<a href="evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl">ログ</a>）、2 本とも終わったあと、入力側は 932 に戻ったのに、出力側は 65001 のまま残った。全プロセスを記録して 60 回流し直すと、入力側が残る回も出た。<a href="#asis-timeline">時系列</a>を参照。PR のソースから順番も導いている</li>
 </ul>
 <p>パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。順番を決めたケースは、安定版と canary 版ですべて同じ判定になり（T6）、932 と 437 でもすべて同じだった。</p>
 <h2>関連する PR</h2>
@@ -312,23 +312,58 @@ neighbor: 東京大阪            neighbor: café
 <tr><td class="nowrap">45</td><td class="nowrap">❌ 65001 / 932</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline/asis-45/watch.ndjson">watch.ndjson</a></td></tr>
 <tr><td class="nowrap">51</td><td class="nowrap">❌ 65001 / 932</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline/asis-51/watch.ndjson">watch.ndjson</a></td></tr>
 </tbody></table></div>
-<p>ほかの 57 回は 932 / 932 に戻った（<a href="evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl">results.jsonl</a>、<a href="evidence/cp932/bun-pr-43662/asis-timeline/environment.json">environment.json</a>）。45 回目の bun の行だけを抜くと（UTC）:</p>
-<pre><code class="language-text">13:39:50.176  attach  bun -e "console.log(...)"
+<p>ほかの 57 回は 932 / 932 に戻った（<a href="evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl">results.jsonl</a>、<a href="evidence/cp932/bun-pr-43662/asis-timeline/environment.json">environment.json</a>）。3 回の bun の行だけを抜くと（UTC）。W は送り手 <code>bun -e "console.log(...)"</code>、R は受け手 <code>bun -e "process.stdin.pipe(process.stdout)"</code>:</p>
+<pre><code class="language-text">run 19
+13:39:12.205  attach  W
+13:39:12.208  codepage in 932   / out 65001
+13:39:12.209  codepage in 65001 / out 65001
+13:39:12.216  attach  R
+13:39:12.223  codepage in 932   / out 65001
+13:39:12.226  detach  W
+13:39:12.226  codepage in 65001 / out 65001
+13:39:12.263  codepage in 932   / out 65001
+13:39:12.266  detach  R
+              (left at in 932 / out 65001)
+
+run 45
+13:39:50.176  attach  W
 13:39:50.179  codepage in 932   / out 65001
 13:39:50.181  codepage in 65001 / out 65001
-13:39:50.189  attach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.189  attach  R
 13:39:50.192  codepage in 65001 / out 932
-13:39:50.194  detach  bun -e "console.log(...)"
-13:39:50.227  detach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.194  detach  W
+13:39:50.227  detach  R
+              (left at in 65001 / out 932)
+
+run 51
+13:39:58.957  attach  W
+13:39:58.959  codepage in 932   / out 65001
+13:39:58.960  codepage in 65001 / out 65001
+13:39:58.970  attach  R
+13:39:58.974  codepage in 65001 / out 932
+13:39:58.975  detach  W
+13:39:59.011  detach  R
               (left at in 65001 / out 932)
 </code></pre>
 <ul>
 <li>65001 の間に起動した 3 本目のプロセスはいない。bun 2 本だけで、コードページが変わったまま残った</li>
 <li>3 回とも、2 本目の bun は、1 本目が 65001 にした 8〜11 ms 後に起動しており、2 本の寿命は重なっていた</li>
 <li>残るのは出力側（19 回目）のことも、入力側（45・51 回目）のこともある</li>
-<li>入力と出力は別々の呼び出しで変わるため、932 / 65001 のような途中の状態が短い間ある。未確認だが、2 本目が 65001 か、この途中の状態を「元の値」として控えた可能性がある</li>
 <li>見張り役は数 ms ごとに読むため、ごく短い変化は記録から抜けているかもしれない</li>
 </ul>
+<h3>PR のソースから導いた順番</h3>
+<p>試した版は PR の先頭コミット <code>576eb251a</code>。コードページを変えるのは、その <code>output.rs</code> だけ:</p>
+<ul>
+<li><code>init()</code>（<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L581-L585">output.rs の 581〜585 行</a>）は、別々の 4 つの呼び出しで動く。出力側を控える、出力側を 65001 にする、入力側を控える、入力側を 65001 にする</li>
+<li><code>restore()</code>（<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L536-L544">output.rs の 536〜544 行</a>）は、出力側、入力側の順に控えた値へ戻す。ただし控えた値が 65001 の側は戻さない</li>
+</ul>
+<p>呼ぶのが W と R だけなら、どの終わり方にも、それを生む順番は 1 つしかない:</p>
+<ul>
+<li><strong>入力側が 65001 で残る（45・51 回目）:</strong> 最後の入力側の変更が、誰も戻さない 65001 への変更でなければならない。W は 932 を控えたので、W の後始末は入力側を 932 にする。その後に来られるのは R の「入力側を 65001 にする」だけで、R が戻さないのだから R は 65001 を控えている。順番は、R が入力側を控える（65001）→ W が終わって入力側を 932 に戻す → R が入力側を 65001 にする。W の後始末が、R の「控える」と「変える」の間に入った</li>
+<li><strong>出力側が 65001 で残る（19 回目）:</strong> 出力側で同じ順番が起きた。R が出力側を控える（65001）→ W が出力側を 932 に戻す → R が 65001 にする。入力側が戻ったのは、R が入力側を控えたのが W の後始末の後（932）で、R の後始末が .263 に戻したため</li>
+<li>どの回も原因は同じ。R の「控える」と「変える」が 1 つの操作になっておらず、その間に W の後始末が入る。すると R は 65001 を「元の値」として控え、PR の判定は 65001 を控えた側を戻さない</li>
+</ul>
+<p>これはソースと時刻からの推論で、呼び出しを 1 つずつ記録したものではない。見張り役にはどのプロセスが呼んだかは見えず、R の「控える」と「変える」の間は読み取りの間隔より短い（19 回目で、出力側が 932 になってまた 65001 に戻った変化は記録に出ていない）。</p>
 <p>コード: <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts">見張り役</a>（watch.ts）、<a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts">流す側</a>（asis-timeline.ts）</p>
 </section>
 

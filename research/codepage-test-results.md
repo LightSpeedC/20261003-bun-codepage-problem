@@ -49,7 +49,7 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 - While Bun runs, the console is at 65001 for every process attached to it (T1)
 - A forced kill still leaves 65001 behind, and a script run afterwards in the same console is misread (T3)
 - `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still write with `WriteFile`, so in the ww order their output is garbled (T5), as the PR description and its review say
-- Restoring "only a code page this process changed" still loses a race: in 1 of the 20 unordered runs ([log](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)), the output code page stayed at 65001 after both processes exited, while the input code page was back at 932. A likely order (not verified): the reader saves the output code page after the writer has set 65001, the writer exits and restores 932, then the reader sets 65001 and, having saved 65001, never restores it
+- Restoring "only a code page this process changed" still loses a race: in 1 of the 20 unordered runs ([log](evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)), the output code page stayed at 65001 after both processes exited, while the input code page was back at 932. A second run of 60 with every process logged left the input side at 65001 as well; see [the timeline](#timeline-of-every-process-on-the-console-pr-43662-932-60-runs), which also derives the order from the PR's source
 
 The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.
 
@@ -260,24 +260,61 @@ To see which processes were on the console when the code page was left changed, 
 | 45 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-45/watch.ndjson) |
 | 51 | ❌ 65001 / 932 |  | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline/asis-51/watch.ndjson) |
 
-The other 57 runs returned to 932 / 932 ([results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl), [environment.json](evidence/cp932/bun-pr-43662/asis-timeline/environment.json)). Run 45, the bun lines only (UTC):
+The other 57 runs returned to 932 / 932 ([results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline/results.jsonl), [environment.json](evidence/cp932/bun-pr-43662/asis-timeline/environment.json)). The three runs, the bun lines only (UTC). W is the writer `bun -e "console.log(...)"` and R is the reader `bun -e "process.stdin.pipe(process.stdout)"`:
 
 ```text
-13:39:50.176  attach  bun -e "console.log(...)"
+run 19
+13:39:12.205  attach  W
+13:39:12.208  codepage in 932   / out 65001
+13:39:12.209  codepage in 65001 / out 65001
+13:39:12.216  attach  R
+13:39:12.223  codepage in 932   / out 65001
+13:39:12.226  detach  W
+13:39:12.226  codepage in 65001 / out 65001
+13:39:12.263  codepage in 932   / out 65001
+13:39:12.266  detach  R
+              (left at in 932 / out 65001)
+
+run 45
+13:39:50.176  attach  W
 13:39:50.179  codepage in 932   / out 65001
 13:39:50.181  codepage in 65001 / out 65001
-13:39:50.189  attach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.189  attach  R
 13:39:50.192  codepage in 65001 / out 932
-13:39:50.194  detach  bun -e "console.log(...)"
-13:39:50.227  detach  bun -e "process.stdin.pipe(process.stdout)"
+13:39:50.194  detach  W
+13:39:50.227  detach  R
+              (left at in 65001 / out 932)
+
+run 51
+13:39:58.957  attach  W
+13:39:58.959  codepage in 932   / out 65001
+13:39:58.960  codepage in 65001 / out 65001
+13:39:58.970  attach  R
+13:39:58.974  codepage in 65001 / out 932
+13:39:58.975  detach  W
+13:39:59.011  detach  R
               (left at in 65001 / out 932)
 ```
 
 - No third process started while the console was at 65001. The code page was left changed with only the two bun processes
 - In all three runs, the second bun started 8 to 11 ms after the first one had set 65001, so their lifetimes overlapped
 - Both directions can be left behind: the output code page (run 19) or the input code page (runs 45 and 51)
-- Input and output are changed by separate calls, so the console is briefly in a mixed state such as 932 / 65001. Not verified: the second process may save 65001, or this mixed state, as the "original" value
 - The watcher samples every few ms, so very short changes may be missing from the log
+
+#### The order, derived from the PR's source
+
+The tested build is the PR's head commit `576eb251a`. Its `output.rs` is the only place that changes the code page:
+
+- `init()` ([output.rs lines 581 to 585](https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L581-L585)) runs four separate calls: save the output code page, set it to 65001, save the input code page, set it to 65001
+- `restore()` ([output.rs lines 536 to 544](https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L536-L544)) sets the output and then the input back to the saved value, but skips a side whose saved value is 65001
+
+With only W and R calling these, each final state has a single order that produces it:
+
+- **Input left at 65001 (runs 45, 51):** the last input change must be a set to 65001 that nobody undoes. W saved 932, so W's restore sets the input to 932. Only R's "set input to 65001" can come after that, and R must not restore it, so R saved 65001. The order is: R saves the input (65001) → W exits and restores the input to 932 → R sets the input to 65001. W's restore fell between R's save and R's set
+- **Output left at 65001 (run 19):** the same order on the output side: R saves the output (65001) → W restores the output to 932 → R sets it to 65001. The input then came back, because R saved the input after W had restored it (932), and R's restore set it back at .263
+- In every case the cause is the same: R's save and set are not one step, and W's restore lands between them. R then saves 65001 as its "original", and the PR's check skips restoring a saved 65001
+
+This is a deduction from the source and the timestamps, not a per-call trace: the watcher does not see which process made each call, and the step between R's save and R's set is shorter than its sampling interval (in run 19 the output going to 932 and back is not in the log).
 
 Code: [the watcher](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts) (watch.ts) and [the runner](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts) (asis-timeline.ts)
 
