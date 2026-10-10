@@ -21,11 +21,12 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(224,78%,25%); --accent2: hsl(224,58%,55%); --soft: hsl(224,28%,95%); }
-.ch03 { --accent: hsl(168,78%,25%); --accent2: hsl(168,58%,55%); --soft: hsl(168,28%,95%); }
-.ch04 { --accent: hsl(112,78%,25%); --accent2: hsl(112,58%,55%); --soft: hsl(112,28%,95%); }
-.ch05 { --accent: hsl(56,78%,25%); --accent2: hsl(56,58%,55%); --soft: hsl(56,28%,95%); }
-.ch06 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(233.3,78%,25%); --accent2: hsl(233.3,58%,55%); --soft: hsl(233.3,28%,95%); }
+.ch03 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
+.ch04 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch05 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
+.ch06 { --accent: hsl(46.7,78%,25%); --accent2: hsl(46.7,58%,55%); --soft: hsl(46.7,28%,95%); }
+.ch07 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
@@ -59,6 +60,7 @@ footer .navbar { margin-top: 0; }
 <li class="ch04"><a href="#ch04">bun#44693 への続報のコメント（PR #43662）</a></li>
 <li class="ch05"><a href="#ch05">PR #43662 へのコメント</a></li>
 <li class="ch06"><a href="#ch06">PR #43662 への返信（時系列）</a></li>
+<li class="ch07"><a href="#ch07">PR #43662 への続報（ソースから導いた順番）</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
@@ -198,6 +200,29 @@ Active code page: 65001
 
 時系列 ・ 証拠 ・ 見張り役のコード:
 <a href="https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#asis-timeline">https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#asis-timeline</a>
+</code></pre>
+</section>
+
+<section class="ch07" id="ch07">
+<h1><a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> への続報（ソースから導いた順番）</h1>
+<p>3 回の時系列の裏にある順番を、PR のソースから導いたもの。<a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489">PR #43662 への続報</a>として投稿した。投稿したのは英語版。</p>
+<pre><code class="language-markdown">4 点目の続報です。3 回の時系列を PR のソース（先頭 `576eb251a`）と突き合わせました。どの回も、それを生む順番は 1 つしかありません。
+
+`init()`（<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L581-L585">output.rs 581〜585 行</a>）は、4 つの別々の呼び出しで動きます。出力側を控える、出力側を 65001 にする、入力側を控える、入力側を 65001 にする、の 4 つです。`restore()`（<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L536-L544">536〜544 行</a>）は、それぞれを控えた値へ戻します。ただし、控えた値が 65001 の側は戻しません。W は送り手（先に起動）、R は受け手です。
+
+**入力側が 65001 で残る（45・51 回目）:**
+
+1. W が 932 を控えて、65001 にする。
+2. R が入力側を控える: 65001。
+3. W が終わり、入力側を 932 に戻す。
+4. R が入力側を 65001 にする。
+5. R が終わる。控えた入力側が 65001 なので、戻さない。
+
+**出力側が 65001 で残る（19 回目）:** 出力側で同じ順番が起きました。R が出力側を控え（65001）、W が 932 に戻し、そのあと R が 65001 にします。この回で入力側が戻ったのは、R が入力側を控えたのが、W が戻した後だったためです。
+
+つまり、この競合に 3 本目のプロセスは要りません。1 本目の後始末が、2 本目の「控える」と「変える」の間に入れば、2 本目は 65001 を「元の値」として控え、`!= CP_UTF8` の判定で戻さなくなります。窓を共有するプロセスの間では「控えてから変える」を 1 つの操作にできないので、プロセスごとの判定でこの隙間を塞ぐ方法は見当たりません。<a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> で、コードページを一切変えないよう頼んでいるのは、このためです。
+
+これはソースと時刻からの推論で、呼び出しを 1 つずつ記録したものではありません。見張り役には、どのプロセスが呼んだかが見えません。また、R の「控える」と「変える」の間は、読み取りの間隔より短いです。時系列と導き方: <a href="https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#asis-timeline">https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results-JP.html#asis-timeline</a>
 </code></pre>
 </section>
 </div>

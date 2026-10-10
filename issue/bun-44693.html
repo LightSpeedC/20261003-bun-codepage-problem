@@ -21,11 +21,12 @@ a { color: var(--link, #1a4fa0); background: transparent; }
 .navbar { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
 .navbar a { display: inline-block; padding: 0 9px; border-radius: 6px; background: linear-gradient(100deg, var(--navy1, #12224d), var(--navy2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
 .ch01 { --accent: hsl(280,78%,25%); --accent2: hsl(280,58%,55%); --soft: hsl(280,28%,95%); }
-.ch02 { --accent: hsl(224,78%,25%); --accent2: hsl(224,58%,55%); --soft: hsl(224,28%,95%); }
-.ch03 { --accent: hsl(168,78%,25%); --accent2: hsl(168,58%,55%); --soft: hsl(168,28%,95%); }
-.ch04 { --accent: hsl(112,78%,25%); --accent2: hsl(112,58%,55%); --soft: hsl(112,28%,95%); }
-.ch05 { --accent: hsl(56,78%,25%); --accent2: hsl(56,58%,55%); --soft: hsl(56,28%,95%); }
-.ch06 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
+.ch02 { --accent: hsl(233.3,78%,25%); --accent2: hsl(233.3,58%,55%); --soft: hsl(233.3,28%,95%); }
+.ch03 { --accent: hsl(186.7,78%,25%); --accent2: hsl(186.7,58%,55%); --soft: hsl(186.7,28%,95%); }
+.ch04 { --accent: hsl(140,78%,25%); --accent2: hsl(140,58%,55%); --soft: hsl(140,28%,95%); }
+.ch05 { --accent: hsl(93.3,78%,25%); --accent2: hsl(93.3,58%,55%); --soft: hsl(93.3,28%,95%); }
+.ch06 { --accent: hsl(46.7,78%,25%); --accent2: hsl(46.7,58%,55%); --soft: hsl(46.7,28%,95%); }
+.ch07 { --accent: hsl(0,78%,25%); --accent2: hsl(0,58%,55%); --soft: hsl(0,28%,95%); }
 .toc ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; counter-reset: tocnum; }
 .toc ol li { counter-increment: tocnum; }
 .toc ol a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal; width: 310px; max-width: 100%; padding: 6px 12px; border-radius: 6px; background: linear-gradient(100deg, var(--accent, #12224d), var(--accent2, #2f5fbf)); color: #fff; text-decoration: none; font-weight: 700; }
@@ -59,6 +60,7 @@ footer .navbar { margin-top: 0; }
 <li class="ch04"><a href="#ch04">Follow-up comment on bun#44693 (PR #43662)</a></li>
 <li class="ch05"><a href="#ch05">Comment on PR #43662</a></li>
 <li class="ch06"><a href="#ch06">Reply on PR #43662 (timeline)</a></li>
+<li class="ch07"><a href="#ch07">Follow-up on PR #43662 (the order, from the source)</a></li>
 </ol></nav>
 
 <section class="ch01" id="ch01">
@@ -207,6 +209,29 @@ The code page was left changed in 3 of 60 runs: in 932 / out 65001 once, and in 
 
 Timeline, evidence and the watcher code:
 <a href="https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#asis-timeline">https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#asis-timeline</a>
+</code></pre>
+</section>
+
+<section class="ch07" id="ch07">
+<h1>Follow-up on <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> (the order, from the source)</h1>
+<p>The order behind the three timelines, derived from the PR's source. Posted as <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489">a follow-up on PR #43662</a>.</p>
+<pre><code class="language-markdown">A follow-up on point 4: I matched the three timelines against the PR's source (head `576eb251a`), and each of them has exactly one order that can produce it.
+
+`init()` ([output.rs L581–L585](<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L581-L585">https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L581-L585</a>)) makes four separate calls: save output CP, set output to 65001, save input CP, set input to 65001. `restore()` ([L536–L544](<a href="https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L536-L544">https://github.com/oven-sh/bun/blob/576eb251af6a8e7deb961d17cf839ad393c5cf73/src/bun_core/output.rs#L536-L544</a>)) sets each side back to its saved value, skipping a side whose saved value is 65001. W is the writer (started first) and R the reader.
+
+**Input left at 65001 (runs 45, 51):**
+
+1. W saves 932 and sets 65001.
+2. R saves the input: 65001.
+3. W exits and restores the input to 932.
+4. R sets the input to 65001.
+5. R exits; its saved input is 65001, so it is skipped.
+
+**Output left at 65001 (run 19):** the same order on the output side. R saves the output (65001), W restores it to 932, then R sets it to 65001. The input came back in that run, because R saved the input only after W had restored it.
+
+So the race does not need a third process. Whenever the first process's restore lands between the second process's save and set, the second one records 65001 as the "original", and the `!= CP_UTF8` check then skips restoring it. I don't see a per-process check that closes this window, because save-then-set is not atomic across processes that share the console. That is the reason <a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> asks Bun not to change the code page at all.
+
+This is a deduction from the source and the timestamps, not a per-call trace. The watcher cannot see which process made a call, and the step between R's save and set is shorter than its polling interval. The timelines and the derivation: <a href="https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#asis-timeline">https://lightspeedc.com/20261003-bun-codepage-problem/research/codepage-test-results.html#asis-timeline</a>
 </code></pre>
 </section>
 </div>
