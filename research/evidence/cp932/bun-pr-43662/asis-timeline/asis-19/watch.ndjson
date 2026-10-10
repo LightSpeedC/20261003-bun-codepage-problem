@@ -1,0 +1,18 @@
+{"utc":"2026-10-10T13:39:12.069Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-10T13:39:12.072Z","event":"attach","pid":51176,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\run.cmd"}
+{"utc":"2026-10-10T13:39:12.086Z","event":"attach","pid":48704,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\.\" --tag before"}
+{"utc":"2026-10-10T13:39:12.191Z","event":"detach","pid":48704}
+{"utc":"2026-10-10T13:39:12.205Z","event":"attach","pid":50992,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-10T13:39:12.208Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-10T13:39:12.209Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:39:12.216Z","event":"attach","pid":41640,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-10T13:39:12.223Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-10T13:39:12.226Z","event":"detach","pid":50992}
+{"utc":"2026-10-10T13:39:12.226Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:39:12.263Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-10T13:39:12.266Z","event":"detach","pid":41640}
+{"utc":"2026-10-10T13:39:12.301Z","event":"attach","pid":49272,"cmd":"chcp"}
+{"utc":"2026-10-10T13:39:12.305Z","event":"detach","pid":49272}
+{"utc":"2026-10-10T13:39:12.323Z","event":"attach","pid":33364,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-19\\./screen.json\""}
+{"utc":"2026-10-10T13:39:12.430Z","event":"detach","pid":33364}
+{"utc":"2026-10-10T13:39:12.436Z","event":"watch-end","in":932,"out":65001}

@@ -1,0 +1,20 @@
+{"utc":"2026-10-10T13:38:58.684Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-10T13:38:58.686Z","event":"attach","pid":29100,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\run.cmd"}
+{"utc":"2026-10-10T13:38:58.708Z","event":"attach","pid":54160,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\.\" --tag before"}
+{"utc":"2026-10-10T13:38:58.831Z","event":"detach","pid":54160}
+{"utc":"2026-10-10T13:38:58.845Z","event":"attach","pid":18904,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-10T13:38:58.849Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-10T13:38:58.850Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:38:58.858Z","event":"attach","pid":7016,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-10T13:38:58.863Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-10T13:38:58.863Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-10T13:38:58.864Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:38:58.864Z","event":"detach","pid":18904}
+{"utc":"2026-10-10T13:38:58.894Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-10T13:38:58.895Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-10T13:38:58.896Z","event":"detach","pid":7016}
+{"utc":"2026-10-10T13:38:58.908Z","event":"attach","pid":45256,"cmd":"chcp"}
+{"utc":"2026-10-10T13:38:58.912Z","event":"detach","pid":45256}
+{"utc":"2026-10-10T13:38:58.931Z","event":"attach","pid":18380,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-10\\./screen.json\""}
+{"utc":"2026-10-10T13:38:59.045Z","event":"detach","pid":18380}
+{"utc":"2026-10-10T13:38:59.050Z","event":"watch-end","in":932,"out":932}

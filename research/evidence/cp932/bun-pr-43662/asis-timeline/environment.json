@@ -1,0 +1,17 @@
+{
+	"runAt": "2026-10-10T13:38:43Z",
+	"codePage": 932,
+	"runner": "tools/50_run/asis-timeline.ts",
+	"tools": [
+		{
+			"name": "bun",
+			"folder": "_bin/bun-pr-43662",
+			"version": "1.4.3-canary.1+576eb251a"
+		},
+		{
+			"name": "node",
+			"folder": "_bin/node",
+			"version": "v26.10.0"
+		}
+	]
+}

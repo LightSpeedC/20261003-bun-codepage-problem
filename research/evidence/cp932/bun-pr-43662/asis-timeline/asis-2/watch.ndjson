@@ -1,0 +1,18 @@
+{"utc":"2026-10-10T13:38:45.270Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-10T13:38:45.273Z","event":"attach","pid":43132,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\run.cmd"}
+{"utc":"2026-10-10T13:38:45.292Z","event":"attach","pid":41960,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\.\" --tag before"}
+{"utc":"2026-10-10T13:38:45.416Z","event":"detach","pid":41960}
+{"utc":"2026-10-10T13:38:45.433Z","event":"attach","pid":10820,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-10T13:38:45.435Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-10T13:38:45.436Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:38:45.458Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-10T13:38:45.462Z","event":"attach","pid":26160,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-10T13:38:45.464Z","event":"detach","pid":10820}
+{"utc":"2026-10-10T13:38:45.467Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-10T13:38:45.511Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-10T13:38:45.517Z","event":"detach","pid":26160}
+{"utc":"2026-10-10T13:38:45.543Z","event":"attach","pid":50088,"cmd":"chcp"}
+{"utc":"2026-10-10T13:38:45.557Z","event":"detach","pid":50088}
+{"utc":"2026-10-10T13:38:45.584Z","event":"attach","pid":52116,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline\\asis-2\\./screen.json\""}
+{"utc":"2026-10-10T13:38:45.712Z","event":"detach","pid":52116}
+{"utc":"2026-10-10T13:38:45.718Z","event":"watch-end","in":932,"out":932}
