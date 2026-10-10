@@ -82,7 +82,7 @@ footer .navbar { margin-top: 0; }
 
 （英語版と同じコマンド）
 
-`ping` とタイマーは順番を決めるためだけのもの。送り手が先に起動し、受け手が約 1 秒後に起動し、受け手が動いているあいだに送り手が終わる。毎回再現した（437 で 3 回中 3 回、932 で 3 回中 3 回。両方の版）。
+`ping` とタイマは順番を決めるためだけのもの。送り手が先に起動し、受け手が約 1 秒後に起動し、受け手が動いているあいだに送り手が終わる。毎回再現した（437 で 3 回中 3 回、932 で 3 回中 3 回。両方の版）。
 </code></pre>
 
 <p><strong>期待する動き（What is the expected behavior?）</strong></p>
@@ -192,7 +192,7 @@ Active code page: 65001
 <p>65001 が残った回について、窓につながる全プロセスの起動と終了の順を求めた <a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6096243719">robobun の返信</a>への答え。<a href="https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890">PR #43662 への返信</a>として投稿した。投稿したのは英語版。</p>
 <pre><code class="language-markdown">詳しい回答をありがとうございます。
 
-**1〜3:** 了解しました。起動時の 65001 の件は <a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> でメンテナーの判断を待ちます。`fs.writeSync` / `fs.write` / `Bun.write` は、<a href="https://github.com/oven-sh/bun/pull/42819">#42819</a> のあとに `src/sys/windows/fs.rs::write_at` で手当てされる、と理解しました。
+**1〜3:** 了解しました。起動時の 65001 の件は <a href="https://github.com/oven-sh/bun/issues/44693">#44693</a> でメンテナの判断を待ちます。`fs.writeSync` / `fs.write` / `Bun.write` は、<a href="https://github.com/oven-sh/bun/pull/42819">#42819</a> のあとに `src/sys/windows/fs.rs::write_at` で手当てされる、と理解しました。
 
 **4:** 同じ版（`1.4.3-canary.1+576eb251a`、開始は 932）で、順番を決めない形を 60 回流し直しました。同じ窓につないだ node の見張り役が、プロセスの出入りとコードページの変化を、すべて UTC の時刻で記録しました。
 

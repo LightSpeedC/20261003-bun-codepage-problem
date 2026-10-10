@@ -260,7 +260,7 @@ tools/50_run/
 <li><code>tools/40_test/run-tests.cmd</code> が <code>set PATH=…\_bin\…;%PATH%</code> で、取った実行ファイルを PATH に置く</li>
 <li><code>where</code> で、bun ・ node ・ deno ・ pwsh が <code>_bin/</code> の下のものに解決されることを確かめる。違えば止める</li>
 <li>各ランタイムの版（<code>bun --revision</code> ・ <code>node -v</code> ・ <code>deno --version</code> ・ pwsh の版）を <code>versions.txt</code> に書く</li>
-<li>全件を流す。ケースごとのバッチ（<code>run.cmd</code>）は、実行ファイルを名前だけで呼び、パスは <code>%~dp0</code> からの相対にする。ユーザー名を含むパスはどこにも入らない</li>
+<li>全件を流す。ケースごとのバッチ（<code>run.cmd</code>）は、実行ファイルを名前だけで呼び、パスは <code>%~dp0</code> からの相対にする。ユーザ名を含むパスはどこにも入らない</li>
 </ol>
 <h2>決めたこと</h2>
 <ul>
@@ -283,7 +283,7 @@ tools/50_run/
 <ul>
 <li>置く中身: <code>versions.txt</code>、集計（node --test と bun test の分）、ケースごとの <code>run.cmd</code> ・ ログ ・ 画面の読み取り ・ 受け手のバイト列</li>
 <li><code>tools/50_run/compare-evidence.ts</code> で 2 つを比べ、判定（✅ ／ ❌）の違いだけを出す。時刻は比べない</li>
-<li>保存の前に、ユーザー名を含むパスが入っていないことを検査する</li>
+<li>保存の前に、ユーザ名を含むパスが入っていないことを検査する</li>
 </ul>
 <h2>あわせて行うこと</h2>
 <ul>
