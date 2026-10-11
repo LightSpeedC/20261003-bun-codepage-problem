@@ -1,0 +1,18 @@
+{"utc":"2026-10-11T02:46:10.526Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-11T02:46:10.529Z","event":"attach","pid":15304,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\run.cmd"}
+{"utc":"2026-10-11T02:46:10.546Z","event":"attach","pid":54452,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\.\" --tag before"}
+{"utc":"2026-10-11T02:46:10.668Z","event":"detach","pid":54452}
+{"utc":"2026-10-11T02:46:10.691Z","event":"attach","pid":49976,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T02:46:10.698Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T02:46:10.708Z","event":"attach","pid":58780,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T02:46:10.708Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T02:46:10.710Z","event":"detach","pid":49976}
+{"utc":"2026-10-11T02:46:10.711Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T02:46:10.711Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T02:46:10.757Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T02:46:10.759Z","event":"detach","pid":58780}
+{"utc":"2026-10-11T02:46:10.781Z","event":"attach","pid":20448,"cmd":"chcp"}
+{"utc":"2026-10-11T02:46:10.787Z","event":"detach","pid":20448}
+{"utc":"2026-10-11T02:46:10.821Z","event":"attach","pid":52172,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-60\\asis-51\\./screen.json\""}
+{"utc":"2026-10-11T02:46:10.952Z","event":"detach","pid":52172}
+{"utc":"2026-10-11T02:46:10.956Z","event":"watch-end","in":932,"out":932}

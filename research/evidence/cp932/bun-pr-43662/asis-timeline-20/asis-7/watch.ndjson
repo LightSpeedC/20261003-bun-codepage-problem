@@ -1,0 +1,20 @@
+{"utc":"2026-10-11T02:44:39.745Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-11T02:44:39.748Z","event":"attach","pid":22940,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\run.cmd"}
+{"utc":"2026-10-11T02:44:39.768Z","event":"attach","pid":53060,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\.\" --tag before"}
+{"utc":"2026-10-11T02:44:39.879Z","event":"detach","pid":53060}
+{"utc":"2026-10-11T02:44:39.895Z","event":"attach","pid":46272,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T02:44:39.898Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T02:44:39.899Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T02:44:39.911Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T02:44:39.913Z","event":"detach","pid":46272}
+{"utc":"2026-10-11T02:44:39.927Z","event":"attach","pid":54856,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T02:44:39.930Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T02:44:39.930Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T02:44:39.970Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-11T02:44:39.971Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T02:44:39.972Z","event":"detach","pid":54856}
+{"utc":"2026-10-11T02:44:39.987Z","event":"attach","pid":39100,"cmd":"chcp"}
+{"utc":"2026-10-11T02:44:39.991Z","event":"detach","pid":39100}
+{"utc":"2026-10-11T02:44:40.009Z","event":"attach","pid":22664,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-20\\asis-7\\./screen.json\""}
+{"utc":"2026-10-11T02:44:40.127Z","event":"detach","pid":22664}
+{"utc":"2026-10-11T02:44:40.139Z","event":"watch-end","in":932,"out":932}

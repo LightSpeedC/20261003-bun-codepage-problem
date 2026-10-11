@@ -1,8 +1,8 @@
 {"t":0,"tag":"before","rt":"node","event":"probe","in":932,"out":932}
-{"t":138,"tag":"r","rt":"node","event":"start","in":932,"out":932}
-{"t":1133,"tag":"w","rt":"node","event":"start","in":932,"out":932}
-{"t":1141,"tag":"w","rt":"node","event":"before-write","in":932,"out":932}
-{"t":1447,"tag":"r","rt":"node","event":"before-write","in":932,"out":932,"bytes":21}
-{"t":1467,"tag":"r","rt":"node","event":"before-exit","in":932,"out":932}
-{"t":4155,"tag":"w","rt":"node","event":"before-exit","in":932,"out":932}
-{"t":4258,"tag":"after","rt":"node","event":"probe","in":932,"out":932}
+{"t":142,"tag":"r","rt":"node","event":"start","in":932,"out":932}
+{"t":1269,"tag":"w","rt":"node","event":"start","in":932,"out":932}
+{"t":1275,"tag":"w","rt":"node","event":"before-write","in":932,"out":932}
+{"t":1585,"tag":"r","rt":"node","event":"before-write","in":932,"out":932,"bytes":21}
+{"t":1601,"tag":"r","rt":"node","event":"before-exit","in":932,"out":932}
+{"t":4277,"tag":"w","rt":"node","event":"before-exit","in":932,"out":932}
+{"t":4395,"tag":"after","rt":"node","event":"probe","in":932,"out":932}

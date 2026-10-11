@@ -55,11 +55,13 @@ New-Item -ItemType Directory -Force -Path $evidence | Out-Null
 
 # Four passes per code page: node --test with Bun stable, node --test with canary and with the build of PR #43662 (only cases involving Bun), and bun test.
 # コードページごとに 4 回: bun 安定版での node --test、canary と PR #43662 の版での node --test（bun を含むケースだけ）、bun test。
+# The PR build runs the bun#43660 shape 60 times instead of 10: its restore loses the race in only about 1 run in 20, so 10 runs often show none.
+# PR の版は bun#43660 と同じ形を 10 回ではなく 60 回流す。戻し方が競合に負けるのは 20 回に 1 回ほどで、10 回では 1 回も出ないことが多いため。
 $passes = @(
-	@{ bun = 'bun'; runner = 'node-test'; onlyBun = '' },
-	@{ bun = 'bun-canary'; runner = 'node-test'; onlyBun = '1' },
-	@{ bun = 'bun-pr-43662'; runner = 'node-test'; onlyBun = '1' },
-	@{ bun = 'bun'; runner = 'bun-test'; onlyBun = '' }
+	@{ bun = 'bun'; runner = 'node-test'; onlyBun = ''; asisRepeat = '10' },
+	@{ bun = 'bun-canary'; runner = 'node-test'; onlyBun = '1'; asisRepeat = '10' },
+	@{ bun = 'bun-pr-43662'; runner = 'node-test'; onlyBun = '1'; asisRepeat = '60' },
+	@{ bun = 'bun'; runner = 'bun-test'; onlyBun = ''; asisRepeat = '10' }
 )
 $summary = @()
 $failed = $false
@@ -71,6 +73,7 @@ foreach ($cp in 932, 437) {
 		$env:CODEPAGE_START_CP = "$cp"
 		$env:CODEPAGE_EVIDENCE_DIR = $dir
 		$env:CODEPAGE_ONLY_BUN = $p.onlyBun
+		$env:CODEPAGE_ASIS_REPEAT = $p.asisRepeat
 		Write-Host "=== コードページ $cp / $($p.bun) / $($p.runner) ==="
 		# bun test stops a test after 5 s by default, so the limit is raised. Bun cases are todo, so bun test skips them.
 		# bun test は 1 件あたり既定 5 秒で打ち切るため、長くする。bun のケースは todo なので bun test では実行されない。

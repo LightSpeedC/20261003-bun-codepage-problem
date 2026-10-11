@@ -17,7 +17,7 @@ $force = $args -contains 'force'
 # name: folder under _bin / exe: file that marks the runtime as installed / url: official zip / inner: folder inside the zip ('' = root)
 # name: _bin の下のフォルダ / exe: 置き済みの目印 / url: 公式の zip / inner: zip の中のフォルダ（'' は直下）
 $runtimes = @(
-	@{ name = 'bun';        exe = 'bun.exe';  url = 'https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64.zip'; inner = 'bun-windows-x64' },
+	@{ name = 'bun';        exe = 'bun.exe';  url = 'https://github.com/oven-sh/bun/releases/download/bun-v1.4.3/bun-windows-x64.zip'; inner = 'bun-windows-x64' },
 	@{ name = 'bun-canary'; exe = 'bun.exe';  url = 'https://github.com/oven-sh/bun/releases/download/canary/bun-windows-x64.zip';      inner = 'bun-windows-x64' },
 	@{ name = 'node';       exe = 'node.exe'; url = 'https://nodejs.org/dist/v26.10.0/node-v26.10.0-win-x64.zip';                      inner = 'node-v26.10.0-win-x64' },
 	@{ name = 'deno';       exe = 'deno.exe'; url = 'https://github.com/denoland/deno/releases/download/v2.9.7/deno-x86_64-pc-windows-msvc.zip'; inner = '' },

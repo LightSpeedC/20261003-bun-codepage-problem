@@ -2,7 +2,7 @@
 
 bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-10
+> 📅 Created: 2026-10-03 / Updated: 2026-10-11
 
 [⌂](../README.md)
 
@@ -90,7 +90,7 @@ None of these depends on the code page, so there is no reason to change it. T1 c
 
 | Runtime | Version | Role |
 |---|---|---|
-| Bun | 1.4.2+744846f84 | Under test (stable) |
+| Bun | 1.4.3+c6da4a4d3 | Under test (stable) |
 | Bun canary | latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
 | Bun PR #43662 | 1.4.3-canary.1+576eb251a | The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in `_bin/bun-pr-43662/` and called with PATH switched |
 | Node.js | v26.10.0 | Reference |
@@ -215,7 +215,7 @@ Anyone who clones the repository on Windows can run the same tests. Nothing depe
 
 | Runtime | Version | Location |
 |---|---|---|
-| Bun | 1.4.2 | `_bin/bun/` |
+| Bun | 1.4.3 | `_bin/bun/` |
 | Bun canary | latest at setup time (it cannot be pinned, so the version is recorded) | `_bin/bun-canary/` |
 | Node.js | v26.10.0 | `_bin/node/` |
 | Deno | 2.9.7 | `_bin/deno/` |
@@ -269,8 +269,8 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 6. Draft the issue following "Outline of the issue", and file it only after the conditions in the local rule "Issue and publishing" are met (done: posted as [bun#44693](https://github.com/oven-sh/bun/issues/44693); text in [Issue bun#44693](../issue/bun-44693.md))
 7. Add a cross-reference to the new issue on bun#43660 (done: [comment](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127))
 8. Measure the build of PR #43662, the fix for bun#43660, with the test suite, and comment on #44693 with what it fixes and what remains (done: the Conclusion of the results has a column for the PR; posted as [a comment on #44693](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500) and [a comment on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802), text in [Issue bun#44693](../issue/bun-44693.md#4-follow-up-comment-on-bun44693httpsgithubcomoven-shbunissues44693-pr-43662httpsgithubcomoven-shbunpull43662); #44693 was filed without noticing the PR)
-9. Answer robobun's question on PR #43662 (the start and exit order of every process in the run that left 65001) by measuring the timeline again (done: ran it 60 times, added it to [the results](../research/codepage-test-results.md#timeline-of-every-process-on-the-console-pr-43662-932-60-runs), and posted [a reply on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890); the text is in [Issue bun#44693](../issue/bun-44693.md#6-reply-on-pr-43662httpsgithubcomoven-shbunpull43662-timeline))
-10. Derive from PR #43662's source the order that leaves 65001, and tell the PR (done: added to [the results](../research/codepage-test-results.md#timeline-of-every-process-on-the-console-pr-43662-932-60-runs) and posted [a follow-up on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489); the text is in [Issue bun#44693](../issue/bun-44693.md#7-follow-up-on-pr-43662httpsgithubcomoven-shbunpull43662-the-order-from-the-source))
+9. Answer robobun's question on PR #43662 (the start and exit order of every process in the run that left 65001) by measuring the timeline again (done: ran it 60 times, added it to [the results](../research/codepage-test-results.md#timeline-of-every-process-on-the-console-pr-43662-932), and posted [a reply on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890); the text is in [Issue bun#44693](../issue/bun-44693.md#6-reply-on-pr-43662httpsgithubcomoven-shbunpull43662-timeline))
+10. Derive from PR #43662's source the order that leaves 65001, and tell the PR (done: added to [the results](../research/codepage-test-results.md#timeline-of-every-process-on-the-console-pr-43662-932) and posted [a follow-up on PR #43662](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489); the text is in [Issue bun#44693](../issue/bun-44693.md#7-follow-up-on-pr-43662httpsgithubcomoven-shbunpull43662-the-order-from-the-source))
 11. Make the same tests runnable on any PC, and keep the evidence in `research/evidence/` (done: every test ran at 932 and 437, the results were copied to `research/evidence/`, and every ✅ / ❌ in the result tables links to its evidence file)
 
 ### Watching for replies

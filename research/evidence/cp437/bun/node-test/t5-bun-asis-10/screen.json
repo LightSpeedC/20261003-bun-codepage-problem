@@ -1,7 +1,7 @@
 [
-	"abc µ¥▒Σ║¼σñºΘÿ¬ xyz",
+	"abc 東京大阪 xyz",
 	"--- tail ---",
-	"Active code page: 65001",
-	"neighbor: caf�",
+	"Active code page: 437",
+	"neighbor: café",
 	""
 ]

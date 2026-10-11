@@ -2,9 +2,9 @@
 // while tests/fixtures/watch.ts logs, with UTC times, every process attached to the console and every code page change.
 // T5 の asis（bun | bun、順番を決めない、bun#43660 と同じ形）を PR #43662 の版で何回も流す。
 // その間 tests/fixtures/watch.ts が、窓につながる全プロセスの出入りと、コードページの変化を UTC の時刻で記録する。
-// Usage / 使い方: node tools/50_run/asis-timeline.ts [--reps 30] [--bun bun-pr-43662] [--cp 932]
-// Results go to research/evidence/cp<cp>/<bun>/asis-timeline/. Each run folder holds run.cmd, log.jsonl, screen.json and watch.ndjson.
-// 結果は research/evidence/cp<cp>/<bun>/asis-timeline/ に置く。回ごとのフォルダに run.cmd ・ log.jsonl ・ screen.json ・ watch.ndjson。
+// Usage / 使い方: node tools/50_run/asis-timeline.ts [--reps 30] [--bun bun-pr-43662] [--cp 932] [--name asis-timeline]
+// Results go to research/evidence/cp<cp>/<bun>/<name>/. Each run folder holds run.cmd, log.jsonl, screen.json and watch.ndjson.
+// 結果は research/evidence/cp<cp>/<bun>/<name>/ に置く。回ごとのフォルダに run.cmd ・ log.jsonl ・ screen.json ・ watch.ndjson。
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -17,7 +17,9 @@ const bunDir = args.bun ?? 'bun-pr-43662';
 const cp = Number(args.cp ?? 932);
 const root = path.resolve(import.meta.dirname, '../..');
 const bin = path.join(root, '_bin');
-const outDir = path.join(root, 'research', 'evidence', `cp${cp}`, bunDir, 'asis-timeline');
+// --name picks the folder, so a new series does not overwrite the one the documents already cite.
+// --name でフォルダを選ぶ。新しい回が、資料が引いている回を上書きしないようにする。
+const outDir = path.join(root, 'research', 'evidence', `cp${cp}`, bunDir, args.name ?? 'asis-timeline');
 
 // Same runtimes as tools/40_test/run-tests.ps1: _bin/ first on PATH. The harness reads its settings when it is loaded.
 // tools/40_test/run-tests.ps1 と同じく _bin/ を PATH の先頭に置く。ハーネスは読み込まれたときに設定を読む。

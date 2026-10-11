@@ -25,7 +25,7 @@ type Lang = 'en' | 'ja';
 const CPS = [932, 437] as const;
 const RTS = ['bun', 'canary', 'pr43662', 'node', 'deno'] as const;
 type Rt = (typeof RTS)[number];
-const LABEL: Record<Rt, string> = { bun: 'bun 1.4.2', canary: 'bun canary', pr43662: 'bun PR #43662', node: 'node', deno: 'deno' };
+const LABEL: Record<Rt, string> = { bun: 'bun 1.4.3', canary: 'bun canary', pr43662: 'bun PR #43662', node: 'node', deno: 'deno' };
 // Bun builds other than the stable one, and the evidence folder of their pass. Their cases are named with "bun".
 // 安定版以外の bun と、その回の証拠のフォルダ。ケース名には "bun" を使っている。
 const FLAVORS: Partial<Record<Rt, string>> = { canary: 'bun-canary', pr43662: 'bun-pr-43662' };
