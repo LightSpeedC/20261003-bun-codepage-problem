@@ -54,7 +54,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Code page test results</h1>
 <p class="lead">Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file</p>
-<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-11</p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-12</p>
 </div></div>
 
 <div class="wrap">
@@ -181,7 +181,7 @@ footer .navbar { margin-top: 0; }
 <ul>
 <li>The bytes flowing through the pipe were never corrupted, in any combination</li>
 <li>Connecting two Bun processes directly from cmd or pwsh 7 left 65001 behind (H3). If either side is Node.js or Deno, it is not left. This matches "it does not happen if either side is Node.js" in bun#43660</li>
-<li>Windows PowerShell 5.1 replaces the Japanese with <code>?</code> in every combination (also for node | node; it is 5.1's own behavior). In the 5.1 column, the same bytes as node | node count as ✅. With 5.1 in between, 65001 was not left, perhaps because the lifetimes of the two Bun processes no longer overlap the same way (cause not confirmed)</li>
+<li>Windows PowerShell 5.1 replaces the Japanese with <code>?</code> in every combination (also for node | node; it is 5.1's own behavior). In the 5.1 column, the same bytes as node | node count as ✅. With 5.1 in between, 65001 was not left, because 5.1 does not run the two Bun processes at the same time. Running the same pipe through 5.1 20 times with the watcher, the reader started only after the writer had exited, in all 20 runs (11 to 22 ms later; <a href="evidence/cp932/bun/asis-timeline-ps51/asis-1/watch.ndjson">watch.ndjson of run 1</a>, <a href="evidence/cp932/bun/asis-timeline-ps51/results.jsonl">results.jsonl</a>). With no overlap, neither process can save the other's 65001</li>
 </ul>
 </section>
 
@@ -303,7 +303,7 @@ neighbor: 東京大阪            neighbor: café
 <li>The garbling reported in bun#43660 was the garbled side of this variation</li>
 <li>The build of PR #43662 printed correctly in all 120 runs and restored the code page every time. On another day, though, it left the output code page at 65001 in 1 of 20 runs (<a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl">run 6 on 2026-10-07</a>). See <a href="#asis-timeline">the timeline below</a></li>
 </ul>
-<h2 id="asis-timeline">Timeline of every process on the console (PR #43662, 932)</h2>
+<h2 id="asis-timeline">Timeline of every process on the console (PR #43662)</h2>
 <p>To see which processes were on the console when the code page was left changed, the same command was run 60 more times with the build of PR #43662, starting at 932. A Node.js watcher was attached to the same console the whole time. It polled <code>GetConsoleProcessList</code>, <code>GetConsoleCP</code> and <code>GetConsoleOutputCP</code> continuously and logged every attach, every detach and every code page change with a UTC time (<code>watch.ndjson</code>). Node.js does not change the code page (T1).</p>
 <p>The same shape was run several times, with and without the watcher. How often the code page was not restored changes a lot from day to day. Every series is listed, including those where it never happened.</p>
 <div class="tablewrap"><table>
@@ -314,7 +314,10 @@ neighbor: 東京大阪            neighbor: café
 <tr><td class="nowrap">2026-10-10</td><td class="nowrap">no (full suite)</td><td class="num">120</td><td class="nowrap">✅ 0 (60 each at 932 and 437)</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/node-test/results.jsonl">932</a> / <a href="evidence/cp437/bun-pr-43662/node-test/results.jsonl">437</a></td></tr>
 <tr><td class="nowrap">2026-10-11</td><td class="nowrap">yes</td><td class="num">20</td><td class="nowrap">❌ 1 (run 9, output side)</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline-20/asis-9/watch.ndjson">watch.ndjson</a>, <a href="evidence/cp932/bun-pr-43662/asis-timeline-20/results.jsonl">results.jsonl</a></td></tr>
 <tr><td class="nowrap">2026-10-11</td><td class="nowrap">yes</td><td class="num">60</td><td class="nowrap">✅ 0</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline-60/results.jsonl">results.jsonl</a></td></tr>
+<tr><td class="nowrap">2026-10-11</td><td class="nowrap">yes (started at 437)</td><td class="num">60</td><td class="nowrap">❌ 2 (runs 48, 55, input)</td><td class="nowrap"><a href="evidence/cp437/bun-pr-43662/asis-timeline-60/results.jsonl">results.jsonl</a></td></tr>
+<tr><td class="nowrap">2026-10-11</td><td class="nowrap">yes + per-call trace</td><td class="num">40</td><td class="nowrap">❌ 3 (runs 6, 15, 21, output)</td><td class="nowrap"><a href="#asis-trace">trace below</a></td></tr>
 </tbody></table></div>
+<p>Starting at 437 left the code page behind in the same way. Both times it was the input side, the same shape as runs 45 and 51 of 2026-10-10.</p>
 <p>Run 9 on 2026-10-11 had the same shape as run 19 below: R started 7 ms after W set 65001, and after exit the console was left at input 932, output 65001. What follows analyzes the 60 runs of 2026-10-10.</p>
 <div class="tablewrap"><table>
 <thead><tr><th>Run</th><th>After exit (in / out)</th><th>Processes on the console</th><th>Timeline</th></tr></thead>
@@ -374,7 +377,30 @@ run 51
 <li><strong>Output left at 65001 (run 19):</strong> the same order on the output side: R saves the output (65001) → W restores the output to 932 → R sets it to 65001. The input then came back, because R saved the input after W had restored it (932), and R's restore set it back at .263</li>
 <li>In every case the cause is the same: R's save and set are not one step, and W's restore lands between them. R then saves 65001 as its "original", and the PR's check skips restoring a saved 65001</li>
 </ul>
-<p>This is a deduction from the source and the timestamps, not a per-call trace: the watcher does not see which process made each call, and the step between R's save and R's set is shorter than its sampling interval (in run 19 the output going to 932 and back is not in the log).</p>
+<p>Up to here this is a deduction from the source and the timestamps: the watcher does not see which process made each call, and the step between R's save and R's set is shorter than its sampling interval (in run 19 the output going to 932 and back is not in the log). So the next step recorded each call.</p>
+<h3 id="asis-trace">Per-call trace</h3>
+<p>W and R each ran under cdb (WinDbg 1.2610), with breakpoints on <code>GetConsoleOutputCP</code>, <code>SetConsoleOutputCP</code>, <code>GetConsoleCP</code> and <code>SetConsoleCP</code> in <code>kernelbase</code>. Each hit recorded the process, the value (the argument of Set, the return value of Get) and the caller address, then continued (<code>trace-writer.ndjson</code>, <code>trace-reader.ndjson</code>). The watcher ran as well. Of 40 runs from 932, 3 left the output code page at 65001.</p>
+<p>Run 6 (UTC). W is pid 30744, R is pid 55480:</p>
+<pre><code class="language-text">21:30:27.486  W  GetConsoleOutputCP -> 932     (saves 932)
+21:30:27.500  W  SetConsoleOutputCP(65001)
+21:30:27.509  W  GetConsoleCP       -> 932
+21:30:27.511  W  SetConsoleCP(65001)
+21:30:27.514  R  GetConsoleOutputCP -> 65001   (saves 65001)
+21:30:27.525  W  SetConsoleOutputCP(932)       (W restores output)
+21:30:27.527  W  SetConsoleCP(932)             (W restores input)
+21:30:27.528  R  SetConsoleOutputCP(65001)
+21:30:27.537  R  GetConsoleCP       -> 932
+21:30:27.539  R  SetConsoleCP(65001)
+21:30:27.594  R  SetConsoleCP(932)             (R restores input only)
+              (left at in 932 / out 65001)</code></pre>
+<ul>
+<li>The trace shows exactly the order derived above: R saves the output (65001) → W restores the output to 932 → R sets the output to 65001. R's restore sets back only the input and skips the output, whose saved value is 65001</li>
+<li>The watcher agrees (output 932 at .531, back to 65001 at .533)</li>
+<li>W and R called from the same addresses: the four save-and-set calls from <code>…989ceb</code>, <code>…989cfc</code>, <code>…989d01</code>, <code>…989d12</code>, the output restore from <code>…989b72</code> and the input restore from <code>…975511</code>. Both processes go through the same init and the same restore</li>
+<li>In all 3 runs that left 65001, R's <code>GetConsoleOutputCP</code> returned 65001 and R did not restore the output. In 14 of the 37 runs that came back, one process had also saved the other's 65001, but the other's restore came later, so the code page came back</li>
+</ul>
+<p>The debugger stops bun at every call, so the rate of lost races cannot be compared with runs without it. Each of the two debuggers records its own times, so the order between the two processes can be off by a few ms (in run 21, going by the recorded times alone, R saved after W's restore). The values (what each process saved) are not affected by this. The debugger prints its banner before the script hides its output, so W's banner goes into the pipe and R prints it on the screen (<code>screen.json</code>).</p>
+<p>Evidence (run 6): <a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-writer.ndjson">trace-writer.ndjson</a>, <a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-reader.ndjson">trace-reader.ndjson</a>, <a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/watch.ndjson">watch.ndjson</a>. All 40 runs: <a href="evidence/cp932/bun-pr-43662/asis-trace-40/results.jsonl">results.jsonl</a>. Code: <code>tools/50_run/asis-timeline.ts --trace</code>, <code>tools/50_run/cdb-trace.js</code>, summary by <code>tools/50_run/summarize-trace.ts</code></p>
 <p>Code: <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts">the watcher</a> (watch.ts) and <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts">the runner</a> (asis-timeline.ts)</p>
 </section>
 

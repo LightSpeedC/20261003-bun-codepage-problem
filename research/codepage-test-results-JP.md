@@ -2,7 +2,7 @@
 
 計画の T1〜T6 を、コードページ 932 と 437 で、bun 1.4.3 ・ bun canary ・ node ・ deno に流した結果。bun がコンソールのコードページを変えることで起きる害を 1 つずつ実測で示し、結果の 1 つ 1 つから証拠ファイルへリンクする
 
-> 📅 作成: 2026-10-04 / 更新: 2026-10-11
+> 📅 作成: 2026-10-04 / 更新: 2026-10-12
 
 [⌂](../README-JP.md)
 
@@ -21,7 +21,7 @@
 
 1. <strong>bun は起動時にコンソールのコードページを 65001 に切り替え、終了時に控えた値へ戻す。</strong>コードページはコンソールに属し、つながる全プロセスで共有される。ソース: `init()`（[output.rs の 561〜567 行](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)）と `restore()`（[output.rs の 517〜524 行](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)）。証拠、bun が動いているあいだのコードページ: [932](evidence/cp932/bun/node-test/t1-bun/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-bun/log.jsonl)（T1）
 2. <strong>1 つの窓で 2 本の bun が動くと、互いの控えを上書きする。</strong>出力が化け、窓に 65001 が残り、同じ窓のほかのプログラムが壊れる。証拠: 化けた画面 [932](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) ／ [437](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json)（T5）、壊れた隣のプロセス [932](evidence/cp932/bun/node-test/t4-bun/screen.json) ／ [437](evidence/cp437/bun/node-test/t4-bun/screen.json)（T4）、強制終了 [932](evidence/cp932/bun/node-test/t3-bun/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t3-bun/log.jsonl)（T3）
-3. **bun#43660 への Open の修正 PR #43662 は、原因を取り除かない。**`console.log` の出力は直すが、動いているあいだは窓を 65001 にしたまま（[932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) ／ [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)）、強制終了では 65001 が残り（[932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)）、`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は化け（[932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)）、戻し方は、順番を決めない形でまれに競合に負ける（[時系列](#窓の全プロセスの時系列pr-43662932)）
+3. **bun#43660 への Open の修正 PR #43662 は、原因を取り除かない。**`console.log` の出力は直すが、動いているあいだは窓を 65001 にしたまま（[932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) ／ [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)）、強制終了では 65001 が残り（[932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)）、`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は化け（[932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)）、戻し方は、順番を決めない形でまれに競合に負ける（[時系列](#窓の全プロセスの時系列pr-43662)）
 4. **node と deno はコードページを一度も変えず**、すべてのケースで正しく出す: node [932](evidence/cp932/bun/node-test/t1-node/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-node/log.jsonl)、deno [932](evidence/cp932/bun/node-test/t1-deno/log.jsonl) ／ [437](evidence/cp437/bun/node-test/t1-deno/log.jsonl)（T1）
 
 **依頼**（[bun#44693](https://github.com/oven-sh/bun/issues/44693)）: コンソールのコードページを一切変えず、画面への出力はすべて `WriteConsoleW` で書いてほしい。判定は、窓が 932（日本語版 Windows）で始まっても 437（英語版 Windows）で始まっても同じだった。詳しくは [結論](#2-結論)、試験の流し方は [条件](#8-条件) にある。
@@ -38,7 +38,7 @@ bun は、起動した瞬間（スクリプトが動く前）に窓の入力・�
 | H6 | 強制終了すると元に戻らない | ❌ 起きた | ❌ 起きる | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t3-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t3-bun/log.jsonl)（T3）。PR: [画面](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) ／ [画面](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json) |
 | H1 | パイプでつないだ相手の表示が化ける | ❌ 起きた | ⚠️ `console.log` と `process.stdout` は直った。`fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` では起きる | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) ／ [画面](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json)（T5 の ww）。PR: [画面](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) ／ [画面](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)（T5 の ww を fs.writeSync で） |
 | H5 | コードページが開始の値に戻った状態で、bun が UTF-8 のバイト列をそのまま書いて化ける | ❌ 起きた | ⚠️ H1 と同じ | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl)（T5 の ww。受け手が書く直前のコードページが開始の値） |
-| H3 | 終了後に 65001 が窓に残る | ❌ 起きた | ⚠️ 順番を決めたケースでは直ったが、順番を決めない形では、まれに入力側か出力側が 65001 のまま残る | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl)（T2、cmd から bun → bun）。PR: [ログ](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/log.jsonl)（932、見張り役つきの 19 回目。終了後は入力 932・出力 65001）。回数は [時系列](#窓の全プロセスの時系列pr-43662932) の表 |
+| H3 | 終了後に 65001 が窓に残る | ❌ 起きた | ⚠️ 順番を決めたケースでは直ったが、順番を決めない形では、まれに入力側か出力側が 65001 のまま残る | ✅ 起きない | [ログ](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) ／ [ログ](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl)（T2、cmd から bun → bun）。PR: [ログ](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/log.jsonl)（932、見張り役つきの 19 回目。終了後は入力 932・出力 65001）。回数は [時系列](#窓の全プロセスの時系列pr-43662) の表 |
 | H2 | 結果が起動・終了の順で決まり、実行のたびに変わる | ❌ 起きた | ⚠️ 順番を決めない形で画面は毎回正しかったが、まれに 65001 が残る（H3） | ✅ 起きない | [T5 の bun#43660 と同じ形](#7-t5-bun43660-と同じ形)。T5 の 4 通りの順で結果が 4 つに分かれる |
 | H7 | bun 同士が直接つながっていなくても起きる | ❌ 起きた | ✅ 直った | ✅ 起きない | [画面](evidence/cp932/bun/node-test/t5-bun-relay-console-1/screen.json) ／ [画面](evidence/cp437/bun/node-test/t5-bun-relay-console-1/screen.json)（T5 の relay、`bun \| node \| bun`） |
 
@@ -49,7 +49,7 @@ bun は、起動した瞬間（スクリプトが動く前）に窓の入力・�
 - bun が動いているあいだ、窓につながる全プロセスにとってコードページは 65001（T1）
 - 強制終了すると 65001 が残り、そのあと同じ窓で動くスクリプトは読み違える（T3）
 - `fs.writeSync(1)` ・ `fs.write(1)` ・ `Bun.write(Bun.stdout)` は `WriteFile` のままなので、ww の順では化ける（T5）。PR の説明文とレビューにも、そう書かれている
-- 「自分が変えたコードページだけを戻す」でも、競合に負けることがある。2 本とも終わったあと、入力側か出力側の片方だけが 65001 のまま残る。起きる頻度は回ごとに大きく変わり、120 回で 0 回のときも、60 回で 3 回のときもあった。[時系列](#窓の全プロセスの時系列pr-43662932)を参照。PR のソースから順番も導いている
+- 「自分が変えたコードページだけを戻す」でも、競合に負けることがある。2 本とも終わったあと、入力側か出力側の片方だけが 65001 のまま残る。起きる頻度は回ごとに大きく変わり、120 回で 0 回のときも、60 回で 3 回のときもあった。[時系列](#窓の全プロセスの時系列pr-43662)を参照。PR のソースから順番も導いている
 
 パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。順番を決めたケースは、安定版と canary 版ですべて同じ判定になり（T6）、932 と 437 でもすべて同じだった。
 
@@ -123,7 +123,7 @@ bun は、起動した瞬間（スクリプトが動く前）に窓の入力・�
 
 - パイプを流れるバイト列は、どの組み合わせでも壊れなかった
 - bun 同士を cmd ・ pwsh 7 から直接つなぐと、終了後に 65001 が残った（H3）。片方が node か deno なら残らない。bun#43660 の「片方が node なら起きない」と合う
-- Windows PowerShell 5.1 は、どの組み合わせでも日本語を `?` に置き換える（node | node でも同じ。5.1 自身の事象）。5.1 の列は node | node と同じバイト列なら ✅ とした。5.1 が間に入ると 2 本の bun の寿命がずれるためか、65001 は残らなかった（原因は未確認）
+- Windows PowerShell 5.1 は、どの組み合わせでも日本語を `?` に置き換える（node | node でも同じ。5.1 自身の事象）。5.1 の列は node | node と同じバイト列なら ✅ とした。5.1 が間に入ると 65001 は残らなかった。5.1 は 2 本の bun を同時に動かさないため。同じ形を 5.1 経由で 20 回流して見張ると、20 回とも、送り手の bun が終わってから受け手の bun が起動した（間は 11〜22 ms。[1 回目の watch.ndjson](evidence/cp932/bun/asis-timeline-ps51/asis-1/watch.ndjson)、[results.jsonl](evidence/cp932/bun/asis-timeline-ps51/results.jsonl)）。寿命が重ならないので、一方が控える値に他方の 65001 が入らない
 
 ## 5. T3・T4. 強制終了と隣のプロセス
 
@@ -248,9 +248,9 @@ bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin
 
 - 同じコマンドでも、bun は回ごとに結果が変わり、化ける回数も流すたびに変わった（H2）。2 本のどちらが先に起動・終了するかで決まり、その順は OS の都合で毎回揺れる
 - bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった
-- PR #43662 の版は 120 回とも正しく出し、コードページも毎回戻した。ただし、別の日には 20 回中 1 回、出力側を 65001 のまま残した（[2026-10-07 の 6 回目](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)）。[下の時系列](#窓の全プロセスの時系列pr-43662932) を参照
+- PR #43662 の版は 120 回とも正しく出し、コードページも毎回戻した。ただし、別の日には 20 回中 1 回、出力側を 65001 のまま残した（[2026-10-07 の 6 回目](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)）。[下の時系列](#窓の全プロセスの時系列pr-43662) を参照
 
-### 窓の全プロセスの時系列（PR #43662、932）
+### 窓の全プロセスの時系列（PR #43662）
 
 コードページが変わったまま残ったとき、窓にどのプロセスがいたかを見るため、同じコマンドを PR #43662 の版で、932 から 60 回流し直した。その間、同じ窓に node の見張り役をつないだ。見張り役は `GetConsoleProcessList` ・ `GetConsoleCP` ・ `GetConsoleOutputCP` を読み続け、プロセスの出入りとコードページの変化を、すべて UTC の時刻で記録した（`watch.ndjson`）。node はコードページを変えない（T1）。
 
@@ -263,6 +263,10 @@ bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin
 | 2026-10-10 | なし（全件の試験） | 120 | ✅ 0（932 と 437 で 60 回ずつ） | [932](evidence/cp932/bun-pr-43662/node-test/results.jsonl) ／ [437](evidence/cp437/bun-pr-43662/node-test/results.jsonl) |
 | 2026-10-11 | あり | 20 | ❌ 1（9 回目、出力側） | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline-20/asis-9/watch.ndjson)、[results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline-20/results.jsonl) |
 | 2026-10-11 | あり | 60 | ✅ 0 | [results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline-60/results.jsonl) |
+| 2026-10-11 | あり（437 で開始） | 60 | ❌ 2（48・55 回目、入力側） | [results.jsonl](evidence/cp437/bun-pr-43662/asis-timeline-60/results.jsonl) |
+| 2026-10-11 | あり ＋ 呼び出しの記録 | 40 | ❌ 3（6・15・21 回目、出力側） | [下の記録](#呼び出しを-1-つずつ記録した結果) |
+
+437 で始めても同じように残った。残った側は 2 回とも入力側で、2026-10-10 の 45・51 回目と同じ形だった。
 
 2026-10-11 の 9 回目は、下の 19 回目と同じ形だった。R は W が 65001 にした 7 ms 後に起動し、終了後は入力 932 ・ 出力 65001 で残った。以下は 2026-10-10 の 60 回の分析。
 
@@ -326,7 +330,37 @@ run 51
 - **出力側が 65001 で残る（19 回目）:** 出力側で同じ順番が起きた。R が出力側を控える（65001）→ W が出力側を 932 に戻す → R が 65001 にする。入力側が戻ったのは、R が入力側を控えたのが W の後始末の後（932）で、R の後始末が .263 に戻したため
 - どの回も原因は同じ。R の「控える」と「変える」が 1 つの操作になっておらず、その間に W の後始末が入る。すると R は 65001 を「元の値」として控え、PR の判定は 65001 を控えた側を戻さない
 
-これはソースと時刻からの推論で、呼び出しを 1 つずつ記録したものではない。見張り役にはどのプロセスが呼んだかは見えず、R の「控える」と「変える」の間は読み取りの間隔より短い（19 回目で、出力側が 932 になってまた 65001 に戻った変化は記録に出ていない）。
+ここまではソースと時刻からの推論。見張り役にはどのプロセスが呼んだかは見えず、R の「控える」と「変える」の間は読み取りの間隔より短い（19 回目で、出力側が 932 になってまた 65001 に戻った変化は記録に出ていない）。そこで次に、呼び出しを 1 つずつ記録した。
+
+#### 呼び出しを 1 つずつ記録した結果
+
+W と R をそれぞれ cdb（WinDbg 1.2610）の下で動かし、`kernelbase` の `GetConsoleOutputCP` ・ `SetConsoleOutputCP` ・ `GetConsoleCP` ・ `SetConsoleCP` にブレークポイントを置いた。呼ばれるたびに、プロセス ・ 値（Set は引数、Get は戻り値）・ 呼び出し元の番地を記録して、そのまま続行させた（`trace-writer.ndjson` ・ `trace-reader.ndjson`）。見張り役も同時に動かした。932 から 40 回流し、3 回で出力側が 65001 のまま残った。
+
+6 回目（UTC）。W は pid 30744、R は pid 55480:
+
+```text
+21:30:27.486  W  GetConsoleOutputCP -> 932     (saves 932)
+21:30:27.500  W  SetConsoleOutputCP(65001)
+21:30:27.509  W  GetConsoleCP       -> 932
+21:30:27.511  W  SetConsoleCP(65001)
+21:30:27.514  R  GetConsoleOutputCP -> 65001   (saves 65001)
+21:30:27.525  W  SetConsoleOutputCP(932)       (W restores output)
+21:30:27.527  W  SetConsoleCP(932)             (W restores input)
+21:30:27.528  R  SetConsoleOutputCP(65001)
+21:30:27.537  R  GetConsoleCP       -> 932
+21:30:27.539  R  SetConsoleCP(65001)
+21:30:27.594  R  SetConsoleCP(932)             (R restores input only)
+              (left at in 932 / out 65001)
+```
+
+- 上で導いた順番がそのまま記録された。R が出力側を控える（65001）→ W が出力側を 932 に戻す → R が出力側を 65001 にする。R の後始末は入力側だけを戻し、65001 を控えた出力側は戻さなかった
+- 見張り役の記録とも合う（.531 に出力 932、.533 に出力 65001 へ戻る）
+- 呼び出し元の番地は、W と R で同じだった。控えて変える 4 つは `…989ceb` ・ `…989cfc` ・ `…989d01` ・ `…989d12`、出力側の後始末は `…989b72`、入力側の後始末は `…975511`。どちらの bun も、同じ初期化と同じ後始末の箇所から呼んでいる
+- 残った 3 回とも、R の `GetConsoleOutputCP` が 65001 を返し、R は出力側を戻さなかった。戻った 37 回のうち 14 回は、どちらかが一方の 65001 を控えていたが、もう一方の後始末がその後に来たため戻った
+
+デバッガは呼ばれるたびに bun を止めるので、競合の割合はデバッガなしの回とは比べられない。時刻は 2 つのデバッガがそれぞれ記録したもので、2 本の間の前後は数 ms ずれることがある（21 回目は、記録上の時刻だけを見ると R が控えたのが W の後始末の後になっている）。値（何を控えたか）は、このずれの影響を受けない。デバッガは、出力を隠す前に名乗りを出すため、W の分はその名乗りがパイプに入り、R が画面に出している（`screen.json`）。
+
+証拠（6 回目）: [trace-writer.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-writer.ndjson)、[trace-reader.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-reader.ndjson)、[watch.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/watch.ndjson)。40 回分:[results.jsonl](evidence/cp932/bun-pr-43662/asis-trace-40/results.jsonl)。コード: `tools/50_run/asis-timeline.ts --trace`、`tools/50_run/cdb-trace.js`、まとめは `tools/50_run/summarize-trace.ts`
 
 コード: [見張り役](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts)（watch.ts）、[流す側](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts)（asis-timeline.ts）
 

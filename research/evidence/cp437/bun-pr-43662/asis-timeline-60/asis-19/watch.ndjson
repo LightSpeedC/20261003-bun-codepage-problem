@@ -1,0 +1,19 @@
+{"utc":"2026-10-11T21:03:38.148Z","event":"watch-start","in":437,"out":437}
+{"utc":"2026-10-11T21:03:38.160Z","event":"attach","pid":32564,"cmd":"cmd /c .\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\run.cmd"}
+{"utc":"2026-10-11T21:03:38.194Z","event":"attach","pid":45976,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\.\" --tag before"}
+{"utc":"2026-10-11T21:03:38.433Z","event":"detach","pid":45976}
+{"utc":"2026-10-11T21:03:38.483Z","event":"codepage","in":437,"out":65001}
+{"utc":"2026-10-11T21:03:38.489Z","event":"attach","pid":33364,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T21:03:38.491Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:03:38.495Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-11T21:03:38.496Z","event":"detach","pid":33364}
+{"utc":"2026-10-11T21:03:38.499Z","event":"attach","pid":39548,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T21:03:38.530Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:03:38.594Z","event":"codepage","in":65001,"out":437}
+{"utc":"2026-10-11T21:03:38.602Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-11T21:03:38.605Z","event":"detach","pid":39548}
+{"utc":"2026-10-11T21:03:38.627Z","event":"attach","pid":14392,"cmd":"chcp"}
+{"utc":"2026-10-11T21:03:38.640Z","event":"detach","pid":14392}
+{"utc":"2026-10-11T21:03:38.667Z","event":"attach","pid":66960,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\.\" --tag after --screen \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-19\\./screen.json\""}
+{"utc":"2026-10-11T21:03:38.856Z","event":"detach","pid":66960}
+{"utc":"2026-10-11T21:03:38.905Z","event":"watch-end","in":437,"out":437}

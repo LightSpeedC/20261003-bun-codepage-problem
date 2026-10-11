@@ -1,0 +1,21 @@
+{"utc":"2026-10-11T21:20:43.392Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-11T21:20:43.396Z","event":"attach","pid":41148,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\run.cmd"}
+{"utc":"2026-10-11T21:20:43.416Z","event":"attach","pid":46880,"cmd":"node  \".\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\.\" --tag before"}
+{"utc":"2026-10-11T21:20:43.571Z","event":"detach","pid":46880}
+{"utc":"2026-10-11T21:20:43.908Z","event":"attach","pid":68592,"cmd":"powershell  -NoProfile -Command \"bun -e 'console.log(''abc \\u6771\\u4eac\\u5927\\u962a xyz'')' | bun -e 'process.stdin.pipe(process.stdout)'\""}
+{"utc":"2026-10-11T21:20:44.106Z","event":"attach","pid":67308,"cmd":"\".\\_bin\\bun\\bun.exe\" -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\""}
+{"utc":"2026-10-11T21:20:44.107Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T21:20:44.108Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:20:44.116Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T21:20:44.117Z","event":"detach","pid":67308}
+{"utc":"2026-10-11T21:20:44.130Z","event":"attach","pid":10512,"cmd":"\".\\_bin\\bun\\bun.exe\" -e process.stdin.pipe(process.stdout)"}
+{"utc":"2026-10-11T21:20:44.132Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T21:20:44.132Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:20:44.225Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T21:20:44.228Z","event":"detach","pid":10512}
+{"utc":"2026-10-11T21:20:44.248Z","event":"detach","pid":68592}
+{"utc":"2026-10-11T21:20:44.274Z","event":"attach","pid":64036,"cmd":"chcp"}
+{"utc":"2026-10-11T21:20:44.279Z","event":"detach","pid":64036}
+{"utc":"2026-10-11T21:20:44.304Z","event":"attach","pid":38972,"cmd":"node  \".\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun\\asis-timeline-ps51\\asis-17\\./screen.json\""}
+{"utc":"2026-10-11T21:20:44.439Z","event":"detach","pid":38972}
+{"utc":"2026-10-11T21:20:44.445Z","event":"watch-end","in":932,"out":932}

@@ -1,0 +1,21 @@
+{"utc":"2026-10-11T21:30:48.021Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-11T21:30:48.026Z","event":"attach","pid":49424,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\run.cmd"}
+{"utc":"2026-10-11T21:30:48.052Z","event":"attach","pid":25580,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\.\" --tag before"}
+{"utc":"2026-10-11T21:30:48.157Z","event":"detach","pid":25580}
+{"utc":"2026-10-11T21:30:48.216Z","event":"attach","pid":47592,"cmd":"cdb  -G -cf \"tmp/cdb/asis-11-writer.txt\" bun.exe -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T21:30:48.248Z","event":"attach","pid":67328,"cmd":"cdb  -G -cf \"tmp/cdb/asis-11-reader.txt\" bun.exe -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T21:30:48.452Z","event":"attach","pid":46548,"cmd":"bun.exe -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T21:30:48.494Z","event":"attach","pid":54164,"cmd":"bun.exe -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T21:30:50.428Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-11T21:30:50.437Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:30:50.452Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-11T21:30:50.457Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-11T21:30:50.477Z","event":"detach","pid":46548}
+{"utc":"2026-10-11T21:30:50.486Z","event":"detach","pid":47592}
+{"utc":"2026-10-11T21:30:50.526Z","event":"detach","pid":54164}
+{"utc":"2026-10-11T21:30:50.535Z","event":"detach","pid":67328}
+{"utc":"2026-10-11T21:30:50.560Z","event":"attach","pid":55536,"cmd":"chcp"}
+{"utc":"2026-10-11T21:30:50.565Z","event":"detach","pid":55536}
+{"utc":"2026-10-11T21:30:50.590Z","event":"attach","pid":3304,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-trace-40\\asis-11\\./screen.json\""}
+{"utc":"2026-10-11T21:30:50.756Z","event":"detach","pid":3304}
+{"utc":"2026-10-11T21:30:50.768Z","event":"watch-end","in":932,"out":932}

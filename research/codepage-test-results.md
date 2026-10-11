@@ -2,7 +2,7 @@
 
 Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-11
+> 📅 Created: 2026-10-04 / Updated: 2026-10-12
 
 [⌂](../README.md)
 
@@ -21,7 +21,7 @@ Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, B
 
 1. **Bun switches the console to code page 65001 at startup, and restores the value it saved at exit.** The code page belongs to the console and is shared by every process attached to it. Source: `init()` ([output.rs lines 561 to 567](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L561-L567)) and `restore()` ([output.rs lines 517 to 524](https://github.com/oven-sh/bun/blob/3f1765a6de030d00a98c33ff0c776c7a7e4b23e9/src/bun_core/output.rs#L517-L524)). Evidence, the code page while Bun runs: [932](evidence/cp932/bun/node-test/t1-bun/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-bun/log.jsonl) (T1)
 2. **Two Bun processes in one console overwrite each other's saved value.** Output is garbled, 65001 is left on the console, and other programs in the same console break. Evidence: garbled screen [932](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) / [437](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json) (T5), broken neighbor [932](evidence/cp932/bun/node-test/t4-bun/screen.json) / [437](evidence/cp437/bun/node-test/t4-bun/screen.json) (T4), forced kill [932](evidence/cp932/bun/node-test/t3-bun/log.jsonl) / [437](evidence/cp437/bun/node-test/t3-bun/log.jsonl) (T3)
-3. **PR #43662, the open fix for bun#43660, does not remove the cause.** It fixes `console.log` output, but Bun still switches the console to 65001 while it runs ([932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) / [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)), a forced kill still leaves 65001 ([932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)), `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` are still garbled ([932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)), and restoring still loses a race now and then when the order is not fixed ([timeline](#timeline-of-every-process-on-the-console-pr-43662-932))
+3. **PR #43662, the open fix for bun#43660, does not remove the cause.** It fixes `console.log` output, but Bun still switches the console to 65001 while it runs ([932](evidence/cp932/bun-pr-43662/node-test/t1-bun/log.jsonl) / [437](evidence/cp437/bun-pr-43662/node-test/t1-bun/log.jsonl)), a forced kill still leaves 65001 ([932](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json)), `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` are still garbled ([932](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [437](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json)), and restoring still loses a race now and then when the order is not fixed ([timeline](#timeline-of-every-process-on-the-console-pr-43662))
 4. **Node.js and Deno never change the code page** and print correctly in every case: Node.js [932](evidence/cp932/bun/node-test/t1-node/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-node/log.jsonl), Deno [932](evidence/cp932/bun/node-test/t1-deno/log.jsonl) / [437](evidence/cp437/bun/node-test/t1-deno/log.jsonl) (T1)
 
 **Request** ([bun#44693](https://github.com/oven-sh/bun/issues/44693)): do not change the console code page at all, and write all console output with `WriteConsoleW`. Every verdict was the same whether the console started at 932 (Japanese Windows) or 437 (English Windows). The details follow in [Conclusion](#2-conclusion); how the tests were run is in [Conditions](#8-conditions).
@@ -38,7 +38,7 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 | H6 | A forced kill leaves the code page changed | ❌ happens | ❌ still happens | ✅ never | [log](evidence/cp932/bun/node-test/t3-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t3-bun/log.jsonl) (T3); PR: [screen](evidence/cp932/bun-pr-43662/node-test/t3-bun/screen.json) / [screen](evidence/cp437/bun-pr-43662/node-test/t3-bun/screen.json) |
 | H1 | The output of a piped peer is garbled | ❌ happens | ⚠️ fixed for `console.log` and `process.stdout`; still happens with `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` | ✅ never | [screen](evidence/cp932/bun/node-test/t5-bun-ww-console-1/screen.json) / [screen](evidence/cp437/bun/node-test/t5-bun-ww-console-1/screen.json) (T5 ww); PR: [screen](evidence/cp932/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) / [screen](evidence/cp437/bun-pr-43662/node-test/t5-bun-ww-fswritesync-1/screen.json) (T5 ww with fs.writeSync) |
 | H5 | After the code page is put back to the starting value, Bun writes raw UTF-8 bytes and they are garbled | ❌ happens | ⚠️ same as H1 | ✅ never | [log](evidence/cp932/bun/node-test/t5-bun-ww-console-1/log.jsonl) / [log](evidence/cp437/bun/node-test/t5-bun-ww-console-1/log.jsonl) (T5 ww: the reader's code page right before writing is the starting value) |
-| H3 | 65001 is left on the console after exit | ❌ happens | ⚠️ fixed in every fixed order, but with no fixed order the input or the output code page is now and then left at 65001 | ✅ never | [log](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl) (T2, cmd, bun → bun); PR: [log](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/log.jsonl) (932, run 19 with the watcher: after exit input 932, output 65001); counts in the table of [the timeline](#timeline-of-every-process-on-the-console-pr-43662-932) |
+| H3 | 65001 is left on the console after exit | ❌ happens | ⚠️ fixed in every fixed order, but with no fixed order the input or the output code page is now and then left at 65001 | ✅ never | [log](evidence/cp932/bun/node-test/t2-cmd-bun-bun/log.jsonl) / [log](evidence/cp437/bun/node-test/t2-cmd-bun-bun/log.jsonl) (T2, cmd, bun → bun); PR: [log](evidence/cp932/bun-pr-43662/asis-timeline/asis-19/log.jsonl) (932, run 19 with the watcher: after exit input 932, output 65001); counts in the table of [the timeline](#timeline-of-every-process-on-the-console-pr-43662) |
 | H2 | The result is decided by the start and exit order, so it changes from run to run | ❌ happens | ⚠️ with no fixed order the screen was always correct, but 65001 is now and then left (H3) | ✅ never | [T5, same shape as bun#43660](#7-t5-same-shape-as-bun43660): the four fixed orders in T5 give four different outcomes |
 | H7 | It happens even when the two Bun processes are not directly connected | ❌ happens | ✅ fixed | ✅ never | [screen](evidence/cp932/bun/node-test/t5-bun-relay-console-1/screen.json) / [screen](evidence/cp437/bun/node-test/t5-bun-relay-console-1/screen.json) (T5 relay, `bun \| node \| bun`) |
 
@@ -49,7 +49,7 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 - While Bun runs, the console is at 65001 for every process attached to it (T1)
 - A forced kill still leaves 65001 behind, and a script run afterwards in the same console is misread (T3)
 - `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still write with `WriteFile`, so in the ww order their output is garbled (T5), as the PR description and its review say
-- Restoring "only a code page this process changed" still loses a race: after both processes exit, either the input or the output code page alone stays at 65001. How often this happens changes a lot from series to series: 0 times in 120 runs, 3 times in 60. See [the timeline](#timeline-of-every-process-on-the-console-pr-43662-932), which also derives the order from the PR's source
+- Restoring "only a code page this process changed" still loses a race: after both processes exit, either the input or the output code page alone stays at 65001. How often this happens changes a lot from series to series: 0 times in 120 runs, 3 times in 60. See [the timeline](#timeline-of-every-process-on-the-console-pr-43662), which also derives the order from the PR's source
 
 The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.
 
@@ -123,7 +123,7 @@ The command for each launcher is built here: [lines 58 to 61](https://github.com
 
 - The bytes flowing through the pipe were never corrupted, in any combination
 - Connecting two Bun processes directly from cmd or pwsh 7 left 65001 behind (H3). If either side is Node.js or Deno, it is not left. This matches "it does not happen if either side is Node.js" in bun#43660
-- Windows PowerShell 5.1 replaces the Japanese with `?` in every combination (also for node | node; it is 5.1's own behavior). In the 5.1 column, the same bytes as node | node count as ✅. With 5.1 in between, 65001 was not left, perhaps because the lifetimes of the two Bun processes no longer overlap the same way (cause not confirmed)
+- Windows PowerShell 5.1 replaces the Japanese with `?` in every combination (also for node | node; it is 5.1's own behavior). In the 5.1 column, the same bytes as node | node count as ✅. With 5.1 in between, 65001 was not left, because 5.1 does not run the two Bun processes at the same time. Running the same pipe through 5.1 20 times with the watcher, the reader started only after the writer had exited, in all 20 runs (11 to 22 ms later; [watch.ndjson of run 1](evidence/cp932/bun/asis-timeline-ps51/asis-1/watch.ndjson), [results.jsonl](evidence/cp932/bun/asis-timeline-ps51/results.jsonl)). With no overlap, neither process can save the other's 65001
 
 ## 5. T3, T4. Forced kill and neighboring processes
 
@@ -248,9 +248,9 @@ Test code: [same shape as bun#43660 (codepage.test.ts lines 140 to 161)](https:/
 
 - With the same command, Bun's result changed from run to run (H2), and the number of garbled runs also changed from run to run. It is decided by which of the two processes starts and exits first, and that order varies with OS scheduling
 - The garbling reported in bun#43660 was the garbled side of this variation
-- The build of PR #43662 printed correctly in all 120 runs and restored the code page every time. On another day, though, it left the output code page at 65001 in 1 of 20 runs ([run 6 on 2026-10-07](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)). See [the timeline below](#timeline-of-every-process-on-the-console-pr-43662-932)
+- The build of PR #43662 printed correctly in all 120 runs and restored the code page every time. On another day, though, it left the output code page at 65001 in 1 of 20 runs ([run 6 on 2026-10-07](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)). See [the timeline below](#timeline-of-every-process-on-the-console-pr-43662)
 
-### Timeline of every process on the console (PR #43662, 932)
+### Timeline of every process on the console (PR #43662)
 
 To see which processes were on the console when the code page was left changed, the same command was run 60 more times with the build of PR #43662, starting at 932. A Node.js watcher was attached to the same console the whole time. It polled `GetConsoleProcessList`, `GetConsoleCP` and `GetConsoleOutputCP` continuously and logged every attach, every detach and every code page change with a UTC time (`watch.ndjson`). Node.js does not change the code page (T1).
 
@@ -263,6 +263,10 @@ The same shape was run several times, with and without the watcher. How often th
 | 2026-10-10 | no (full suite) | 120 | ✅ 0 (60 each at 932 and 437) | [932](evidence/cp932/bun-pr-43662/node-test/results.jsonl) / [437](evidence/cp437/bun-pr-43662/node-test/results.jsonl) |
 | 2026-10-11 | yes | 20 | ❌ 1 (run 9, output side) | [watch.ndjson](evidence/cp932/bun-pr-43662/asis-timeline-20/asis-9/watch.ndjson), [results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline-20/results.jsonl) |
 | 2026-10-11 | yes | 60 | ✅ 0 | [results.jsonl](evidence/cp932/bun-pr-43662/asis-timeline-60/results.jsonl) |
+| 2026-10-11 | yes (started at 437) | 60 | ❌ 2 (runs 48, 55, input) | [results.jsonl](evidence/cp437/bun-pr-43662/asis-timeline-60/results.jsonl) |
+| 2026-10-11 | yes + per-call trace | 40 | ❌ 3 (runs 6, 15, 21, output) | [trace below](#per-call-trace) |
+
+Starting at 437 left the code page behind in the same way. Both times it was the input side, the same shape as runs 45 and 51 of 2026-10-10.
 
 Run 9 on 2026-10-11 had the same shape as run 19 below: R started 7 ms after W set 65001, and after exit the console was left at input 932, output 65001. What follows analyzes the 60 runs of 2026-10-10.
 
@@ -326,7 +330,37 @@ With only W and R calling these, each final state has a single order that produc
 - **Output left at 65001 (run 19):** the same order on the output side: R saves the output (65001) → W restores the output to 932 → R sets it to 65001. The input then came back, because R saved the input after W had restored it (932), and R's restore set it back at .263
 - In every case the cause is the same: R's save and set are not one step, and W's restore lands between them. R then saves 65001 as its "original", and the PR's check skips restoring a saved 65001
 
-This is a deduction from the source and the timestamps, not a per-call trace: the watcher does not see which process made each call, and the step between R's save and R's set is shorter than its sampling interval (in run 19 the output going to 932 and back is not in the log).
+Up to here this is a deduction from the source and the timestamps: the watcher does not see which process made each call, and the step between R's save and R's set is shorter than its sampling interval (in run 19 the output going to 932 and back is not in the log). So the next step recorded each call.
+
+#### Per-call trace
+
+W and R each ran under cdb (WinDbg 1.2610), with breakpoints on `GetConsoleOutputCP`, `SetConsoleOutputCP`, `GetConsoleCP` and `SetConsoleCP` in `kernelbase`. Each hit recorded the process, the value (the argument of Set, the return value of Get) and the caller address, then continued (`trace-writer.ndjson`, `trace-reader.ndjson`). The watcher ran as well. Of 40 runs from 932, 3 left the output code page at 65001.
+
+Run 6 (UTC). W is pid 30744, R is pid 55480:
+
+```text
+21:30:27.486  W  GetConsoleOutputCP -> 932     (saves 932)
+21:30:27.500  W  SetConsoleOutputCP(65001)
+21:30:27.509  W  GetConsoleCP       -> 932
+21:30:27.511  W  SetConsoleCP(65001)
+21:30:27.514  R  GetConsoleOutputCP -> 65001   (saves 65001)
+21:30:27.525  W  SetConsoleOutputCP(932)       (W restores output)
+21:30:27.527  W  SetConsoleCP(932)             (W restores input)
+21:30:27.528  R  SetConsoleOutputCP(65001)
+21:30:27.537  R  GetConsoleCP       -> 932
+21:30:27.539  R  SetConsoleCP(65001)
+21:30:27.594  R  SetConsoleCP(932)             (R restores input only)
+              (left at in 932 / out 65001)
+```
+
+- The trace shows exactly the order derived above: R saves the output (65001) → W restores the output to 932 → R sets the output to 65001. R's restore sets back only the input and skips the output, whose saved value is 65001
+- The watcher agrees (output 932 at .531, back to 65001 at .533)
+- W and R called from the same addresses: the four save-and-set calls from `…989ceb`, `…989cfc`, `…989d01`, `…989d12`, the output restore from `…989b72` and the input restore from `…975511`. Both processes go through the same init and the same restore
+- In all 3 runs that left 65001, R's `GetConsoleOutputCP` returned 65001 and R did not restore the output. In 14 of the 37 runs that came back, one process had also saved the other's 65001, but the other's restore came later, so the code page came back
+
+The debugger stops bun at every call, so the rate of lost races cannot be compared with runs without it. Each of the two debuggers records its own times, so the order between the two processes can be off by a few ms (in run 21, going by the recorded times alone, R saved after W's restore). The values (what each process saved) are not affected by this. The debugger prints its banner before the script hides its output, so W's banner goes into the pipe and R prints it on the screen (`screen.json`).
+
+Evidence (run 6): [trace-writer.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-writer.ndjson), [trace-reader.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-reader.ndjson), [watch.ndjson](evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/watch.ndjson). All 40 runs: [results.jsonl](evidence/cp932/bun-pr-43662/asis-trace-40/results.jsonl). Code: `tools/50_run/asis-timeline.ts --trace`, `tools/50_run/cdb-trace.js`, summary by `tools/50_run/summarize-trace.ts`
 
 Code: [the watcher](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts) (watch.ts) and [the runner](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts) (asis-timeline.ts)
 

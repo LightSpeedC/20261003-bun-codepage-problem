@@ -54,7 +54,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>コードページ試験の結果</h1>
 <p class="lead">計画の T1〜T6 を、コードページ 932 と 437 で、bun 1.4.3 ・ bun canary ・ node ・ deno に流した結果。bun がコンソールのコードページを変えることで起きる害を 1 つずつ実測で示し、結果の 1 つ 1 つから証拠ファイルへリンクする</p>
-<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-11</p>
+<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-12</p>
 </div></div>
 
 <div class="wrap">
@@ -181,7 +181,7 @@ footer .navbar { margin-top: 0; }
 <ul>
 <li>パイプを流れるバイト列は、どの組み合わせでも壊れなかった</li>
 <li>bun 同士を cmd ・ pwsh 7 から直接つなぐと、終了後に 65001 が残った（H3）。片方が node か deno なら残らない。bun#43660 の「片方が node なら起きない」と合う</li>
-<li>Windows PowerShell 5.1 は、どの組み合わせでも日本語を <code>?</code> に置き換える（node | node でも同じ。5.1 自身の事象）。5.1 の列は node | node と同じバイト列なら ✅ とした。5.1 が間に入ると 2 本の bun の寿命がずれるためか、65001 は残らなかった（原因は未確認）</li>
+<li>Windows PowerShell 5.1 は、どの組み合わせでも日本語を <code>?</code> に置き換える（node | node でも同じ。5.1 自身の事象）。5.1 の列は node | node と同じバイト列なら ✅ とした。5.1 が間に入ると 65001 は残らなかった。5.1 は 2 本の bun を同時に動かさないため。同じ形を 5.1 経由で 20 回流して見張ると、20 回とも、送り手の bun が終わってから受け手の bun が起動した（間は 11〜22 ms。<a href="evidence/cp932/bun/asis-timeline-ps51/asis-1/watch.ndjson">1 回目の watch.ndjson</a>、<a href="evidence/cp932/bun/asis-timeline-ps51/results.jsonl">results.jsonl</a>）。寿命が重ならないので、一方が控える値に他方の 65001 が入らない</li>
 </ul>
 </section>
 
@@ -303,7 +303,7 @@ neighbor: 東京大阪            neighbor: café
 <li>bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった</li>
 <li>PR #43662 の版は 120 回とも正しく出し、コードページも毎回戻した。ただし、別の日には 20 回中 1 回、出力側を 65001 のまま残した（<a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl">2026-10-07 の 6 回目</a>）。<a href="#asis-timeline">下の時系列</a> を参照</li>
 </ul>
-<h2 id="asis-timeline">窓の全プロセスの時系列（PR #43662、932）</h2>
+<h2 id="asis-timeline">窓の全プロセスの時系列（PR #43662）</h2>
 <p>コードページが変わったまま残ったとき、窓にどのプロセスがいたかを見るため、同じコマンドを PR #43662 の版で、932 から 60 回流し直した。その間、同じ窓に node の見張り役をつないだ。見張り役は <code>GetConsoleProcessList</code> ・ <code>GetConsoleCP</code> ・ <code>GetConsoleOutputCP</code> を読み続け、プロセスの出入りとコードページの変化を、すべて UTC の時刻で記録した（<code>watch.ndjson</code>）。node はコードページを変えない（T1）。</p>
 <p>同じ形を、見張り役の有無を変えて何度か流した。開始のコードページに戻らなかった回数は、日によって大きく変わる。うまくいった回も、選ばずにすべて載せる。</p>
 <div class="tablewrap"><table>
@@ -314,7 +314,10 @@ neighbor: 東京大阪            neighbor: café
 <tr><td class="nowrap">2026-10-10</td><td class="nowrap">なし（全件の試験）</td><td class="num">120</td><td class="nowrap">✅ 0（932 と 437 で 60 回ずつ）</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/node-test/results.jsonl">932</a> ／ <a href="evidence/cp437/bun-pr-43662/node-test/results.jsonl">437</a></td></tr>
 <tr><td class="nowrap">2026-10-11</td><td class="nowrap">あり</td><td class="num">20</td><td class="nowrap">❌ 1（9 回目、出力側）</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline-20/asis-9/watch.ndjson">watch.ndjson</a>、<a href="evidence/cp932/bun-pr-43662/asis-timeline-20/results.jsonl">results.jsonl</a></td></tr>
 <tr><td class="nowrap">2026-10-11</td><td class="nowrap">あり</td><td class="num">60</td><td class="nowrap">✅ 0</td><td class="nowrap"><a href="evidence/cp932/bun-pr-43662/asis-timeline-60/results.jsonl">results.jsonl</a></td></tr>
+<tr><td class="nowrap">2026-10-11</td><td class="nowrap">あり（437 で開始）</td><td class="num">60</td><td class="nowrap">❌ 2（48・55 回目、入力側）</td><td class="nowrap"><a href="evidence/cp437/bun-pr-43662/asis-timeline-60/results.jsonl">results.jsonl</a></td></tr>
+<tr><td class="nowrap">2026-10-11</td><td class="nowrap">あり ＋ 呼び出しの記録</td><td class="num">40</td><td class="nowrap">❌ 3（6・15・21 回目、出力側）</td><td class="nowrap"><a href="#asis-trace">下の記録</a></td></tr>
 </tbody></table></div>
+<p>437 で始めても同じように残った。残った側は 2 回とも入力側で、2026-10-10 の 45・51 回目と同じ形だった。</p>
 <p>2026-10-11 の 9 回目は、下の 19 回目と同じ形だった。R は W が 65001 にした 7 ms 後に起動し、終了後は入力 932 ・ 出力 65001 で残った。以下は 2026-10-10 の 60 回の分析。</p>
 <div class="tablewrap"><table>
 <thead><tr><th>回</th><th>終了後（入力 / 出力）</th><th>窓にいたプロセス</th><th>時系列</th></tr></thead>
@@ -374,7 +377,30 @@ run 51
 <li><strong>出力側が 65001 で残る（19 回目）:</strong> 出力側で同じ順番が起きた。R が出力側を控える（65001）→ W が出力側を 932 に戻す → R が 65001 にする。入力側が戻ったのは、R が入力側を控えたのが W の後始末の後（932）で、R の後始末が .263 に戻したため</li>
 <li>どの回も原因は同じ。R の「控える」と「変える」が 1 つの操作になっておらず、その間に W の後始末が入る。すると R は 65001 を「元の値」として控え、PR の判定は 65001 を控えた側を戻さない</li>
 </ul>
-<p>これはソースと時刻からの推論で、呼び出しを 1 つずつ記録したものではない。見張り役にはどのプロセスが呼んだかは見えず、R の「控える」と「変える」の間は読み取りの間隔より短い（19 回目で、出力側が 932 になってまた 65001 に戻った変化は記録に出ていない）。</p>
+<p>ここまではソースと時刻からの推論。見張り役にはどのプロセスが呼んだかは見えず、R の「控える」と「変える」の間は読み取りの間隔より短い（19 回目で、出力側が 932 になってまた 65001 に戻った変化は記録に出ていない）。そこで次に、呼び出しを 1 つずつ記録した。</p>
+<h3 id="asis-trace">呼び出しを 1 つずつ記録した結果</h3>
+<p>W と R をそれぞれ cdb（WinDbg 1.2610）の下で動かし、<code>kernelbase</code> の <code>GetConsoleOutputCP</code> ・ <code>SetConsoleOutputCP</code> ・ <code>GetConsoleCP</code> ・ <code>SetConsoleCP</code> にブレークポイントを置いた。呼ばれるたびに、プロセス ・ 値（Set は引数、Get は戻り値）・ 呼び出し元の番地を記録して、そのまま続行させた（<code>trace-writer.ndjson</code> ・ <code>trace-reader.ndjson</code>）。見張り役も同時に動かした。932 から 40 回流し、3 回で出力側が 65001 のまま残った。</p>
+<p>6 回目（UTC）。W は pid 30744、R は pid 55480:</p>
+<pre><code class="language-text">21:30:27.486  W  GetConsoleOutputCP -> 932     (saves 932)
+21:30:27.500  W  SetConsoleOutputCP(65001)
+21:30:27.509  W  GetConsoleCP       -> 932
+21:30:27.511  W  SetConsoleCP(65001)
+21:30:27.514  R  GetConsoleOutputCP -> 65001   (saves 65001)
+21:30:27.525  W  SetConsoleOutputCP(932)       (W restores output)
+21:30:27.527  W  SetConsoleCP(932)             (W restores input)
+21:30:27.528  R  SetConsoleOutputCP(65001)
+21:30:27.537  R  GetConsoleCP       -> 932
+21:30:27.539  R  SetConsoleCP(65001)
+21:30:27.594  R  SetConsoleCP(932)             (R restores input only)
+              (left at in 932 / out 65001)</code></pre>
+<ul>
+<li>上で導いた順番がそのまま記録された。R が出力側を控える（65001）→ W が出力側を 932 に戻す → R が出力側を 65001 にする。R の後始末は入力側だけを戻し、65001 を控えた出力側は戻さなかった</li>
+<li>見張り役の記録とも合う（.531 に出力 932、.533 に出力 65001 へ戻る）</li>
+<li>呼び出し元の番地は、W と R で同じだった。控えて変える 4 つは <code>…989ceb</code> ・ <code>…989cfc</code> ・ <code>…989d01</code> ・ <code>…989d12</code>、出力側の後始末は <code>…989b72</code>、入力側の後始末は <code>…975511</code>。どちらの bun も、同じ初期化と同じ後始末の箇所から呼んでいる</li>
+<li>残った 3 回とも、R の <code>GetConsoleOutputCP</code> が 65001 を返し、R は出力側を戻さなかった。戻った 37 回のうち 14 回は、どちらかが一方の 65001 を控えていたが、もう一方の後始末がその後に来たため戻った</li>
+</ul>
+<p>デバッガは呼ばれるたびに bun を止めるので、競合の割合はデバッガなしの回とは比べられない。時刻は 2 つのデバッガがそれぞれ記録したもので、2 本の間の前後は数 ms ずれることがある（21 回目は、記録上の時刻だけを見ると R が控えたのが W の後始末の後になっている）。値（何を控えたか）は、このずれの影響を受けない。デバッガは、出力を隠す前に名乗りを出すため、W の分はその名乗りがパイプに入り、R が画面に出している（<code>screen.json</code>）。</p>
+<p>証拠（6 回目）: <a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-writer.ndjson">trace-writer.ndjson</a>、<a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/trace-reader.ndjson">trace-reader.ndjson</a>、<a href="evidence/cp932/bun-pr-43662/asis-trace-40/asis-6/watch.ndjson">watch.ndjson</a>。40 回分:<a href="evidence/cp932/bun-pr-43662/asis-trace-40/results.jsonl">results.jsonl</a>。コード: <code>tools/50_run/asis-timeline.ts --trace</code>、<code>tools/50_run/cdb-trace.js</code>、まとめは <code>tools/50_run/summarize-trace.ts</code></p>
 <p>コード: <a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tests/fixtures/watch.ts">見張り役</a>（watch.ts）、<a href="https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/93cca91/tools/50_run/asis-timeline.ts">流す側</a>（asis-timeline.ts）</p>
 </section>
 

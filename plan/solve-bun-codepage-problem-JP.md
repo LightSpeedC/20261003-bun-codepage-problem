@@ -2,7 +2,7 @@
 
 bun#43660 は氷山の一角。根本の問題は bun がコンソールのコードページを変えることにある。その害を実測で示し、変えない実装を求める Issue を出す
 
-> 📅 作成: 2026-10-03 / 更新: 2026-10-11
+> 📅 作成: 2026-10-03 / 更新: 2026-10-12
 
 [⌂](../README-JP.md)
 
@@ -269,9 +269,10 @@ tools/50_run/
 6. 「Issue の骨組み」に沿って本文案を作り、ローカルルール「Issue と公開」の条件を満たしてから出す（済: [bun#44693](https://github.com/oven-sh/bun/issues/44693) として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md)）
 7. bun#43660 に、新しい Issue への関連を書き足す（済: [コメント](https://github.com/oven-sh/bun/issues/43660#issuecomment-6036544127)）
 8. bun#43660 への修正の PR #43662 の版を試験一式で測り、直る害と残る害を #44693 にコメントする（済: 結果資料の結論に PR の列を足した。[#44693 へのコメント](https://github.com/oven-sh/bun/issues/44693#issuecomment-6040994500)と [PR #43662 へのコメント](https://github.com/oven-sh/bun/pull/43662#issuecomment-6040869802)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#4-bun44693httpsgithubcomoven-shbunissues44693-への続報のコメントpr-43662httpsgithubcomoven-shbunpull43662)。PR を見落としたまま #44693 を出したため）
-9. PR #43662 での robobun の問い（65001 が残った回の、全プロセスの起動と終了の順）に、時系列を測り直して答える（済: 60 回流して [結果資料](../research/codepage-test-results-JP.md#窓の全プロセスの時系列pr-43662932) に足し、[PR #43662 への返信](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#6-pr-43662httpsgithubcomoven-shbunpull43662-への返信時系列)）
-10. 65001 が残る順番を PR #43662 のソースから導き、PR に伝える（済: [結果資料](../research/codepage-test-results-JP.md#窓の全プロセスの時系列pr-43662932)に足し、[PR #43662 への続報](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#7-pr-43662httpsgithubcomoven-shbunpull43662-への続報ソースから導いた順番)）
+9. PR #43662 での robobun の問い（65001 が残った回の、全プロセスの起動と終了の順）に、時系列を測り直して答える（済: 60 回流して [結果資料](../research/codepage-test-results-JP.md#窓の全プロセスの時系列pr-43662) に足し、[PR #43662 への返信](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098318890)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#6-pr-43662httpsgithubcomoven-shbunpull43662-への返信時系列)）
+10. 65001 が残る順番を PR #43662 のソースから導き、PR に伝える（済: [結果資料](../research/codepage-test-results-JP.md#窓の全プロセスの時系列pr-43662)に足し、[PR #43662 への続報](https://github.com/oven-sh/bun/pull/43662#issuecomment-6098674489)として投稿した。本文は [Issue bun#44693](../issue/bun-44693-JP.md#7-pr-43662httpsgithubcomoven-shbunpull43662-への続報ソースから導いた順番)）
 11. どの PC でも同じ試験を流せる仕組みにし、証拠を `research/evidence/` に残す（済。932 と 437 で全件を流し、`research/evidence/` に写した。結果資料の表の ✅ ／ ❌ から証拠ファイルへリンクした）
+12. PR #43662 で 65001 が残る順番を、呼び出しを 1 つずつ記録して確かめる。あわせて 437 での時系列と、5.1 が間に入ると残らない理由を測る（済: 結果資料の[呼び出しを 1 つずつ記録した結果](../research/codepage-test-results-JP.md#呼び出しを-1-つずつ記録した結果)と [時系列の表](../research/codepage-test-results-JP.md#窓の全プロセスの時系列pr-43662)、T2 の 5.1 の項に足した。PR への続報は未送信）
 
 ### 返事を見張る
 

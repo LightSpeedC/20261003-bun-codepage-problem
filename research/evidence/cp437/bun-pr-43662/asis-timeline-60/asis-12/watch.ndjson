@@ -1,0 +1,18 @@
+{"utc":"2026-10-11T21:03:17.828Z","event":"watch-start","in":437,"out":437}
+{"utc":"2026-10-11T21:03:17.834Z","event":"attach","pid":61612,"cmd":"cmd /c .\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\run.cmd"}
+{"utc":"2026-10-11T21:03:17.897Z","event":"attach","pid":37920,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\.\" --tag before"}
+{"utc":"2026-10-11T21:03:18.078Z","event":"detach","pid":37920}
+{"utc":"2026-10-11T21:03:18.133Z","event":"codepage","in":437,"out":65001}
+{"utc":"2026-10-11T21:03:18.135Z","event":"attach","pid":56400,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-11T21:03:18.140Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:03:18.141Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-11T21:03:18.142Z","event":"detach","pid":56400}
+{"utc":"2026-10-11T21:03:18.188Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-11T21:03:18.190Z","event":"attach","pid":41120,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-11T21:03:18.232Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-11T21:03:18.246Z","event":"detach","pid":41120}
+{"utc":"2026-10-11T21:03:18.304Z","event":"attach","pid":44340,"cmd":"chcp"}
+{"utc":"2026-10-11T21:03:18.312Z","event":"detach","pid":44340}
+{"utc":"2026-10-11T21:03:18.392Z","event":"attach","pid":39932,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\.\" --tag after --screen \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-60\\asis-12\\./screen.json\""}
+{"utc":"2026-10-11T21:03:18.611Z","event":"detach","pid":39932}
+{"utc":"2026-10-11T21:03:18.621Z","event":"watch-end","in":437,"out":437}

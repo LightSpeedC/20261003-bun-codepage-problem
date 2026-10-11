@@ -1,0 +1,18 @@
+{
+	"runAt": "2026-10-11T21:20:02Z",
+	"codePage": 932,
+	"runner": "tools/50_run/asis-timeline.ts",
+	"via": "powershell",
+	"tools": [
+		{
+			"name": "bun",
+			"folder": "_bin/bun",
+			"version": "1.4.3+c6da4a4d3"
+		},
+		{
+			"name": "node",
+			"folder": "_bin/node",
+			"version": "v26.10.0"
+		}
+	]
+}

@@ -1,0 +1,6 @@
+{"utc":"2026-10-11T21:30:35.021Z","pid":63196,"tid":21232,"call":"GetConsoleOutputCP","value":932,"caller":"0x7ff7dd989ceb"}
+{"utc":"2026-10-11T21:30:35.036Z","pid":63196,"tid":21232,"call":"SetConsoleOutputCP","value":65001,"caller":"0x7ff7dd989cfc"}
+{"utc":"2026-10-11T21:30:35.043Z","pid":63196,"tid":21232,"call":"GetConsoleCP","value":932,"caller":"0x7ff7dd989d01"}
+{"utc":"2026-10-11T21:30:35.044Z","pid":63196,"tid":21232,"call":"SetConsoleCP","value":65001,"caller":"0x7ff7dd989d12"}
+{"utc":"2026-10-11T21:30:35.060Z","pid":63196,"tid":21232,"call":"SetConsoleOutputCP","value":932,"caller":"0x7ff7dd989b72"}
+{"utc":"2026-10-11T21:30:35.064Z","pid":63196,"tid":21232,"call":"SetConsoleCP","value":932,"caller":"0x7ff7dd975511"}

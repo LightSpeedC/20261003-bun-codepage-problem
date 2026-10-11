@@ -1,0 +1,4 @@
+{"utc":"2026-10-11T21:32:29.616Z","pid":7028,"tid":64056,"call":"GetConsoleOutputCP","value":65001,"caller":"0x7ff7dd989ceb"}
+{"utc":"2026-10-11T21:32:29.630Z","pid":7028,"tid":64056,"call":"SetConsoleOutputCP","value":65001,"caller":"0x7ff7dd989cfc"}
+{"utc":"2026-10-11T21:32:29.636Z","pid":7028,"tid":64056,"call":"GetConsoleCP","value":65001,"caller":"0x7ff7dd989d01"}
+{"utc":"2026-10-11T21:32:29.638Z","pid":7028,"tid":64056,"call":"SetConsoleCP","value":65001,"caller":"0x7ff7dd989d12"}
