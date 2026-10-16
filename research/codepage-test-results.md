@@ -2,7 +2,7 @@
 
 Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-12
+> 📅 Created: 2026-10-04 / Updated: 2026-10-16
 
 [⌂](../README.md)
 
@@ -50,6 +50,7 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 - A forced kill still leaves 65001 behind, and a script run afterwards in the same console is misread (T3)
 - `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still write with `WriteFile`, so in the ww order their output is garbled (T5), as the PR description and its review say
 - Restoring "only a code page this process changed" still loses a race: after both processes exit, either the input or the output code page alone stays at 65001. How often this happens changes a lot from series to series: 0 times in 120 runs, 3 times in 60. See [the timeline](#timeline-of-every-process-on-the-console-pr-43662), which also derives the order from the PR's source
+- Commit [6b5271c](https://github.com/oven-sh/bun/pull/43662/commits/6b5271c), pushed to the PR on 2026-10-16 (JST), skips `SetConsoleOutputCP` and `SetConsoleCP` at startup when the console is already at 65001. A console at 437 or 932 is still switched to 65001, so the results in this document were measured on the build before this commit, and the request in bun#44693 is not met by it. We have not re-run the tests on a build with this commit
 
 The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.
 
