@@ -2,7 +2,7 @@
 
 Rules that apply only to this project. Where they differ from the common rules, these take precedence
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-09
+> 📅 Created: 2026-10-03 / Updated: 2026-10-16
 
 [⌂](../README.md)
 
@@ -67,6 +67,8 @@ Reason: this project only publishes documents with GitHub Pages, so there are no
 
 - **When a piece of work is finished, commit and push it without waiting to be told**. The words "commit" and "push" are not needed
 - **A piece of work is what answers one instruction from the user**. Commit only after the checks pass (html2md, check-markdown, check-contrast; the full test run when the test code changed)
+- **Finish the remaining work without waiting to be told**. Carry on through updating the records, the checks, commit, push, and checking the published page. Stop only for the hard-to-undo operations below, and when a direction has to be chosen
+- **When a new Bun is released, re-run the tests, update the documents and push, without waiting to be told**. Run the same set of tests, and write in the documents whether the results changed from before
 - **Commit only the files changed by that work**. Name them in `git add <path>` and check with `git diff --cached --name-only`
 - **After pushing, wait until GitHub Pages has rebuilt and the published page shows the change, then report**
 - **Operations that are hard to undo still need confirmation**: posting to Bun (issues and comments, under the conditions above), `git reset`, `--amend`, force push, and deleting files not named in the instruction

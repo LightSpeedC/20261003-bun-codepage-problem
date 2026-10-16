@@ -40,7 +40,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Local rules</h1>
 <p class="lead">Rules that apply only to this project. Where they differ from the common rules, these take precedence</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-09</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-16</p>
 </div></div>
 
 <div class="wrap">
@@ -109,6 +109,8 @@ AGENTS.md
 <ul>
 <li><strong>When a piece of work is finished, commit and push it without waiting to be told</strong>. The words "commit" and "push" are not needed</li>
 <li><strong>A piece of work is what answers one instruction from the user</strong>. Commit only after the checks pass (html2md, check-markdown, check-contrast; the full test run when the test code changed)</li>
+<li><strong>Finish the remaining work without waiting to be told</strong>. Carry on through updating the records, the checks, commit, push, and checking the published page. Stop only for the hard-to-undo operations below, and when a direction has to be chosen</li>
+<li><strong>When a new Bun is released, re-run the tests, update the documents and push, without waiting to be told</strong>. Run the same set of tests, and write in the documents whether the results changed from before</li>
 <li><strong>Commit only the files changed by that work</strong>. Name them in <code>git add &lt;path&gt;</code> and check with <code>git diff --cached --name-only</code></li>
 <li><strong>After pushing, wait until GitHub Pages has rebuilt and the published page shows the change, then report</strong></li>
 <li><strong>Operations that are hard to undo still need confirmation</strong>: posting to Bun (issues and comments, under the conditions above), <code>git reset</code>, <code>--amend</code>, force push, and deleting files not named in the instruction</li>
