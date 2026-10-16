@@ -52,7 +52,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Solving the Bun code page problem</h1>
 <p class="lead">bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it</p>
-<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-12</p>
+<p class="date">📅 Created: 2026-10-03 / Updated: 2026-10-17</p>
 </div></div>
 
 <div class="wrap">
@@ -134,7 +134,7 @@ footer .navbar { margin-top: 0; }
 <tbody>
 <tr><td>Bun</td><td class="nowrap">1.4.3+c6da4a4d3</td><td>Under test (stable)</td></tr>
 <tr><td>Bun canary</td><td class="nowrap">latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run)</td><td>Under test. Placed in <code>_bin/bun-canary/</code> and called with PATH switched</td></tr>
-<tr><td>Bun PR #43662</td><td class="nowrap">1.4.3-canary.1+576eb251a</td><td>The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in <code>_bin/bun-pr-43662/</code> and called with PATH switched</td></tr>
+<tr><td>Bun PR #43662</td><td class="nowrap">1.4.3-canary.1+6b5271cb1</td><td>The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in <code>_bin/bun-pr-43662/</code> and called with PATH switched</td></tr>
 <tr><td>Node.js</td><td class="nowrap">v26.10.0</td><td>Reference</td></tr>
 <tr><td>Deno</td><td class="nowrap">2.9.7</td><td>Reference</td></tr>
 </tbody></table></div>
@@ -278,7 +278,7 @@ tools/50_run/
 <thead><tr><th>Location</th><th>Handling</th></tr></thead>
 <tbody>
 <tr><td class="nowrap"><code>research/evidence_last/</code></td><td>Overwritten on every run. Not excluded by Git, but not committed</td></tr>
-<tr><td class="nowrap"><code>research/evidence/</code></td><td>Committed as the baseline. Copied from <code>evidence_last</code> after it is checked, when the user says so</td></tr>
+<tr><td class="nowrap"><code>research/evidence/</code></td><td>Committed as the baseline. Copied from <code>evidence_last</code> after it is checked. After a re-test, it is copied without waiting to be told (local rules)</td></tr>
 </tbody></table></div>
 <ul>
 <li>Contents: <code>versions.txt</code>, the result records (for node --test and bun test), and per case the <code>run.cmd</code>, logs, the screen read back, and the bytes the reader received</li>

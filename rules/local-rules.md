@@ -68,7 +68,7 @@ Reason: this project only publishes documents with GitHub Pages, so there are no
 - **When a piece of work is finished, commit and push it without waiting to be told**. The words "commit" and "push" are not needed
 - **A piece of work is what answers one instruction from the user**. Commit only after the checks pass (html2md, check-markdown, check-contrast; the full test run when the test code changed)
 - **Finish the remaining work without waiting to be told**. Carry on through updating the records, the checks, commit, push, and checking the published page. Stop only for the hard-to-undo operations below, and when a direction has to be chosen
-- **When a new Bun is released, re-run the tests, update the documents and push, without waiting to be told**. Run the same set of tests, and write in the documents whether the results changed from before
+- **When a new Bun is released, re-run the tests, update the documents and push, without waiting to be told**. Run the same set of tests, and write in the documents whether the results changed from before. After the run, carry on from copying the evidence to `research/evidence/` through updating the documents, commit and push (no separate instruction is needed to copy it)
 - **Re-test the build of PR #43662 in the same round**. Besides a new Bun release, when the head commit of the PR changes, fetch the build again, run the same set of tests, update the documents and push
 - **Commit only the files changed by that work**. Name them in `git add <path>` and check with `git diff --cached --name-only`
 - **After pushing, wait until GitHub Pages has rebuilt and the published page shows the change, then report**

@@ -54,7 +54,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>コードページ試験の結果</h1>
 <p class="lead">計画の T1〜T6 を、コードページ 932 と 437 で、bun 1.4.3 ・ bun canary ・ node ・ deno に流した結果。bun がコンソールのコードページを変えることで起きる害を 1 つずつ実測で示し、結果の 1 つ 1 つから証拠ファイルへリンクする</p>
-<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-16</p>
+<p class="date">📅 作成: 2026-10-04 / 更新: 2026-10-17</p>
 </div></div>
 
 <div class="wrap">
@@ -104,7 +104,7 @@ footer .navbar { margin-top: 0; }
 <li>強制終了すると 65001 が残り、そのあと同じ窓で動くスクリプトは読み違える（T3）</li>
 <li><code>fs.writeSync(1)</code> ・ <code>fs.write(1)</code> ・ <code>Bun.write(Bun.stdout)</code> は <code>WriteFile</code> のままなので、ww の順では化ける（T5）。PR の説明文とレビューにも、そう書かれている</li>
 <li>「自分が変えたコードページだけを戻す」でも、競合に負けることがある。2 本とも終わったあと、入力側か出力側の片方だけが 65001 のまま残る。起きる頻度は回ごとに大きく変わり、120 回で 0 回のときも、60 回で 3 回のときもあった。<a href="#asis-timeline">時系列</a>を参照。PR のソースから順番も導いている</li>
-<li>2026-10-16（JST）に PR へ入ったコミット <a href="https://github.com/oven-sh/bun/pull/43662/commits/6b5271c">6b5271c</a> は、起動時に窓がすでに 65001 なら <code>SetConsoleOutputCP</code> と <code>SetConsoleCP</code> を呼ばない。437 や 932 の窓は、これまでどおり 65001 に書き換える。この資料の結果はこのコミットより前の版で測ったもので、このコミットでは bun#44693 の求める実装にならない。このコミットを含む版では、まだ試験をやり直していない</li>
+<li>2026-10-16（JST）に PR へ入ったコミット <a href="https://github.com/oven-sh/bun/pull/43662/commits/6b5271c">6b5271c</a> は、起動時に窓がすでに 65001 なら <code>SetConsoleOutputCP</code> と <code>SetConsoleCP</code> を呼ばない。437 や 932 の窓は、これまでどおり 65001 に書き換える。この資料の結果はこのコミットより前の版で測ったもので、このコミットでは bun#44693 の求める実装にならない。このコミットを含む版（先頭コミット 6b5271cb1）で、932 と 437 の全件を流し直したところ、PR の版の判定は 576eb251a のときと 1 件も違わなかった。順番を決めない回（asis）は 932 と 437 で 60 回ずつ、すべて正しく出て、コードページも戻った。強制終了で 65001 が残ることなど、PR のあとも残る害も変わらない</li>
 </ul>
 <p>パイプを流れるデータそのものは、どの組み合わせでも壊れなかった（T2）。害はすべて、窓のコードページという共有の状態を書き換えることから起きている。順番を決めたケースは、安定版と canary 版ですべて同じ判定になり（T6）、932 と 437 でもすべて同じだった。</p>
 <h2>関連する PR</h2>
@@ -414,7 +414,7 @@ run 51
 <tr><td class="nowrap">窓</td><td>ケースごとに <code>conhost.exe</code> で新しい窓を起こす。開始のコードページは、ほかと共有しないその専用の窓の中で <code>chcp</code> して 932 か 437 にする。そのあと試験はコードページに触らない</td></tr>
 <tr><td class="nowrap">bun</td><td>1.4.3+c6da4a4d3</td></tr>
 <tr><td class="nowrap">bun canary</td><td>1.4.3-canary.1+bbdc5a519（準備の時点の最新）</td></tr>
-<tr><td class="nowrap">bun PR #43662</td><td>1.4.3-canary.1+576eb251a。bun#43660 への修正で Open の <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> の、CI の Windows x64 のビルド（先頭コミット 576eb251a、Buildkite のビルド 119166）</td></tr>
+<tr><td class="nowrap">bun PR #43662</td><td>1.4.3-canary.1+6b5271cb1。bun#43660 への修正で Open の <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a> の、CI の Windows x64 のビルド（先頭コミット 6b5271cb1、Buildkite のビルド 126042）。それまでの結果は 576eb251a（Buildkite のビルド 119166）で測った。<a href="#asis-timeline">窓の全プロセスの時系列</a>と、そのあとの cdb の記録は、576eb251a のまま</td></tr>
 <tr><td class="nowrap">node</td><td>v26.10.0</td></tr>
 <tr><td class="nowrap">deno</td><td>2.9.7</td></tr>
 <tr><td class="nowrap">pwsh ／ Windows PowerShell</td><td>7.6.6 ／ 5.1.26100.9549</td></tr>

@@ -2,7 +2,7 @@
 
 bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-12
+> 📅 Created: 2026-10-03 / Updated: 2026-10-17
 
 [⌂](../README.md)
 
@@ -92,7 +92,7 @@ None of these depends on the code page, so there is no reason to change it. T1 c
 |---|---|---|
 | Bun | 1.4.3+c6da4a4d3 | Under test (stable) |
 | Bun canary | latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
-| Bun PR #43662 | 1.4.3-canary.1+576eb251a | The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in `_bin/bun-pr-43662/` and called with PATH switched |
+| Bun PR #43662 | 1.4.3-canary.1+6b5271cb1 | The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in `_bin/bun-pr-43662/` and called with PATH switched |
 | Node.js | v26.10.0 | Reference |
 | Deno | 2.9.7 | Reference |
 
@@ -247,7 +247,7 @@ Then `npm ci` runs with the npm in `_bin/node/` (for koffi and type checking).
 | Location | Handling |
 |---|---|
 | `research/evidence_last/` | Overwritten on every run. Not excluded by Git, but not committed |
-| `research/evidence/` | Committed as the baseline. Copied from `evidence_last` after it is checked, when the user says so |
+| `research/evidence/` | Committed as the baseline. Copied from `evidence_last` after it is checked. After a re-test, it is copied without waiting to be told (local rules) |
 
 - Contents: `versions.txt`, the result records (for node --test and bun test), and per case the `run.cmd`, logs, the screen read back, and the bytes the reader received
 - `tools/50_run/compare-evidence.ts` compares the two and shows only differences in the verdicts (✅ / ❌), not in timings

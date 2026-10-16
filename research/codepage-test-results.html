@@ -54,7 +54,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>Code page test results</h1>
 <p class="lead">Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file</p>
-<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-16</p>
+<p class="date">📅 Created: 2026-10-04 / Updated: 2026-10-17</p>
 </div></div>
 
 <div class="wrap">
@@ -104,7 +104,7 @@ footer .navbar { margin-top: 0; }
 <li>A forced kill still leaves 65001 behind, and a script run afterwards in the same console is misread (T3)</li>
 <li><code>fs.writeSync(1)</code>, <code>fs.write(1)</code> and <code>Bun.write(Bun.stdout)</code> still write with <code>WriteFile</code>, so in the ww order their output is garbled (T5), as the PR description and its review say</li>
 <li>Restoring "only a code page this process changed" still loses a race: after both processes exit, either the input or the output code page alone stays at 65001. How often this happens changes a lot from series to series: 0 times in 120 runs, 3 times in 60. See <a href="#asis-timeline">the timeline</a>, which also derives the order from the PR's source</li>
-<li>Commit <a href="https://github.com/oven-sh/bun/pull/43662/commits/6b5271c">6b5271c</a>, pushed to the PR on 2026-10-16 (JST), skips <code>SetConsoleOutputCP</code> and <code>SetConsoleCP</code> at startup when the console is already at 65001. A console at 437 or 932 is still switched to 65001, so the results in this document were measured on the build before this commit, and the request in bun#44693 is not met by it. We have not re-run the tests on a build with this commit</li>
+<li>Commit <a href="https://github.com/oven-sh/bun/pull/43662/commits/6b5271c">6b5271c</a>, pushed to the PR on 2026-10-16 (JST), skips <code>SetConsoleOutputCP</code> and <code>SetConsoleCP</code> at startup when the console is already at 65001. A console at 437 or 932 is still switched to 65001, so the results in this document were measured on the build before this commit, and the request in bun#44693 is not met by it. We re-ran the full set at 932 and 437 on the build with this commit (head commit 6b5271cb1): the verdicts for the PR build did not differ from those of 576eb251a in a single case. The runs with no fixed order (asis) printed correctly and restored the code page in all 60 runs at each of 932 and 437. The harms that remain after the PR, such as 65001 staying after a forced kill, are unchanged</li>
 </ul>
 <p>The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.</p>
 <h2>Related PRs</h2>
@@ -414,7 +414,7 @@ run 51
 <tr><td class="nowrap">Console</td><td>A new console is created with <code>conhost.exe</code> for every case. Its starting code page is set to 932 or 437 with <code>chcp</code> inside that dedicated console, which nothing else shares. The tests never change the code page after that</td></tr>
 <tr><td class="nowrap">Bun</td><td>1.4.3+c6da4a4d3</td></tr>
 <tr><td class="nowrap">Bun canary</td><td>1.4.3-canary.1+bbdc5a519 (the latest at setup time)</td></tr>
-<tr><td class="nowrap">Bun PR #43662</td><td>1.4.3-canary.1+576eb251a: the Windows x64 CI build of <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a>, the open fix for bun#43660 (head commit 576eb251a, Buildkite build 119166)</td></tr>
+<tr><td class="nowrap">Bun PR #43662</td><td>1.4.3-canary.1+6b5271cb1: the Windows x64 CI build of <a href="https://github.com/oven-sh/bun/pull/43662">PR #43662</a>, the open fix for bun#43660 (head commit 6b5271cb1, Buildkite build 126042). Earlier results were measured on 576eb251a (Buildkite build 119166). <a href="#asis-timeline">The timeline of every process in the console</a> and the cdb records after it remain those of 576eb251a</td>
 <tr><td class="nowrap">Node.js</td><td>v26.10.0</td></tr>
 <tr><td class="nowrap">Deno</td><td>2.9.7</td></tr>
 <tr><td class="nowrap">pwsh / Windows PowerShell</td><td>7.6.6 / 5.1.26100.9549</td></tr>

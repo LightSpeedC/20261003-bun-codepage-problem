@@ -2,7 +2,7 @@
 
 Results of T1 to T6 in the plan, run at code pages 932 and 437 with Bun 1.4.3, Bun canary, Node.js and Deno. Each harm caused by Bun changing the console code page is shown by measurement, and every result links to its evidence file
 
-> 📅 Created: 2026-10-04 / Updated: 2026-10-16
+> 📅 Created: 2026-10-04 / Updated: 2026-10-17
 
 [⌂](../README.md)
 
@@ -50,7 +50,7 @@ The rows are in order of importance: the harms that remain even with PR #43662 c
 - A forced kill still leaves 65001 behind, and a script run afterwards in the same console is misread (T3)
 - `fs.writeSync(1)`, `fs.write(1)` and `Bun.write(Bun.stdout)` still write with `WriteFile`, so in the ww order their output is garbled (T5), as the PR description and its review say
 - Restoring "only a code page this process changed" still loses a race: after both processes exit, either the input or the output code page alone stays at 65001. How often this happens changes a lot from series to series: 0 times in 120 runs, 3 times in 60. See [the timeline](#timeline-of-every-process-on-the-console-pr-43662), which also derives the order from the PR's source
-- Commit [6b5271c](https://github.com/oven-sh/bun/pull/43662/commits/6b5271c), pushed to the PR on 2026-10-16 (JST), skips `SetConsoleOutputCP` and `SetConsoleCP` at startup when the console is already at 65001. A console at 437 or 932 is still switched to 65001, so the results in this document were measured on the build before this commit, and the request in bun#44693 is not met by it. We have not re-run the tests on a build with this commit
+- Commit [6b5271c](https://github.com/oven-sh/bun/pull/43662/commits/6b5271c), pushed to the PR on 2026-10-16 (JST), skips `SetConsoleOutputCP` and `SetConsoleCP` at startup when the console is already at 65001. A console at 437 or 932 is still switched to 65001, so the results in this document were measured on the build before this commit, and the request in bun#44693 is not met by it. We re-ran the full set at 932 and 437 on the build with this commit (head commit 6b5271cb1): the verdicts for the PR build did not differ from those of 576eb251a in a single case. The runs with no fixed order (asis) printed correctly and restored the code page in all 60 runs at each of 932 and 437. The harms that remain after the PR, such as 65001 staying after a forced kill, are unchanged
 
 The data flowing through the pipe itself was never corrupted, in any combination (T2). Every harm comes from rewriting shared state: the code page of the console. The stable and canary builds gave the same verdicts in every fixed case (T6), and every fixed verdict was the same at 932 and 437.
 
@@ -367,18 +367,17 @@ Code: [the watcher](https://github.com/LightSpeedC/20261003-bun-codepage-problem
 
 ## 8. Conditions
 
-| Item | Value |
-|---|---|
-| OS | Windows 11 Home 10.0.26300 (Japanese) |
-| Console | A new console is created with `conhost.exe` for every case. Its starting code page is set to 932 or 437 with `chcp` inside that dedicated console, which nothing else shares. The tests never change the code page after that |
-| Bun | 1.4.3+c6da4a4d3 |
-| Bun canary | 1.4.3-canary.1+bbdc5a519 (the latest at setup time) |
-| Bun PR #43662 | 1.4.3-canary.1+576eb251a: the Windows x64 CI build of [PR #43662](https://github.com/oven-sh/bun/pull/43662), the open fix for bun#43660 (head commit 576eb251a, Buildkite build 119166) |
-| Node.js | v26.10.0 |
-| Deno | 2.9.7 |
-| pwsh / Windows PowerShell | 7.6.6 / 5.1.26100.9549 |
-| Text sent | `abc 東京大阪 xyz` ("Tokyo Osaka"). Garbled it becomes `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz` at 932 and `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` at 437 |
-| How to run | `tools\10_setup\setup-runtimes.cmd` downloads the runtimes above from their official sources into `_bin\`, and `tools\40_test\run-tests.cmd` puts them first on PATH and runs everything. Nothing installed on the PC is used |
+| Item | Value |  |  |
+|---|---|---|---|
+| OS | Windows 11 Home 10.0.26300 (Japanese) |  |  |
+| Console | A new console is created with `conhost.exe` for every case. Its starting code page is set to 932 or 437 with `chcp` inside that dedicated console, which nothing else shares. The tests never change the code page after that |  |  |
+| Bun | 1.4.3+c6da4a4d3 |  |  |
+| Bun canary | 1.4.3-canary.1+bbdc5a519 (the latest at setup time) |  |  |
+| Bun PR #43662 | 1.4.3-canary.1+6b5271cb1: the Windows x64 CI build of [PR #43662](https://github.com/oven-sh/bun/pull/43662), the open fix for bun#43660 (head commit 6b5271cb1, Buildkite build 126042). Earlier results were measured on 576eb251a (Buildkite build 119166). [The timeline of every process in the console](#timeline-of-every-process-on-the-console-pr-43662) and the cdb records after it remain those of 576eb251a | Node.js | v26.10.0 |
+| Deno | 2.9.7 |  |  |
+| pwsh / Windows PowerShell | 7.6.6 / 5.1.26100.9549 |  |  |
+| Text sent | `abc 東京大阪 xyz` ("Tokyo Osaka"). Garbled it becomes `abc 譚ｱ莠ｬ螟ｧ髦ｪ xyz` at 932 and `abc µ¥▒Σ║¼σñºΘÿ¬ xyz` at 437 |  |  |
+| How to run | `tools\10_setup\setup-runtimes.cmd` downloads the runtimes above from their official sources into `_bin\`, and `tools\40_test\run-tests.cmd` puts them first on PATH and runs everything. Nothing installed on the PC is used |  |  |
 
 ### How results are judged
 

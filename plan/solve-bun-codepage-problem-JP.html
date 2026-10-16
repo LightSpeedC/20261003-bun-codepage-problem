@@ -52,7 +52,7 @@ footer .navbar { margin-top: 0; }
 <div class="titlebar"><div class="inner">
 <h1>bun のコードページ問題を解決したい</h1>
 <p class="lead">bun#43660 は氷山の一角。根本の問題は bun がコンソールのコードページを変えることにある。その害を実測で示し、変えない実装を求める Issue を出す</p>
-<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-12</p>
+<p class="date">📅 作成: 2026-10-03 / 更新: 2026-10-17</p>
 </div></div>
 
 <div class="wrap">
@@ -134,7 +134,7 @@ footer .navbar { margin-top: 0; }
 <tbody>
 <tr><td>bun</td><td class="nowrap">1.4.3+c6da4a4d3</td><td>調べる対象（安定版）</td></tr>
 <tr><td>bun canary</td><td class="nowrap">準備の時点の最新（全件の試験では 1.4.3-canary.1+bbdc5a519）</td><td>調べる対象。<code>_bin/bun-canary/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
-<tr><td>bun PR #43662</td><td class="nowrap">1.4.3-canary.1+576eb251a</td><td>bun#43660 への修正の PR の版。何が直り、何が残るかを見る。<code>_bin/bun-pr-43662/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
+<tr><td>bun PR #43662</td><td class="nowrap">1.4.3-canary.1+6b5271cb1</td><td>bun#43660 への修正の PR の版。何が直り、何が残るかを見る。<code>_bin/bun-pr-43662/</code> に置き、PATH を入れ替えて呼ぶ</td></tr>
 <tr><td>node</td><td class="nowrap">v26.10.0</td><td>比べる相手</td></tr>
 <tr><td>deno</td><td class="nowrap">2.9.7</td><td>比べる相手</td></tr>
 </tbody></table></div>
@@ -278,7 +278,7 @@ tools/50_run/
 <thead><tr><th>置き場</th><th>扱い</th></tr></thead>
 <tbody>
 <tr><td class="nowrap"><code>research/evidence_last/</code></td><td>流すたびに上書きする。Git で除外しないが、commit しない</td></tr>
-<tr><td class="nowrap"><code>research/evidence/</code></td><td>基準として commit する。<code>evidence_last</code> を確かめてから、利用者の指示で写す</td></tr>
+<tr><td class="nowrap"><code>research/evidence/</code></td><td>基準として commit する。<code>evidence_last</code> を確かめてから写す。再試験のあとは、指示を待たずに写す（ローカルルール）</td></tr>
 </tbody></table></div>
 <ul>
 <li>置く中身: <code>versions.txt</code>、集計（node --test と bun test の分）、ケースごとの <code>run.cmd</code> ・ ログ ・ 画面の読み取り ・ 受け手のバイト列</li>
