@@ -250,6 +250,8 @@ bun -e "console.log('abc \u6771\u4eac\u5927\u962a xyz')" | bun -e "process.stdin
 - 同じコマンドでも、bun は回ごとに結果が変わり、化ける回数も流すたびに変わった（H2）。2 本のどちらが先に起動・終了するかで決まり、その順は OS の都合で毎回揺れる
 - bun#43660 で「化ける」と報告した現象は、この揺れのうち化ける側を見たものだった
 - PR #43662 の版は 120 回とも正しく出し、コードページも毎回戻した。ただし、別の日には 20 回中 1 回、出力側を 65001 のまま残した（[2026-10-07 の 6 回目](https://github.com/LightSpeedC/20261003-bun-codepage-problem/blob/e5e5de4/research/evidence/cp932/bun-pr-43662/node-test/t5-bun-asis-6/log.jsonl)）。[下の時系列](#窓の全プロセスの時系列pr-43662) を参照
+- 先頭コミット 6b5271cb1 の版を、順番を決めずに、932 と 437 で 300 回ずつ流し、見張り役も付けた。さらに、CPU を 8 本の空回しで埋めた中でも 300 回ずつ流した。合わせて 1,200 回、すべて正しく出て、コードページも毎回戻った。証拠は [932（負荷なし）](evidence/cp932/bun-pr-43662/asis-timeline-300/results.jsonl) ・ [932（負荷あり）](evidence/cp932/bun-pr-43662/asis-timeline-300-load/results.jsonl) ・ [437（負荷なし）](evidence/cp437/bun-pr-43662/asis-timeline-300/results.jsonl) ・ [437（負荷あり）](evidence/cp437/bun-pr-43662/asis-timeline-300-load/results.jsonl)
+- 負荷が隙間を広げることは、前の版（576eb251a）を負荷ありの 932 で 100 回流して確かめた。3 回（21 ・ 70 ・ 92 回目）、コードページが戻らなかった（[証拠](evidence/cp932/bun-pr-43662-576eb251a/asis-timeline-100-load/results.jsonl)）。同じ負荷の中で 6b5271cb1 は 600 回 0 回なので、失敗の割合が前の版の 3% のままなら、600 回すべて成功する確率は 8000 万分の 1 ほどになる。この試験は、競合に負けることを見つけられる。失敗しなかったのは、たまたまではない。ただし、試験で確かめたのはこの形（`bun | bun`）だけで、すべての順番を証明したものではない
 
 ### 窓の全プロセスの時系列（PR #43662）
 

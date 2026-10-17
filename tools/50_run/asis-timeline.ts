@@ -2,10 +2,10 @@
 // while tests/fixtures/watch.ts logs, with UTC times, every process attached to the console and every code page change.
 // T5 の asis（bun | bun、順番を決めない、bun#43660 と同じ形）を PR #43662 の版で何回も流す。
 // その間 tests/fixtures/watch.ts が、窓につながる全プロセスの出入りと、コードページの変化を UTC の時刻で記録する。
-// Usage / 使い方: node tools/50_run/asis-timeline.ts [--reps 30] [--bun bun-pr-43662] [--cp 932] [--name asis-timeline] [--via cmd]
+// Usage / 使い方: node tools/50_run/asis-timeline.ts [--reps 30] [--bun bun-pr-43662] [--cp 932] [--name asis-timeline] [--via cmd] [--load 0]
 // Results go to research/evidence/cp<cp>/<bun>/<name>/. Each run folder holds run.cmd, log.jsonl, screen.json and watch.ndjson.
 // 結果は research/evidence/cp<cp>/<bun>/<name>/ に置く。回ごとのフォルダに run.cmd ・ log.jsonl ・ screen.json ・ watch.ndjson。
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -121,6 +121,16 @@ const lines = () => [
 	'del "{dir}\\ready.flag" "{dir}\\stop.flag" "{dir}\\done.flag"',
 ];
 
+// --load <n> keeps n busy-loop node processes running during the series, so the two bun processes start under CPU pressure.
+// This widens the window in which the race can be lost; it is recorded in environment.json.
+// --load <n> は、系列のあいだ n 本の node の空回しを動かし続け、2 本の bun が CPU の混んだ中で起動するようにする。
+// 競合に負ける隙間が広がる。環境ファイルに n を書く。
+const loadCount = Number(args.load ?? 0);
+const busy = Array.from({ length: loadCount }, () => spawn(path.join(bin, 'node', 'node.exe'), ['-e', 'for(;;){}'], { stdio: 'ignore' }));
+if (loadCount > 0) {
+	const envFile = path.join(outDir, 'environment.json');
+	writeFileSync(envFile, JSON.stringify({ ...JSON.parse(readFileSync(envFile, 'utf8')), load: loadCount }, null, '\t') + '\n');
+}
 const results = [];
 for (let i = 1; i <= reps; i++) {
 	rep = i;
@@ -130,6 +140,7 @@ for (let i = 1; i <= reps; i++) {
 	results.push(item);
 	console.log(`${i} 回目: 終了後 ${item.after.in}/${item.after.out} 画面 ${item.screen} 隣 ${item.neighbor ? '正しい' : '化けた'}`);
 }
+for (const b of busy) b.kill();
 writeFileSync(path.join(outDir, 'results.jsonl'), results.map((r) => JSON.stringify(r)).join('\n') + '\n');
 const left = results.filter((r) => r.after.out !== cp || r.after.in !== cp).map((r) => r.rep);
 console.log(`${reps} 回中 ${left.length} 回で、開始のコードページに戻らなかった: ${left.join(', ') || 'なし'}`);
