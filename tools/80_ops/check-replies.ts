@@ -2,6 +2,8 @@
 // oven-sh/bun の #44693 ・ #43660 ・ PR #43662 で、前回の確認から増えたもの（コメント ・ レビュー ・ コミット ・ 出来事 ・ リアクション）だけを表示する。
 // Activity by the account running gh (the one that posted) is left out. The time of the last check is kept in etc/check-replies.json (not in Git).
 // gh を動かすアカウント（投稿した本人）の分は除く。前回の確認の時刻は etc/check-replies.json に残す（Git 管理外）。
+// It also reports a new stable Bun release (the tag is kept in the same file).
+// 新しい安定版の bun が出たことも知らせる（版は同じファイルに残す）。
 // Usage: node tools/80_ops/check-replies.ts [--since <ISO 8601 time>]
 // 使い方: node tools/80_ops/check-replies.ts [--since <ISO 8601 の時刻>]
 import { execFileSync } from 'node:child_process';
@@ -40,9 +42,15 @@ const sinceAt = process.argv.indexOf('--since');
 const state = existsSync(stateFile) ? JSON.parse(readFileSync(stateFile, 'utf8')) : null;
 const since: string | undefined = sinceAt >= 0 ? process.argv[sinceAt + 1] : state?.lastCheck;
 const now = new Date().toISOString();
+// The latest stable Bun release. A new one means the tests are to be re-run (local rules). Canary is left out: it changes every day.
+// Bun の最新の安定版。新しくなったら再試験する（ローカルルール）。canary は毎日変わるので見ない。
+const stable: { tag: string; at: string } = (() => {
+	const r = JSON.parse(execFileSync('gh', ['api', 'repos/oven-sh/bun/releases/latest'], { encoding: 'utf8', timeout: 120_000 }));
+	return { tag: r.tag_name as string, at: r.published_at as string };
+})();
 function save() {
 	mkdirSync(path.dirname(stateFile), { recursive: true });
-	writeFileSync(stateFile, JSON.stringify({ lastCheck: now }, null, '\t') + '\n');
+	writeFileSync(stateFile, JSON.stringify({ lastCheck: now, bunStable: stable.tag }, null, '\t') + '\n');
 }
 if (!since || Number.isNaN(Date.parse(since))) {
 	if (sinceAt >= 0) throw new Error(`--since の時刻が読めない: ${since}`);
@@ -130,10 +138,15 @@ for (const n of TARGETS) {
 items.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 console.log(`確認した時刻: ${jst(now)} JST ／ 前回の確認: ${jst(since)} JST`);
 for (const t of titles) console.log(`  ${t}`);
-if (items.length === 0) {
+// A record without bunStable (the first run after this check was added) only sets the baseline.
+// bunStable の無い記録（この確認を足した最初の回）は、基準を残すだけにする。
+const newStable = state?.bunStable && state.bunStable !== stable.tag;
+console.log(`  bun の最新の安定版: ${stable.tag}（${jst(stable.at)} JST）`);
+if (items.length === 0 && !newStable) {
 	console.log('新着なし');
 } else {
-	console.log(`新着 ${items.length} 件`);
+	console.log(`新着 ${items.length + (newStable ? 1 : 0)} 件`);
+	if (newStable) console.log(`[bun の新版] ${stable.tag}（前回 ${state.bunStable}）。再試験する（ローカルルール）\n  https://github.com/oven-sh/bun/releases/tag/${stable.tag}`);
 	for (const i of items) {
 		console.log(`[#${i.n}] ${jst(i.at)} JST ${i.kind} ${i.who}`);
 		if (i.text) console.log(`  ${i.text}`);
