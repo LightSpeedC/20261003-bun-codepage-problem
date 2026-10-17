@@ -1,0 +1,17 @@
+{"utc":"2026-10-17T03:27:56.672Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T03:27:56.674Z","event":"attach","pid":36956,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\run.cmd"}
+{"utc":"2026-10-17T03:27:56.719Z","event":"attach","pid":37040,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\.\" --tag before"}
+{"utc":"2026-10-17T03:27:56.866Z","event":"detach","pid":37040}
+{"utc":"2026-10-17T03:27:56.934Z","event":"attach","pid":31696,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T03:27:56.946Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:27:56.949Z","event":"attach","pid":38676,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T03:27:56.949Z","event":"detach","pid":31696}
+{"utc":"2026-10-17T03:27:56.956Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-17T03:27:56.966Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:27:57.040Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-17T03:27:57.044Z","event":"detach","pid":38676}
+{"utc":"2026-10-17T03:27:57.092Z","event":"attach","pid":14028,"cmd":"chcp"}
+{"utc":"2026-10-17T03:27:57.120Z","event":"detach","pid":14028}
+{"utc":"2026-10-17T03:27:57.241Z","event":"attach","pid":11296,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662-old\\asis-timeline-100-load\\asis-70\\./screen.json\""}
+{"utc":"2026-10-17T03:27:57.379Z","event":"detach","pid":11296}
+{"utc":"2026-10-17T03:27:57.398Z","event":"watch-end","in":932,"out":65001}

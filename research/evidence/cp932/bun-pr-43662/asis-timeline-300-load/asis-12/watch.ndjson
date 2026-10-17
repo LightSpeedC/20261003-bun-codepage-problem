@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T02:48:58.230Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T02:48:58.235Z","event":"attach","pid":27400,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\run.cmd"}
+{"utc":"2026-10-17T02:48:58.292Z","event":"attach","pid":5144,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\.\" --tag before"}
+{"utc":"2026-10-17T02:48:58.522Z","event":"detach","pid":5144}
+{"utc":"2026-10-17T02:48:58.580Z","event":"attach","pid":24272,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T02:48:58.580Z","event":"attach","pid":34284,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T02:48:58.581Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:48:58.586Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-17T02:48:58.586Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:48:58.587Z","event":"detach","pid":24272}
+{"utc":"2026-10-17T02:48:58.589Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-17T02:48:58.650Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:48:58.653Z","event":"detach","pid":34284}
+{"utc":"2026-10-17T02:48:58.712Z","event":"attach","pid":18160,"cmd":"chcp"}
+{"utc":"2026-10-17T02:48:58.785Z","event":"detach","pid":18160}
+{"utc":"2026-10-17T02:48:58.861Z","event":"attach","pid":13152,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-12\\./screen.json\""}
+{"utc":"2026-10-17T02:48:59.019Z","event":"detach","pid":13152}
+{"utc":"2026-10-17T02:48:59.040Z","event":"watch-end","in":932,"out":932}

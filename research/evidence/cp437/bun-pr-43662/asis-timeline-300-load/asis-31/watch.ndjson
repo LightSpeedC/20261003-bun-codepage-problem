@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T03:10:13.962Z","event":"watch-start","in":437,"out":437}
+{"utc":"2026-10-17T03:10:13.965Z","event":"attach","pid":11108,"cmd":"cmd /c .\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\run.cmd"}
+{"utc":"2026-10-17T03:10:14.018Z","event":"attach","pid":20520,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\.\" --tag before"}
+{"utc":"2026-10-17T03:10:14.149Z","event":"detach","pid":20520}
+{"utc":"2026-10-17T03:10:14.200Z","event":"attach","pid":13272,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T03:10:14.200Z","event":"attach","pid":26928,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T03:10:14.201Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:10:14.207Z","event":"codepage","in":65001,"out":437}
+{"utc":"2026-10-17T03:10:14.208Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:10:14.210Z","event":"detach","pid":26928}
+{"utc":"2026-10-17T03:10:14.212Z","event":"codepage","in":65001,"out":437}
+{"utc":"2026-10-17T03:10:14.284Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:10:14.288Z","event":"detach","pid":13272}
+{"utc":"2026-10-17T03:10:14.338Z","event":"attach","pid":23736,"cmd":"chcp"}
+{"utc":"2026-10-17T03:10:14.362Z","event":"detach","pid":23736}
+{"utc":"2026-10-17T03:10:14.481Z","event":"attach","pid":10808,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\.\" --tag after --screen \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-31\\./screen.json\""}
+{"utc":"2026-10-17T03:10:14.635Z","event":"detach","pid":10808}
+{"utc":"2026-10-17T03:10:14.650Z","event":"watch-end","in":437,"out":437}

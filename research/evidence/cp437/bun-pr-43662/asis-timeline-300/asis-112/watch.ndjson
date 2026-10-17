@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T03:04:29.160Z","event":"watch-start","in":437,"out":437}
+{"utc":"2026-10-17T03:04:29.162Z","event":"attach","pid":27484,"cmd":"cmd /c .\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\run.cmd"}
+{"utc":"2026-10-17T03:04:29.177Z","event":"attach","pid":29524,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\.\" --tag before"}
+{"utc":"2026-10-17T03:04:29.292Z","event":"detach","pid":29524}
+{"utc":"2026-10-17T03:04:29.315Z","event":"attach","pid":456,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T03:04:29.318Z","event":"codepage","in":437,"out":65001}
+{"utc":"2026-10-17T03:04:29.319Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:04:29.328Z","event":"attach","pid":11672,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T03:04:29.331Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:04:29.331Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:04:29.332Z","event":"detach","pid":456}
+{"utc":"2026-10-17T03:04:29.367Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:04:29.368Z","event":"detach","pid":11672}
+{"utc":"2026-10-17T03:04:29.383Z","event":"attach","pid":21540,"cmd":"chcp"}
+{"utc":"2026-10-17T03:04:29.388Z","event":"detach","pid":21540}
+{"utc":"2026-10-17T03:04:29.406Z","event":"attach","pid":31924,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\.\" --tag after --screen \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300\\asis-112\\./screen.json\""}
+{"utc":"2026-10-17T03:04:29.521Z","event":"detach","pid":31924}
+{"utc":"2026-10-17T03:04:29.527Z","event":"watch-end","in":437,"out":437}

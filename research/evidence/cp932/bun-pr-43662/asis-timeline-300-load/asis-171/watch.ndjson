@@ -1,0 +1,5 @@
+{"utc":"2026-10-17T02:56:05.037Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T02:56:05.059Z","event":"attach","pid":34728,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-171\\run.cmd"}
+{"utc":"2026-10-17T02:56:05.150Z","event":"attach","pid":32804,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-171\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300-load\\asis-171\\.\" --tag before"}
+{"utc":"2026-10-17T02:56:05.434Z","event":"detach","pid":32804}
+{"utc":"2026-10-17T02:56:07.594Z","event":"watch-end","in":932,"out":932}

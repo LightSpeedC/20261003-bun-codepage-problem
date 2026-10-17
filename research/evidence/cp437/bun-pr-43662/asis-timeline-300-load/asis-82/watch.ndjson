@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T03:12:48.897Z","event":"watch-start","in":437,"out":437}
+{"utc":"2026-10-17T03:12:48.904Z","event":"attach","pid":26924,"cmd":"cmd /c .\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\run.cmd"}
+{"utc":"2026-10-17T03:12:48.984Z","event":"attach","pid":15432,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\.\" --tag before"}
+{"utc":"2026-10-17T03:12:49.204Z","event":"detach","pid":15432}
+{"utc":"2026-10-17T03:12:49.248Z","event":"attach","pid":31524,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T03:12:49.252Z","event":"codepage","in":437,"out":65001}
+{"utc":"2026-10-17T03:12:49.254Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:12:49.273Z","event":"attach","pid":36044,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T03:12:49.279Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:12:49.284Z","event":"detach","pid":31524}
+{"utc":"2026-10-17T03:12:49.297Z","event":"codepage","in":437,"out":65001}
+{"utc":"2026-10-17T03:12:49.318Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T03:12:49.403Z","event":"codepage","in":65001,"out":437}
+{"utc":"2026-10-17T03:12:49.418Z","event":"codepage","in":437,"out":437}
+{"utc":"2026-10-17T03:12:49.422Z","event":"detach","pid":36044}
+{"utc":"2026-10-17T03:12:49.534Z","event":"attach","pid":18384,"cmd":"node  \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\.\" --tag after --screen \".\\research\\evidence\\cp437\\bun-pr-43662\\asis-timeline-300-load\\asis-82\\./screen.json\""}
+{"utc":"2026-10-17T03:12:49.714Z","event":"detach","pid":18384}
+{"utc":"2026-10-17T03:12:49.758Z","event":"watch-end","in":437,"out":437}

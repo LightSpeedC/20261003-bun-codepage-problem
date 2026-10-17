@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T02:43:25.620Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T02:43:25.623Z","event":"attach","pid":36088,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\run.cmd"}
+{"utc":"2026-10-17T02:43:25.638Z","event":"attach","pid":36456,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\.\" --tag before"}
+{"utc":"2026-10-17T02:43:25.747Z","event":"detach","pid":36456}
+{"utc":"2026-10-17T02:43:25.769Z","event":"attach","pid":12512,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T02:43:25.771Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:43:25.783Z","event":"attach","pid":33996,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T02:43:25.787Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:43:25.788Z","event":"detach","pid":12512}
+{"utc":"2026-10-17T02:43:25.789Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:43:25.837Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-17T02:43:25.838Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:43:25.840Z","event":"detach","pid":33996}
+{"utc":"2026-10-17T02:43:25.861Z","event":"attach","pid":36284,"cmd":"chcp"}
+{"utc":"2026-10-17T02:43:25.865Z","event":"detach","pid":36284}
+{"utc":"2026-10-17T02:43:25.887Z","event":"attach","pid":1136,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-82\\./screen.json\""}
+{"utc":"2026-10-17T02:43:26.014Z","event":"detach","pid":1136}
+{"utc":"2026-10-17T02:43:26.020Z","event":"watch-end","in":932,"out":932}

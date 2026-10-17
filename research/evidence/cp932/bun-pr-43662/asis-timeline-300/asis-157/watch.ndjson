@@ -1,0 +1,18 @@
+{"utc":"2026-10-17T02:45:10.727Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T02:45:10.730Z","event":"attach","pid":30352,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\run.cmd"}
+{"utc":"2026-10-17T02:45:10.743Z","event":"attach","pid":31108,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\.\" --tag before"}
+{"utc":"2026-10-17T02:45:10.845Z","event":"detach","pid":31108}
+{"utc":"2026-10-17T02:45:10.859Z","event":"attach","pid":29124,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T02:45:10.861Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:45:10.871Z","event":"attach","pid":12076,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T02:45:10.873Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-17T02:45:10.873Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:45:10.874Z","event":"detach","pid":29124}
+{"utc":"2026-10-17T02:45:10.874Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:45:10.902Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:45:10.903Z","event":"detach","pid":12076}
+{"utc":"2026-10-17T02:45:10.916Z","event":"attach","pid":22000,"cmd":"chcp"}
+{"utc":"2026-10-17T02:45:10.920Z","event":"detach","pid":22000}
+{"utc":"2026-10-17T02:45:10.937Z","event":"attach","pid":33592,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-157\\./screen.json\""}
+{"utc":"2026-10-17T02:45:11.031Z","event":"detach","pid":33592}
+{"utc":"2026-10-17T02:45:11.036Z","event":"watch-end","in":932,"out":932}

@@ -1,0 +1,20 @@
+{"utc":"2026-10-17T02:47:25.512Z","event":"watch-start","in":932,"out":932}
+{"utc":"2026-10-17T02:47:25.514Z","event":"attach","pid":36260,"cmd":"cmd /c .\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\run.cmd"}
+{"utc":"2026-10-17T02:47:25.527Z","event":"attach","pid":34908,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\.\" --tag before"}
+{"utc":"2026-10-17T02:47:25.628Z","event":"detach","pid":34908}
+{"utc":"2026-10-17T02:47:25.648Z","event":"attach","pid":27520,"cmd":"bun  -e \"console.log('abc \\u6771\\u4eac\\u5927\\u962a xyz')\" "}
+{"utc":"2026-10-17T02:47:25.651Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-17T02:47:25.652Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:47:25.659Z","event":"attach","pid":36356,"cmd":"bun  -e \"process.stdin.pipe(process.stdout)\""}
+{"utc":"2026-10-17T02:47:25.664Z","event":"codepage","in":65001,"out":932}
+{"utc":"2026-10-17T02:47:25.665Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:47:25.666Z","event":"detach","pid":27520}
+{"utc":"2026-10-17T02:47:25.668Z","event":"codepage","in":932,"out":65001}
+{"utc":"2026-10-17T02:47:25.669Z","event":"codepage","in":65001,"out":65001}
+{"utc":"2026-10-17T02:47:25.708Z","event":"codepage","in":932,"out":932}
+{"utc":"2026-10-17T02:47:25.709Z","event":"detach","pid":36356}
+{"utc":"2026-10-17T02:47:25.724Z","event":"attach","pid":15368,"cmd":"chcp"}
+{"utc":"2026-10-17T02:47:25.728Z","event":"detach","pid":15368}
+{"utc":"2026-10-17T02:47:25.748Z","event":"attach","pid":31620,"cmd":"node  \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\..\\..\\..\\..\\..\\..\\tests\\fixtures/probe.ts\" --dir \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\.\" --tag after --screen \".\\research\\evidence\\cp932\\bun-pr-43662\\asis-timeline-300\\asis-256\\./screen.json\""}
+{"utc":"2026-10-17T02:47:25.862Z","event":"detach","pid":31620}
+{"utc":"2026-10-17T02:47:25.867Z","event":"watch-end","in":932,"out":932}
