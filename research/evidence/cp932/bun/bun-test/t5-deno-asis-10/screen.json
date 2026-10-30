@@ -1,4 +1,6 @@
 [
+	"Could not initialize cache database 'C:\\Users\\work\\AppData\\Local\\deno\\dep_analysis_cache_v2', deleting and retrying... (",
+	"SqliteFailure(Error { code: SystemIoFailure, extended_code: 1546 }, Some(\"disk I/O error\")))",
 	"abc 東京大阪 xyz",
 	"--- tail ---",
 	"現在のコード ページ: 932",
