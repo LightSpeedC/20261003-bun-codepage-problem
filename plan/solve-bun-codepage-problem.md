@@ -2,7 +2,7 @@
 
 bun#43660 is the tip of the iceberg. The root problem is that Bun changes the console code page. Measure the harm it causes, and file an issue asking Bun not to change it
 
-> 📅 Created: 2026-10-03 / Updated: 2026-10-17
+> 📅 Created: 2026-10-03 / Updated: 2026-10-31
 
 [⌂](../README.md)
 
@@ -90,8 +90,8 @@ None of these depends on the code page, so there is no reason to change it. T1 c
 
 | Runtime | Version | Role |
 |---|---|---|
-| Bun | 1.4.3+c6da4a4d3 | Under test (stable) |
-| Bun canary | latest at setup time (1.4.3-canary.1+bbdc5a519 in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
+| Bun | 1.4.4+38afee6c8 | Under test (stable) |
+| Bun canary | latest at setup time (1.4.4-canary.1+da867c60b in the full run) | Under test. Placed in `_bin/bun-canary/` and called with PATH switched |
 | Bun PR #43662 | 1.4.3-canary.1+6b5271cb1 | The build of the PR that fixes bun#43660, to see what it fixes and what remains. Placed in `_bin/bun-pr-43662/` and called with PATH switched |
 | Node.js | v26.10.0 | Reference |
 | Deno | 2.9.7 | Reference |
@@ -215,7 +215,7 @@ Anyone who clones the repository on Windows can run the same tests. Nothing depe
 
 | Runtime | Version | Location |
 |---|---|---|
-| Bun | 1.4.3 | `_bin/bun/` |
+| Bun | 1.4.4 | `_bin/bun/` |
 | Bun canary | latest at setup time (it cannot be pinned, so the version is recorded) | `_bin/bun-canary/` |
 | Node.js | v26.10.0 | `_bin/node/` |
 | Deno | 2.9.7 | `_bin/deno/` |
